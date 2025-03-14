@@ -4,6 +4,8 @@
 
 #define MODO_LECTURA "r"
 
+const int TAMANO_CONST_BUFFER = 10;
+
 struct Archivo {
 	FILE *file;
 	int lineas_leidas;
@@ -38,7 +40,38 @@ Archivo *archivo_abrir(const char *nombre)
  *
  * Devuelve un puntero a la línea leída, o NULL si no hay más líneas.
  */
-const char *archivo_leer_linea(Archivo *archivo) {}
+const char *archivo_leer_linea(Archivo *archivo)
+{
+	char *linea = malloc(sizeof(char) * TAMANO_CONST_BUFFER);
+	if (linea == NULL) {
+		printf("Error reservando memoria\n");
+		return NULL;
+	}
+
+	int tamano_actual_buffer = TAMANO_CONST_BUFFER;
+	int chars_leidos = 0;
+	int caracter;
+	while ((caracter = getchar()) != '\n') {
+		if (chars_leidos + 1 >= tamano_actual_buffer) {
+			tamano_actual_buffer += TAMANO_CONST_BUFFER;
+			linea = realloc(linea, tamano_actual_buffer);
+			if (linea == NULL) {
+				printf("Error reservando memoria\n");
+				return NULL;
+			}
+		}
+		linea[chars_leidos++] = caracter;
+	}
+
+	if (chars_leidos == 0) {
+		free(linea);
+		return NULL;
+	}
+
+	linea[chars_leidos] = '\0';
+	archivo->lineas_leidas++;
+	return linea;
+}
 
 /*
  * Indica si hay más líneas por leer en el archivo.
