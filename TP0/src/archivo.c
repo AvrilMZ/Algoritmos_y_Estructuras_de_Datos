@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const char MODO_LECTURA = 'r';
+#define MODO_LECTURA "r"
 
 struct Archivo {
 	FILE *file;
+	int lineas_leidas;
 };
 
 /*
@@ -24,8 +25,10 @@ Archivo *archivo_abrir(const char *nombre)
 	archivo->file = fopen(nombre, MODO_LECTURA);
 	if (archivo->file == NULL) {
 		printf("No se puedo abrir el archivo %s\n", nombre);
+		free(archivo);
 		return NULL;
 	}
+	archivo->lineas_leidas = 0;
 
 	return archivo;
 }
@@ -49,7 +52,12 @@ int archivo_hay_mas_lineas(Archivo *archivo) {}
  *
  * Devuelve 0 si el archivo es NULL.
  */
-int archivo_lineas_leidas(Archivo *archivo) {}
+int archivo_lineas_leidas(Archivo *archivo)
+{
+	if (archivo == NULL)
+		return 0;
+	return archivo->lineas_leidas;
+}
 
 /*
  * Cierra el archivo y libera toda la memoria reservada.
