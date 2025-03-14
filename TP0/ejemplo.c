@@ -1,6 +1,6 @@
-#include <stdlib.h>
-#include <stdio.h>
 #include "src/archivo.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 int main(int argc, char const *argv[])
 {
