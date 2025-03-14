@@ -51,14 +51,17 @@ const char *archivo_leer_linea(Archivo *archivo)
 	int tamano_actual_buffer = TAMANO_CONST_BUFFER;
 	int chars_leidos = 0;
 	int caracter;
-	while ((caracter = getchar()) != '\n') {
+	while ((caracter = fgetc(archivo->file)) != '\n' && caracter != EOF) {
 		if (chars_leidos + 1 >= tamano_actual_buffer) {
 			tamano_actual_buffer += TAMANO_CONST_BUFFER;
-			linea = realloc(linea, tamano_actual_buffer);
+			char *nueva_linea =
+			    realloc(linea, tamano_actual_buffer);
 			if (linea == NULL) {
 				printf("Error reservando memoria\n");
+				free(linea);
 				return NULL;
 			}
+			linea = nueva_linea;
 		}
 		linea[chars_leidos++] = caracter;
 	}
@@ -78,7 +81,21 @@ const char *archivo_leer_linea(Archivo *archivo)
  *
  * Devuelve 1 si hay más líneas, 0 en caso contrario.
  */
-int archivo_hay_mas_lineas(Archivo *archivo) {}
+int archivo_hay_mas_lineas(Archivo *archivo)
+{
+	long posicion_actual = ftell(archivo->file);
+	if (posicion_actual == -1) {
+		printf("Error al obtener la posición del archivo\n");
+		return 0;
+	}
+
+	int caracter = fgetc(archivo->file);
+	if (caracter == EOF)
+		return 0;
+
+	fseek(archivo->file, posicion_actual, SEEK_SET);
+	return 1;
+}
 
 /*
  * Devuelve la cantidad de líneas leídas hasta el momento.
