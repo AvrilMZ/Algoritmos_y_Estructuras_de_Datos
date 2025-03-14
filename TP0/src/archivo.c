@@ -54,4 +54,11 @@ int archivo_lineas_leidas(Archivo *archivo) {}
 /*
  * Cierra el archivo y libera toda la memoria reservada.
  */
-void archivo_cerrar(Archivo *archivo) {}
+void archivo_cerrar(Archivo *archivo)
+{
+	if (archivo != NULL) {
+		if (archivo->file != NULL)
+			fclose(archivo->file);
+		free(archivo);
+	}
+}
