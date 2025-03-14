@@ -2,12 +2,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+const char MODO_LECTURA = 'r';
+
+struct Archivo {
+	FILE *file;
+};
+
 /*
  * Abre un archivo DE TEXTO para su posterior lectura.
  *
  * Devuelve el archivo si se pudo abrir, NULL en caso contrario.
  */
-Archivo *archivo_abrir(const char *nombre) {}
+Archivo *archivo_abrir(const char *nombre)
+{
+	Archivo *archivo = malloc(sizeof(Archivo));
+	if (archivo == NULL) {
+		printf("Error reservando memoria\n");
+		return NULL;
+	}
+
+	archivo->file = fopen(nombre, MODO_LECTURA);
+	if (archivo->file == NULL) {
+		printf("No se puedo abrir el archivo %s\n", nombre);
+		return NULL;
+	}
+
+	return archivo;
+}
 
 /*
  * Lee una línea del archivo.
