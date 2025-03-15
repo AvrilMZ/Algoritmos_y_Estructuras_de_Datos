@@ -66,12 +66,14 @@ const char *archivo_leer_linea(Archivo *archivo)
 		linea[chars_leidos++] = caracter;
 	}
 
-	if (chars_leidos == 0) {
+	if (chars_leidos == 0 && caracter == '\n') {
+		linea[0] = '\0';
+	} else if (chars_leidos == 0 && caracter == EOF) {
 		free(linea);
 		return NULL;
-	}
+	} else
+		linea[chars_leidos] = '\0';
 
-	linea[chars_leidos] = '\0';
 	archivo->lineas_leidas++;
 	return linea;
 }
