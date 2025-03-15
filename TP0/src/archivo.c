@@ -9,6 +9,7 @@ const int TAMANO_CONST_BUFFER = 10;
 struct Archivo {
 	FILE *file;
 	int lineas_leidas;
+	char *ultima_linea;
 };
 
 /*
@@ -31,6 +32,7 @@ Archivo *archivo_abrir(const char *nombre)
 		return NULL;
 	}
 	archivo->lineas_leidas = 0;
+	archivo->ultima_linea = NULL;
 
 	return archivo;
 }
@@ -42,6 +44,9 @@ Archivo *archivo_abrir(const char *nombre)
  */
 const char *archivo_leer_linea(Archivo *archivo)
 {
+	if (archivo->ultima_linea)
+		free(archivo->ultima_linea);
+
 	char *linea = malloc(sizeof(char) * TAMANO_CONST_BUFFER);
 	if (linea == NULL) {
 		printf("Error reservando memoria\n");
@@ -56,7 +61,7 @@ const char *archivo_leer_linea(Archivo *archivo)
 			tamano_actual_buffer += TAMANO_CONST_BUFFER;
 			char *nueva_linea =
 			    realloc(linea, tamano_actual_buffer);
-			if (linea == NULL) {
+			if (nueva_linea == NULL) {
 				printf("Error reservando memoria\n");
 				free(linea);
 				return NULL;
@@ -75,6 +80,7 @@ const char *archivo_leer_linea(Archivo *archivo)
 		linea[chars_leidos] = '\0';
 
 	archivo->lineas_leidas++;
+	archivo->ultima_linea = linea;
 	return linea;
 }
 
@@ -119,6 +125,8 @@ void archivo_cerrar(Archivo *archivo)
 	if (archivo != NULL) {
 		if (archivo->file != NULL)
 			fclose(archivo->file);
+		if (archivo->ultima_linea)
+			free(archivo->ultima_linea);
 		free(archivo);
 	}
 }
