@@ -44,8 +44,10 @@ Archivo *archivo_abrir(const char *nombre)
  */
 const char *archivo_leer_linea(Archivo *archivo)
 {
-	if (archivo->ultima_linea)
+	if (archivo->ultima_linea) {
 		free(archivo->ultima_linea);
+		archivo->ultima_linea = NULL;
+	}
 
 	char *linea = malloc(sizeof(char) * TAMANO_CONST_BUFFER);
 	if (linea == NULL) {
