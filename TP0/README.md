@@ -50,7 +50,7 @@ Es responsable de abrir un archivo de texto en modo lectura y devolver un punter
 Permite leer una línea del archivo y devolverla en forma de cadena de caracteres. Antes de leer una nueva línea, se libera la memoria de la última línea almacenada, en caso de existir. Se reserva una cantidad inicial de memoria para la línea a leer y, mediante un bucle que emplea `fgetc()`, se van obteniendo caracteres del archivo hasta encontrar un salto de línea (`\n`) o el final del archivo (`EOF`). En caso de que la línea supere la memoria asignada, se realoca más espacio dinámicamente en una cantidad constante de 10 bytes. Una vez completada la lectura, la línea obtenida se almacena en `ultima_linea` y se incrementa el contador de líneas leídas. Finalmente, la función retorna la línea leída o `NULL` si no hay más contenido en el archivo.
 
 <div align="center">
-	<img src="img/Diagrama_archivo_leer_linea().png" alt="Diagrama de flujo función archivo_leer_linea()" width="500"/>
+	<img src="img/Diagrama_archivo_leer_linea().png" alt="Diagrama de flujo función archivo_leer_linea()" width="800"/>
 </div>
 
 #### `archivo_hay_mas_lineas()`
@@ -64,12 +64,12 @@ Permite determinar si quedan más líneas por leer en el archivo. Para ello, se 
 Proporciona la cantidad de líneas que han sido leídas hasta el momento. Si el archivo recibido como parámetro es `NULL`, la función retorna `0`. De lo contrario, se devuelve el valor almacenado en `lineas_leidas` dentro de la estructura `Archivo`, lo que permite obtener un seguimiento de la cantidad de líneas procesadas.
 
 <div align="center">
-	<img src="img/Diagrama_archivo_lineas_leidas().png" alt="Diagrama de flujo función archivo_lineas_leidas()" width="500"/>
+	<img src="img/Diagrama_archivo_lineas_leidas().png" alt="Diagrama de flujo función archivo_lineas_leidas()" width="600"/>
 </div>
 
 #### `archivo_cerrar()`
 Se encarga de cerrar el archivo y liberar toda la memoria reservada. Si el puntero archivo no es `NULL`, se procede a cerrar el archivo utilizando `fclose()` en caso de que estuviera abierto. También se libera la memoria de la última línea almacenada, si existía, y finalmente se libera la estructura `Archivo`.
 
 <div align="center">
-	<img src="img/Diagrama_archivo_cerrar().png" alt="Diagrama de flujo función archivo_cerrar()" width="500"/>
+	<img src="img/Diagrama_archivo_cerrar().png" alt="Diagrama de flujo función archivo_cerrar()" width="600"/>
 </div>
