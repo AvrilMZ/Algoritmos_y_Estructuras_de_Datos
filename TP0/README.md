@@ -33,6 +33,7 @@ Después de finalizar la lectura, el programa imprime la cantidad total de líne
 
 Finalmente, se llama a la función `archivo_cerrar(archivo)`, la cual libera toda la memoria reservada y cierra correctamente el archivo abierto. Una vez que se ha completado esta operación, el programa retorna 0, indicando que se ha ejecutado correctamente y ha finalizado sin errores.
 
+![Diagrama de flujo general del programa](img/Diagrama_general.png)
 
 ###  Funciones implementadas en el módulo `archivo.c`:
 
