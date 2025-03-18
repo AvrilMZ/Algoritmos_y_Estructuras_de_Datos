@@ -75,7 +75,7 @@ const char *archivo_leer_linea(Archivo *archivo)
 		if (chars_leidos + 1 >= tamano_actual_buffer) {
 			tamano_actual_buffer += TAMANO_CONST_BUFFER;
 			char *nueva_linea =
-			    realloc(linea, (size_t)tamano_actual_buffer);
+				realloc(linea, (size_t)tamano_actual_buffer);
 			if (nueva_linea == NULL) {
 				printf("Error reservando memoria\n");
 				free(linea);
