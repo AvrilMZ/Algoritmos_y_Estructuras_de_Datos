@@ -19,6 +19,11 @@ struct Archivo {
  */
 Archivo *archivo_abrir(const char *nombre)
 {
+	if (nombre == NULL) {
+		printf("No se puedo abrir el archivo (null)\n");
+		return NULL;
+	}
+
 	Archivo *archivo = malloc(sizeof(Archivo));
 	if (archivo == NULL) {
 		printf("Error reservando memoria\n");
@@ -44,12 +49,21 @@ Archivo *archivo_abrir(const char *nombre)
  */
 const char *archivo_leer_linea(Archivo *archivo)
 {
+	if (archivo == NULL || archivo->file == NULL) {
+		return NULL;
+	}
+
 	if (archivo->ultima_linea) {
 		free(archivo->ultima_linea);
 		archivo->ultima_linea = NULL;
 	}
 
-	char *linea = malloc(sizeof(char) * TAMANO_CONST_BUFFER);
+	int caracter = fgetc(archivo->file);
+	if (caracter == EOF) {
+		return NULL;
+	}
+
+	char *linea = malloc(sizeof(char) * (size_t)TAMANO_CONST_BUFFER);
 	if (linea == NULL) {
 		printf("Error reservando memoria\n");
 		return NULL;
@@ -57,30 +71,31 @@ const char *archivo_leer_linea(Archivo *archivo)
 
 	int tamano_actual_buffer = TAMANO_CONST_BUFFER;
 	int chars_leidos = 0;
-	int caracter;
-	while ((caracter = fgetc(archivo->file)) != '\n' && caracter != EOF) {
+	while (caracter != '\n' && caracter != EOF) {
 		if (chars_leidos + 1 >= tamano_actual_buffer) {
 			tamano_actual_buffer += TAMANO_CONST_BUFFER;
 			char *nueva_linea =
-			    realloc(linea, tamano_actual_buffer);
+			    realloc(linea, (size_t)tamano_actual_buffer);
 			if (nueva_linea == NULL) {
 				printf("Error reservando memoria\n");
 				free(linea);
+				if (archivo->ultima_linea) {
+					free(archivo->ultima_linea);
+					archivo->ultima_linea = NULL;
+				}
 				return NULL;
 			}
 			linea = nueva_linea;
 		}
-		linea[chars_leidos++] = caracter;
+		linea[chars_leidos++] = (char)caracter;
+		caracter = fgetc(archivo->file);
 	}
 
 	if (chars_leidos == 0 && caracter == '\n') {
-		linea[0] = '\0';
-	} else if (chars_leidos == 0 && caracter == EOF) {
-		free(linea);
-		return NULL;
-	} else
-		linea[chars_leidos] = '\0';
+		linea[chars_leidos++] = '\0';
+	}
 
+	linea[chars_leidos] = '\0';
 	archivo->lineas_leidas++;
 	archivo->ultima_linea = linea;
 	return linea;
@@ -93,6 +108,10 @@ const char *archivo_leer_linea(Archivo *archivo)
  */
 int archivo_hay_mas_lineas(Archivo *archivo)
 {
+	if (archivo == NULL || archivo->file == NULL) {
+		return 0;
+	}
+
 	long posicion_actual = ftell(archivo->file);
 	if (posicion_actual == -1) {
 		printf("Error al obtener la posición del archivo\n");
@@ -100,8 +119,9 @@ int archivo_hay_mas_lineas(Archivo *archivo)
 	}
 
 	int caracter = fgetc(archivo->file);
-	if (caracter == EOF)
+	if (caracter == EOF) {
 		return 0;
+	}
 
 	fseek(archivo->file, posicion_actual, SEEK_SET);
 	return 1;
@@ -114,8 +134,9 @@ int archivo_hay_mas_lineas(Archivo *archivo)
  */
 int archivo_lineas_leidas(Archivo *archivo)
 {
-	if (archivo == NULL)
+	if (archivo == NULL) {
 		return 0;
+	}
 	return archivo->lineas_leidas;
 }
 
@@ -125,10 +146,12 @@ int archivo_lineas_leidas(Archivo *archivo)
 void archivo_cerrar(Archivo *archivo)
 {
 	if (archivo != NULL) {
-		if (archivo->file != NULL)
+		if (archivo->file != NULL) {
 			fclose(archivo->file);
-		if (archivo->ultima_linea)
+		}
+		if (archivo->ultima_linea) {
 			free(archivo->ultima_linea);
+		}
 		free(archivo);
 	}
 }
