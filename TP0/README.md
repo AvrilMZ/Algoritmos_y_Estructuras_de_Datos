@@ -64,7 +64,7 @@ Es responsable de abrir un archivo de texto en modo lectura y devolver un punter
 #### `archivo_leer_linea()`
 <div style="text-align: justify">
 
-Permite leer una línea del archivo y devolverla en forma de cadena de caracteres. Antes de leer una nueva línea, se libera la memoria de la última línea almacenada, en caso de existir. Se reserva una cantidad inicial de memoria para la línea a leer y, mediante un bucle que emplea `fgetc()`, se van obteniendo caracteres del archivo hasta encontrar un salto de línea (`\n`) o el final del archivo (`EOF`). En caso de que la línea supere la memoria asignada, se realoca más espacio dinámicamente en una cantidad constante de 10 bytes. Una vez completada la lectura, la línea obtenida se almacena en `ultima_linea` y se incrementa el contador de líneas leídas. Finalmente, la función retorna la línea leída o `NULL` si no hay más contenido en el archivo.
+Lee una línea del archivo y la devuelve como una cadena de caracteres. Antes de iniciar la lectura, libera la memoria de la última línea almacenada, si existe. Luego, reserva una cantidad inicial de memoria para la nueva línea. Utiliza `fgetc()` para leer caracteres del archivo hasta encontrar un salto de línea (`\n`) o el final del archivo (`EOF`). Si la cantidad de caracteres leídos supera la capacidad reservada, la memoria se expande dinámicamente duplicando su tamaño. Al finalizar la lectura, la línea obtenida se almacena en ultima_linea, se incrementa el contador de líneas leídas y se retorna un puntero a la línea. Si el archivo ya no tiene más contenido, la función devuelve `NULL`.
 
 </div>
 
@@ -76,7 +76,7 @@ Permite leer una línea del archivo y devolverla en forma de cadena de caractere
 #### `archivo_hay_mas_lineas()`
 <div style="text-align: justify">
 
-Permite determinar si quedan más líneas por leer en el archivo. Para ello, se obtiene la posición actual del archivo utilizando `ftell()`. A continuación, se lee un carácter con `fgetc()` para verificar si hay más contenido disponible. Si el carácter obtenido es `EOF`, se concluye que no quedan más líneas y se devuelve `0`. En caso contrario, se retorna `1` y se restablece la posición original del archivo con `fseek()` para no alterar el flujo de lectura.
+Determina si quedan líneas por leer en el archivo. Verifica la validez del puntero y usa `feof()` para comprobar si se alcanzó el final, retornando `1` si hay más líneas y `0` en caso contrario.
 
 </div>
 
