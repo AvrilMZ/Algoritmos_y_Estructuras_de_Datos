@@ -1,6 +1,9 @@
 #include "pokedex.h"
+#include <stdio.h>
 
-struct pokedex {};
+struct pokedex {
+	FILE *archivo;
+};
 
 /*
  * Crea una nueva pokedex a partir de un archivo.
@@ -20,6 +23,29 @@ pokedex_t *pokedex_abrir(const char *archivo)
  */
 unsigned pokedex_cantidad_pokemones(pokedex_t *pokedex)
 {
+	if (!pokedex || !pokedex->archivo) {
+		return 0;
+	}
+
+	rewind(pokedex->archivo);
+	unsigned contador_lineas = 0;
+	bool linea_tiene_contenido = false;
+
+	int caracter = fgetc(pokedex->archivo);
+	while (caracter != EOF) {
+		linea_tiene_contenido = true;
+		if (caracter == '\n') {
+			contador_lineas++;
+			linea_tiene_contenido = false;
+		}
+		caracter = fgetc(pokedex->archivo);
+	}
+
+	if (linea_tiene_contenido && caracter != '\n') {
+		contador_lineas++;
+	}
+
+	return contador_lineas;
 }
 
 /*
