@@ -111,4 +111,12 @@ unsigned pokedex_iterar_pokemones(pokedex_t *pokedex, enum modo_iteracion modo,
  */
 void pokedex_destruir(pokedex_t *pokedex)
 {
+	if (pokedex) {
+		if (pokedex->archivo) {
+			fclose(pokedex->archivo);
+			pokedex->archivo = NULL;
+		}
+		free(pokedex);
+		pokedex = NULL;
+	}
 }
