@@ -1,6 +1,8 @@
 #include "pokedex.h"
 #include <stdio.h>
 
+#define MODO_LECTURA "r"
+
 struct pokedex {
 	FILE *archivo;
 };
@@ -16,6 +18,25 @@ struct pokedex {
  */
 pokedex_t *pokedex_abrir(const char *archivo)
 {
+	if (!archivo || !*archivo) {
+		printf("No se pudo abrir el archivo\n");
+		return NULL;
+	}
+
+	pokedex_t *pokemones = malloc(sizeof(pokedex_t));
+	if (!pokemones) {
+		printf("Error reservando memoria\n");
+		return NULL;
+	}
+
+	pokemones->archivo = fopen(archivo, MODO_LECTURA);
+	if (!pokemones->archivo) {
+		free(pokemones);
+		printf("No se pudo abrir el archivo \n");
+		return NULL;
+	}
+
+	return pokemones;
 }
 
 /*
