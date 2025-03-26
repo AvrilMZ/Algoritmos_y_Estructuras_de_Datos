@@ -29,6 +29,16 @@ int main(int argc, char const *argv[])
 		return 1;
 	}
 
+	if (argc >= 2) {
+		const struct pokemon *pokemon =
+			pokedex_buscar_pokemon_nombre(pokedex, argv[2]);
+		if (pokemon) {
+			printf("El nombre es %s\n", pokemon->nombre);
+		} else {
+			printf("Pokemon no encontrado\n");
+		}
+	}
+
 	printf("La pokedex tiene %d pokemones\n",
 	       pokedex_cantidad_pokemones(pokedex));
 

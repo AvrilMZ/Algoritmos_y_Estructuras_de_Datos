@@ -34,7 +34,7 @@ typedef struct pokedex pokedex_t;
  * 
  * Cada pokemon en el archivo debe tener el siguiente formato: id;nombre;tipo;fuerza;destreza;inteligencia
  * 
- * Al encontrar un pokemon inválido, se ignora y finaliza la lectura del archivo. Se leen todos los pokemon válidos del archivo y se almacenan en la pokedex. Si no se pudo leer ningún pokemon válido, se devuelve NULL.
+ * Al encontrar un pokemon inválido, se ignora y deja de leer del archivo. Se leen todos los pokemon válidos del archivo y se almacenan en la pokedex. Si no se pudo leer ningún pokemon válido, se devuelve NULL.
  */
 pokedex_t *pokedex_abrir(const char *archivo);
 

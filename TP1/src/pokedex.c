@@ -1,10 +1,13 @@
 #include "pokedex.h"
 #include <stdio.h>
+#include <string.h>
 
 #define MODO_LECTURA "r"
+const size_t CAPACIDAD_INICIAL = 16;
 
 struct pokedex {
 	FILE *archivo;
+	struct pokemon poke_buscado;
 };
 
 /*
@@ -14,7 +17,7 @@ struct pokedex {
  * 
  * Cada pokemon en el archivo debe tener el siguiente formato: id;nombre;tipo;fuerza;destreza;inteligencia
  * 
- * Al encontrar un pokemon inválido, se ignora y finaliza la lectura del archivo. Se leen todos los pokemon válidos del archivo y se almacenan en la pokedex. Si no se pudo leer ningún pokemon válido, se devuelve NULL.
+ * Al encontrar un pokemon inválido, se ignora y deja de leer del archivo. Se leen todos los pokemon válidos del archivo y se almacenan en la pokedex. Si no se pudo leer ningún pokemon válido, se devuelve NULL.
  */
 pokedex_t *pokedex_abrir(const char *archivo)
 {
@@ -23,20 +26,21 @@ pokedex_t *pokedex_abrir(const char *archivo)
 		return NULL;
 	}
 
-	pokedex_t *pokemones = malloc(sizeof(pokedex_t));
-	if (!pokemones) {
+	pokedex_t *pokedex = malloc(sizeof(pokedex_t));
+	if (!pokedex) {
 		printf("Error reservando memoria\n");
 		return NULL;
 	}
 
-	pokemones->archivo = fopen(archivo, MODO_LECTURA);
-	if (!pokemones->archivo) {
-		free(pokemones);
+	pokedex->archivo = fopen(archivo, MODO_LECTURA);
+	if (!pokedex->archivo) {
+		free(pokedex);
 		printf("No se pudo abrir el archivo \n");
 		return NULL;
 	}
 
-	return pokemones;
+	pokedex->poke_buscado = (struct pokemon){ 0, NULL, 0, 0, 0, 0 };
+	return pokedex;
 }
 
 /*
@@ -69,6 +73,29 @@ unsigned pokedex_cantidad_pokemones(pokedex_t *pokedex)
 	return contador_lineas;
 }
 
+// Reserva memoria para la línea y la inicializa.
+char *reservar_memoria_linea(size_t capacidad)
+{
+	char *linea = malloc(sizeof(char) * capacidad);
+	if (!linea) {
+		printf("Error reservando memoria\n");
+		return NULL;
+	}
+	return linea;
+}
+
+// Realoca memoria para la línea y los bytes adicionales (si los hay) se inicializan en 0.
+char *realocar_memoria_linea(char *linea, size_t capacidad)
+{
+	char *nueva_linea = realloc(linea, sizeof(char) * capacidad);
+	if (!nueva_linea) {
+		printf("Error realocando memoria\n");
+		return NULL;
+	}
+
+	return nueva_linea;
+}
+
 /*
  * Busca un pokemon con el nombre especificado en la pokedex.
  * 
@@ -77,6 +104,81 @@ unsigned pokedex_cantidad_pokemones(pokedex_t *pokedex)
 const struct pokemon *pokedex_buscar_pokemon_nombre(pokedex_t *pokedex,
 						    const char *nombre)
 {
+	if (!pokedex || !pokedex->archivo || !nombre) {
+		return NULL;
+	}
+
+	rewind(pokedex->archivo);
+
+	size_t capacidad = CAPACIDAD_INICIAL;
+	char *linea = reservar_memoria_linea(capacidad);
+	if (!linea) {
+		return NULL;
+	}
+
+	bool poke_encontrado = false;
+	while (fgets(linea, (int)capacidad, pokedex->archivo) &&
+	       !poke_encontrado) {
+		while (strlen(linea) == (capacidad - 1) &&
+		       !feof(pokedex->archivo)) {
+			capacidad *= 2;
+			char *nueva_linea =
+				realocar_memoria_linea(linea, capacidad);
+			if (!nueva_linea) {
+				free(linea);
+				return NULL;
+			}
+			linea = nueva_linea;
+
+			size_t longitud_actual = strlen(linea);
+			if (!fgets(linea + longitud_actual,
+				   (int)(capacidad - longitud_actual),
+				   pokedex->archivo)) {
+				free(linea);
+				return NULL;
+			}
+		}
+
+		int id = atoi(strtok(linea, ";"));
+		char *nombre_poke = strtok(NULL, ";");
+		char tipo = strtok(NULL, ";")[0];
+		int fuerza = atoi(strtok(NULL, ";"));
+		int destreza = atoi(strtok(NULL, ";"));
+		int inteligencia = atoi(strtok(NULL, ";"));
+
+		if (nombre_poke && strcmp(nombre_poke, nombre) == 0) {
+			pokedex->poke_buscado.id = (unsigned)id;
+
+			size_t nombre_len = strlen(nombre_poke) + 1;
+			pokedex->poke_buscado.nombre =
+				reservar_memoria_linea(nombre_len);
+			if (!pokedex->poke_buscado.nombre) {
+				free(linea);
+				return NULL;
+			}
+			strcpy((char *)pokedex->poke_buscado.nombre,
+			       nombre_poke);
+
+			pokedex->poke_buscado.tipo = tipo;
+			pokedex->poke_buscado.fuerza = (unsigned)fuerza;
+			pokedex->poke_buscado.destreza = (unsigned)destreza;
+			pokedex->poke_buscado.inteligencia =
+				(unsigned)inteligencia;
+
+			poke_encontrado = true;
+		}
+	}
+
+	if (linea) {
+		free(linea);
+		linea = NULL;
+	}
+
+	if (poke_encontrado) {
+		return &(pokedex->poke_buscado);
+	} else {
+		return NULL;
+	}
 }
 
 /*
@@ -115,6 +217,10 @@ void pokedex_destruir(pokedex_t *pokedex)
 		if (pokedex->archivo) {
 			fclose(pokedex->archivo);
 			pokedex->archivo = NULL;
+		}
+		if (pokedex->poke_buscado.nombre) {
+			free((char *)pokedex->poke_buscado.nombre);
+			pokedex->poke_buscado.nombre = NULL;
 		}
 		free(pokedex);
 		pokedex = NULL;
