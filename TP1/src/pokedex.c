@@ -79,42 +79,6 @@ char *leer_campo(char **linea)
 	return campo;
 }
 
-// Parsear un Pokémon desde una línea de texto
-struct pokemon parsear_pokemon(char *linea)
-{
-	struct pokemon poke = { 0, NULL, 0, 0, 0, 0 };
-	char *puntero_lectura = linea;
-
-	char *campo_id = leer_campo(&puntero_lectura);
-	poke.id = atoi(campo_id);
-	free(campo_id);
-	campo_id = NULL;
-
-	poke.nombre = leer_campo(&puntero_lectura);
-
-	char *campo_tipo = leer_campo(&puntero_lectura);
-	poke.tipo = campo_tipo[0];
-	free(campo_tipo);
-	campo_tipo = NULL;
-
-	char *campo_fuerza = leer_campo(&puntero_lectura);
-	poke.fuerza = atoi(campo_fuerza);
-	free(campo_fuerza);
-	campo_fuerza = NULL;
-
-	char *campo_destreza = leer_campo(&puntero_lectura);
-	poke.destreza = atoi(campo_destreza);
-	free(campo_destreza);
-	campo_destreza = NULL;
-
-	char *campo_inteligencia = leer_campo(&puntero_lectura);
-	poke.inteligencia = atoi(campo_inteligencia);
-	free(campo_inteligencia);
-	campo_inteligencia = NULL;
-
-	return poke;
-}
-
 // Liberar todos los campos de un pokemon.
 void liberar_campos(char *campo_id, char *nombre_poke, char *campo_tipo,
 		    char *campo_fuerza, char *campo_destreza,
@@ -272,6 +236,42 @@ unsigned pokedex_cantidad_pokemones(pokedex_t *pokedex)
 	return (unsigned)pokedex->cantidad_pokemones;
 }
 
+// Parsear un Pokémon desde una línea de texto
+struct pokemon parsear_pokemon(char *linea)
+{
+	struct pokemon poke = { 0, NULL, 0, 0, 0, 0 };
+	char *puntero_lectura = linea;
+
+	char *campo_id = leer_campo(&puntero_lectura);
+	poke.id = atoi(campo_id);
+	free(campo_id);
+	campo_id = NULL;
+
+	poke.nombre = leer_campo(&puntero_lectura);
+
+	char *campo_tipo = leer_campo(&puntero_lectura);
+	poke.tipo = campo_tipo[0];
+	free(campo_tipo);
+	campo_tipo = NULL;
+
+	char *campo_fuerza = leer_campo(&puntero_lectura);
+	poke.fuerza = atoi(campo_fuerza);
+	free(campo_fuerza);
+	campo_fuerza = NULL;
+
+	char *campo_destreza = leer_campo(&puntero_lectura);
+	poke.destreza = atoi(campo_destreza);
+	free(campo_destreza);
+	campo_destreza = NULL;
+
+	char *campo_inteligencia = leer_campo(&puntero_lectura);
+	poke.inteligencia = atoi(campo_inteligencia);
+	free(campo_inteligencia);
+	campo_inteligencia = NULL;
+
+	return poke;
+}
+
 /*
  * Busca un pokemon con el nombre especificado en la pokedex.
  * 
@@ -329,6 +329,46 @@ const struct pokemon *pokedex_buscar_pokemon_nombre(pokedex_t *pokedex,
  */
 const struct pokemon *pokedex_buscar_pokemon_id(pokedex_t *pokedex, unsigned id)
 {
+	if (!pokedex || !pokedex->archivo || !id) {
+		return NULL;
+	}
+
+	rewind(pokedex->archivo);
+
+	struct pokemon *poke = malloc(sizeof(struct pokemon));
+	if (!poke) {
+		return NULL;
+	}
+
+	bool poke_encontrado = false;
+	char *linea = NULL;
+	while ((linea = archivo_leer_linea(pokedex)) != NULL &&
+	       !poke_encontrado) {
+		if (es_linea_valida(linea)) {
+			*poke = parsear_pokemon(linea);
+			if (poke->id == id) {
+				pokedex->poke_buscado = poke;
+				poke_encontrado = true;
+			} else {
+				if (poke->nombre) {
+					free((char *)poke->nombre);
+					poke->nombre = NULL;
+				}
+			}
+		}
+	}
+
+	if (poke_encontrado) {
+		return poke;
+	}
+
+	if (poke->nombre) {
+		free((char *)poke->nombre);
+		poke->nombre = NULL;
+	}
+	free(poke);
+	poke = NULL;
+	return NULL;
 }
 
 /*
