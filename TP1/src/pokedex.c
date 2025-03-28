@@ -9,6 +9,7 @@ struct pokedex {
 	FILE *archivo;
 	int cantidad_pokemones;
 	char *ultima_linea;
+	struct pokemon *poke_buscado;
 };
 
 // Reserva memoria para un arreglo de caracteres.
@@ -241,9 +242,9 @@ pokedex_t *pokedex_abrir(const char *archivo)
 		printf("No se pudo abrir el archivo \n");
 		return NULL;
 	}
-
 	pokedex->cantidad_pokemones = 0;
 	pokedex->ultima_linea = NULL;
+	pokedex->poke_buscado = NULL;
 
 	bool linea_invalida = false;
 	char *linea = NULL;
@@ -279,6 +280,46 @@ unsigned pokedex_cantidad_pokemones(pokedex_t *pokedex)
 const struct pokemon *pokedex_buscar_pokemon_nombre(pokedex_t *pokedex,
 						    const char *nombre)
 {
+	if (!pokedex || !pokedex->archivo || !nombre) {
+		return NULL;
+	}
+
+	rewind(pokedex->archivo);
+
+	struct pokemon *poke = malloc(sizeof(struct pokemon));
+	if (!poke) {
+		return NULL;
+	}
+
+	bool poke_encontrado = false;
+	char *linea = NULL;
+	while ((linea = archivo_leer_linea(pokedex)) != NULL &&
+	       !poke_encontrado) {
+		if (es_linea_valida(linea)) {
+			*poke = parsear_pokemon(linea);
+			if (poke->nombre && strcmp(poke->nombre, nombre) == 0) {
+				pokedex->poke_buscado = poke;
+				poke_encontrado = true;
+			} else {
+				if (poke->nombre) {
+					free((char *)poke->nombre);
+					poke->nombre = NULL;
+				}
+			}
+		}
+	}
+
+	if (poke_encontrado) {
+		return poke;
+	}
+
+	if (poke->nombre) {
+		free((char *)poke->nombre);
+		poke->nombre = NULL;
+	}
+	free(poke);
+	poke = NULL;
+	return NULL;
 }
 
 /*
@@ -321,6 +362,14 @@ void pokedex_destruir(pokedex_t *pokedex)
 		if (pokedex->ultima_linea) {
 			free(pokedex->ultima_linea);
 			pokedex->ultima_linea = NULL;
+		}
+		if (pokedex->poke_buscado) {
+			if (pokedex->poke_buscado->nombre) {
+				free((char *)pokedex->poke_buscado->nombre);
+				pokedex->poke_buscado->nombre = NULL;
+			}
+			free(pokedex->poke_buscado);
+			pokedex->poke_buscado = NULL;
 		}
 		free(pokedex);
 		pokedex = NULL;
