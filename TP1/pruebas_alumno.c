@@ -6,13 +6,6 @@
 #define ARCHIVO_INEXISTENTE "asdasdasd.csv"
 #define ARCHIVO_CON_ERRORES "ejemplos/pokedex_con_errores.csv"
 
-void mostrar_pokemon(const struct pokemon *pokemon)
-{
-	printf("Id: %d, Nombre: %s, Tipo: %d, Fuerza: %d, Destreza: %d, Inteligencia: %d\n",
-	       pokemon->id, pokemon->nombre, pokemon->tipo, pokemon->fuerza,
-	       pokemon->destreza, pokemon->inteligencia);
-}
-
 bool funcion_generica_para_probar_iterar(struct pokemon *pokemon,
 					 void *contexto)
 {
