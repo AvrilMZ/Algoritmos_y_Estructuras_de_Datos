@@ -18,9 +18,8 @@ struct pokedex {
 // Reserva memoria para un arreglo de caracteres.
 char *reservar_memoria_linea(size_t capacidad)
 {
-	char *linea = malloc(sizeof(char) * capacidad);
+	char *linea = calloc(capacidad, sizeof(char));
 	if (!linea) {
-		printf("Error reservando memoria\n");
 		return NULL;
 	}
 	return linea;
@@ -29,9 +28,8 @@ char *reservar_memoria_linea(size_t capacidad)
 // Reserva memoria para un struct pokemon.
 struct pokemon *reservar_memoria_pokemon(size_t capacidad)
 {
-	struct pokemon *pokemon = malloc(sizeof(struct pokemon) * capacidad);
+	struct pokemon *pokemon = calloc(capacidad, sizeof(struct pokemon));
 	if (!pokemon) {
-		printf("Error reservando memoria\n");
 		return NULL;
 	}
 	return pokemon;
@@ -42,7 +40,6 @@ char *realocar_memoria_linea(char *linea, size_t capacidad)
 {
 	char *nueva_linea = realloc(linea, sizeof(char) * capacidad);
 	if (!nueva_linea) {
-		printf("Error realocando memoria\n");
 		return NULL;
 	}
 
@@ -352,24 +349,14 @@ void cargar_pokemones_ordenados(pokedex_t *pokedex)
 				     pokedex->cantidad_pokemones);
 }
 
-/*
- * Crea una nueva pokedex a partir de un archivo.
- * 
- * Devuelve un puntero a la pokedex si se pudo abrir el archivo, o NULL en caso contrario.
- * 
- * Cada pokemon en el archivo debe tener el siguiente formato: id;nombre;tipo;fuerza;destreza;inteligencia
- * 
- * Al encontrar un pokemon inválido, se ignora y deja de leer del archivo. Se leen todos los pokemon válidos del archivo y se almacenan en la pokedex. Si no se pudo leer ningún pokemon válido, se devuelve NULL.
- */
 pokedex_t *pokedex_abrir(const char *archivo)
 {
 	if (!archivo || !*archivo) {
 		return NULL;
 	}
 
-	pokedex_t *pokedex = malloc(sizeof(pokedex_t));
+	pokedex_t *pokedex = calloc(1, sizeof(pokedex_t));
 	if (!pokedex) {
-		printf("Error reservando memoria\n");
 		return NULL;
 	}
 
@@ -379,12 +366,6 @@ pokedex_t *pokedex_abrir(const char *archivo)
 		pokedex = NULL;
 		return NULL;
 	}
-
-	pokedex->cantidad_pokemones = 0;
-	pokedex->ultima_linea = NULL;
-	pokedex->poke_buscado = NULL;
-	pokedex->pokes_ordenados_id = NULL;
-	pokedex->pokes_ordenados_nombre = NULL;
 
 	bool linea_invalida = false;
 	char *linea = NULL;
@@ -405,9 +386,6 @@ pokedex_t *pokedex_abrir(const char *archivo)
 	return pokedex;
 }
 
-/*
- * Devuelve la cantidad de pokemones en la pokedex.
- */
 unsigned pokedex_cantidad_pokemones(pokedex_t *pokedex)
 {
 	if (!pokedex || !pokedex->archivo) {
@@ -416,11 +394,6 @@ unsigned pokedex_cantidad_pokemones(pokedex_t *pokedex)
 	return (unsigned)pokedex->cantidad_pokemones;
 }
 
-/*
- * Busca un pokemon con el nombre especificado en la pokedex.
- * 
- * Devuelve un puntero al pokemon si se encontró, o NULL en caso contrario.
- */
 const struct pokemon *pokedex_buscar_pokemon_nombre(pokedex_t *pokedex,
 						    const char *nombre)
 {
@@ -431,10 +404,8 @@ const struct pokemon *pokedex_buscar_pokemon_nombre(pokedex_t *pokedex,
 	rewind(pokedex->archivo);
 
 	if (pokedex->poke_buscado) {
-		if (pokedex->poke_buscado->nombre) {
-			free((char *)pokedex->poke_buscado->nombre);
-			pokedex->poke_buscado->nombre = NULL;
-		}
+		free((char *)pokedex->poke_buscado->nombre);
+		pokedex->poke_buscado->nombre = NULL;
 		free(pokedex->poke_buscado);
 		pokedex->poke_buscado = NULL;
 	}
@@ -457,10 +428,8 @@ const struct pokemon *pokedex_buscar_pokemon_nombre(pokedex_t *pokedex,
 				pokedex->poke_buscado = poke;
 				poke_encontrado = true;
 			} else {
-				if (poke->nombre) {
-					free((char *)poke->nombre);
-					poke->nombre = NULL;
-				}
+				free((char *)poke->nombre);
+				poke->nombre = NULL;
 			}
 		}
 	}
@@ -469,20 +438,14 @@ const struct pokemon *pokedex_buscar_pokemon_nombre(pokedex_t *pokedex,
 		return poke;
 	}
 
-	if (poke->nombre) {
-		free((char *)poke->nombre);
-		poke->nombre = NULL;
-	}
+	free((char *)poke->nombre);
+	poke->nombre = NULL;
+
 	free(poke);
 	poke = NULL;
 	return NULL;
 }
 
-/*
-* Busca un pokemon con el id especificado en la pokedex.
-* 
-* Devuelve un puntero al pokemon si se encontró, o NULL en caso contrario.
-*/
 const struct pokemon *pokedex_buscar_pokemon_id(pokedex_t *pokedex, unsigned id)
 {
 	if (!pokedex || !pokedex->archivo || !id) {
@@ -492,17 +455,14 @@ const struct pokemon *pokedex_buscar_pokemon_id(pokedex_t *pokedex, unsigned id)
 	rewind(pokedex->archivo);
 
 	if (pokedex->poke_buscado) {
-		if (pokedex->poke_buscado->nombre) {
-			free((char *)pokedex->poke_buscado->nombre);
-			pokedex->poke_buscado->nombre = NULL;
-		}
+		free((char *)pokedex->poke_buscado->nombre);
+		pokedex->poke_buscado->nombre = NULL;
 		free(pokedex->poke_buscado);
 		pokedex->poke_buscado = NULL;
 	}
 
 	struct pokemon *poke = reservar_memoria_pokemon(1);
 	if (!poke) {
-		printf("Error reservando memoria\n");
 		return NULL;
 	}
 
@@ -519,10 +479,8 @@ const struct pokemon *pokedex_buscar_pokemon_id(pokedex_t *pokedex, unsigned id)
 				pokedex->poke_buscado = poke;
 				poke_encontrado = true;
 			} else {
-				if (poke->nombre) {
-					free((char *)poke->nombre);
-					poke->nombre = NULL;
-				}
+				free((char *)poke->nombre);
+				poke->nombre = NULL;
 			}
 		}
 	}
@@ -531,27 +489,14 @@ const struct pokemon *pokedex_buscar_pokemon_id(pokedex_t *pokedex, unsigned id)
 		return poke;
 	}
 
-	if (poke->nombre) {
-		free((char *)poke->nombre);
-		poke->nombre = NULL;
-	}
+	free((char *)poke->nombre);
+	poke->nombre = NULL;
+
 	free(poke);
 	poke = NULL;
 	return NULL;
 }
 
-/*
- * Invoca la función especificada para cada pokemon en la pokedex.
- * 
- * La función se debe invocar con los pokemon ordenados según el criterio de iteracion dado (creciente por nombre o por id).
- * 
- * La función de iteración recibe un puntero al pokemon y un puntero al contexto y devuelve 
- * true si se debe seguir iterando, o false en caso contrario.
- * 
- * Devuelve la cantidad de pokemones iterados.
- * 
- * Restriccion del TP: implementar con complejidad O(n) en tiempo y O(1) en espacio.
- */
 unsigned pokedex_iterar_pokemones(pokedex_t *pokedex, enum modo_iteracion modo,
 				  bool (*funcion)(struct pokemon *, void *),
 				  void *ctx)
@@ -591,9 +536,6 @@ unsigned pokedex_iterar_pokemones(pokedex_t *pokedex, enum modo_iteracion modo,
 	return pokemones_iterados;
 }
 
-/*
- * Destruye la pokedex.
- */
 void pokedex_destruir(pokedex_t *pokedex)
 {
 	if (pokedex) {
@@ -606,35 +548,26 @@ void pokedex_destruir(pokedex_t *pokedex)
 			pokedex->ultima_linea = NULL;
 		}
 		if (pokedex->poke_buscado) {
-			if (pokedex->poke_buscado->nombre) {
-				free((char *)pokedex->poke_buscado->nombre);
-				pokedex->poke_buscado->nombre = NULL;
-			}
+			free((char *)pokedex->poke_buscado->nombre);
+			pokedex->poke_buscado->nombre = NULL;
 			free(pokedex->poke_buscado);
 			pokedex->poke_buscado = NULL;
 		}
 		if (pokedex->pokes_ordenados_id) {
 			for (int i = 0; i < pokedex->cantidad_pokemones; i++) {
-				if (pokedex->pokes_ordenados_id[i].nombre) {
-					free((char *)pokedex
-						     ->pokes_ordenados_id[i]
-						     .nombre);
-					pokedex->pokes_ordenados_id[i].nombre =
-						NULL;
-				}
+				free((char *)pokedex->pokes_ordenados_id[i]
+					     .nombre);
+				pokedex->pokes_ordenados_id[i].nombre = NULL;
 			}
 			free(pokedex->pokes_ordenados_id);
 			pokedex->pokes_ordenados_id = NULL;
 		}
 		if (pokedex->pokes_ordenados_nombre) {
 			for (int i = 0; i < pokedex->cantidad_pokemones; i++) {
-				if (pokedex->pokes_ordenados_nombre[i].nombre) {
-					free((char *)pokedex
-						     ->pokes_ordenados_nombre[i]
-						     .nombre);
-					pokedex->pokes_ordenados_nombre[i]
-						.nombre = NULL;
-				}
+				free((char *)pokedex->pokes_ordenados_nombre[i]
+					     .nombre);
+				pokedex->pokes_ordenados_nombre[i].nombre =
+					NULL;
 			}
 			free(pokedex->pokes_ordenados_nombre);
 			pokedex->pokes_ordenados_nombre = NULL;

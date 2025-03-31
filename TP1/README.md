@@ -9,17 +9,17 @@
 
 - Para compilar:
 ```bash
-gcc src/pokedex.c tp1.c -o tp1
+gcc -std=c99 -Wall -Wconversion -Wtype-limits -pedantic -Werror -O2 -g src/pokedex.c tp1.c -o tp1
 ```
 
 - Para ejecutar:
 ```bash
-./tp1 <nombre_archivo>
+./tp1 <nombre_archivo> <accion_a_realizar>
 ```
 
 - Para ejecutar con Valgrind:
 ```bash
-valgrind ./tp1 <nombre_archivo>
+valgrind --leak-check=full --track-origins=yes --show-reachable=yes --error-exitcode=2 --show-leak-kinds=all --trace-children=yes -s ./tp1 <nombre_archivo> <accion_a_realizar>
 ```
 
 <br>
