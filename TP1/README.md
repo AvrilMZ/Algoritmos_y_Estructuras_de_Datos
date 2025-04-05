@@ -61,7 +61,7 @@ Se utiliza principalmente una estructura de datos `struct pokedex` que contiene 
 ### `pokedex_abrir()`
 <div style="text-align: justify">
 
-Se encarga de inicializar la estructura de datos `pokedex` abriendo el archivo CSV en modo lectura y verificando la validez de cada línea. Si se encuentra una línea inválida, la lectura se detiene y solo se contabilizan los datos previos. Una vez determinado la cantidad de Pokémon válidos, recorre nuevamente el archivo para cargar los datos en dos arreglos distintos, ordenándolos mediante insertion sort: uno por ID (`pokes_ordenados_id`) y otro por nombre (`pokes_ordenados_nombre`). Finalmente, devuelve un puntero a la estructura o `NULL` si no se puede abrir el archivo o si el primer pokémon es inválido.
+Se encarga de inicializar la estructura de datos `pokedex` abriendo el archivo CSV en modo lectura y verificando la validez de cada línea. Si se encuentra una línea inválida, la lectura se detiene y solo se contabilizan los datos previos. Una vez determinado la cantidad de pokémon válidos, recorre nuevamente el archivo para cargar los datos en dos arreglos distintos, ordenándolos mediante insertion sort: uno por ID (`pokes_ordenados_id`) y otro por nombre (`pokes_ordenados_nombre`). Finalmente, devuelve un puntero a la estructura o `NULL` si no se puede abrir el archivo o si el primer pokémon es inválido.
 
 **Complejidad:**
 - **Tiempo:** $`O(n^2)`$, donde $`n`$ es la cantidad de pokémons válidos. Durante su ejecución, se llaman funciones como `parsear_linea()`, que internamente usa `leer_campo()` con complejidad $`O(m)`$ debido a que lee $`m`$ caracteres, y `archivo_leer_linea()`, ambas con complejidad $`O(n)`$. Aunque, el uso de insertion sort para ordenar los pokémons por ID y nombre implica que los $`n`$ pokémons se recorran $`n`$ veces, por lo que $`n^2`$ se convierte en la cota superior de la función.
@@ -70,7 +70,7 @@ Se encarga de inicializar la estructura de datos `pokedex` abriendo el archivo C
 </div>
 
 <div align="center">
-	<img src="img/Diagrama_pokedex_abrir().png" alt="Diagrama de flujo función pokedex_abrir()" width="900">
+	<img src="img/Diagrama_pokedex_abrir().png" alt="Diagrama de flujo función pokedex_abrir()" width="800">
 </div>
 
 <br>  
@@ -96,7 +96,7 @@ Se encarga de inicializar la estructura de datos `pokedex` abriendo el archivo C
 Se utiliza un puntero doble con el objetivo de modificar directamente el valor del puntero original que apunta a la línea. Esto permite que la función avance el puntero a medida que lee caracteres y, al finalizar, lo deje posicionado justo después del campo leído. De esta manera, se puede mantener el estado de lectura entre múltiples llamadas a la función.
 
 <div align="center">
-	<img src="img/Diagrama_memoria_leer_campo().png" alt="Diagrama de memoria función leer_campo()" width="600"/>
+	<img src="img/Diagrama_memoria_leer_campo().png" alt="Diagrama de memoria función leer_campo()" width="650"/>
 </div>
 
 ### `pokedex_cantidad_pokemones()`
