@@ -45,18 +45,6 @@ struct pokemon *reservar_memoria_pokemon(size_t capacidad)
 	return pokemon;
 }
 
-// Realoca memoria para un struct pokemon.
-struct pokemon *realocar_memoria_pokemon(struct pokemon *pokemon,
-					 size_t capacidad)
-{
-	struct pokemon *nuevo_pokemon =
-		realloc(pokemon, sizeof(struct pokemon) * capacidad);
-	if (!nuevo_pokemon) {
-		return NULL;
-	}
-	return nuevo_pokemon;
-}
-
 // Ordena los pokemones por ID (insertion sort).
 void ordenar_pokemones_por_id(struct pokemon *pokemones, int cantidad)
 {
@@ -278,39 +266,46 @@ bool es_linea_valida(struct pokemon poke)
 		poke.inteligencia != 0);
 }
 
-// Agranda los vectores de pokemones según el contador `cantidad_pokemones`, en caso de que apunten a NULL les reserva memoria e inicializa.
-void agrandar_vectores_pokemones(pokedex_t *pokedex)
+// Carga ordenadamente, por ID y nombre, los pokemones en los vectores del struct.
+void cargar_pokemones_ordenados(pokedex_t *pokedex)
 {
 	if (!pokedex || !pokedex->archivo || pokedex->cantidad_pokemones <= 0)
 		return;
 
-	struct pokemon *nuevo_vector_nombre = NULL;
-	if (!pokedex->pokes_ordenados_nombre) {
-		nuevo_vector_nombre = reservar_memoria_pokemon(
-			(size_t)pokedex->cantidad_pokemones);
-	} else {
-		nuevo_vector_nombre = realocar_memoria_pokemon(
-			pokedex->pokes_ordenados_nombre,
-			(size_t)pokedex->cantidad_pokemones);
-	}
-	if (!nuevo_vector_nombre) {
-		return;
-	}
-	pokedex->pokes_ordenados_nombre = nuevo_vector_nombre;
-
-	struct pokemon *nuevo_vector_id = NULL;
+	pokedex->pokes_ordenados_id =
+		reservar_memoria_pokemon((size_t)pokedex->cantidad_pokemones);
 	if (!pokedex->pokes_ordenados_id) {
-		nuevo_vector_id = reservar_memoria_pokemon(
-			(size_t)pokedex->cantidad_pokemones);
-	} else {
-		nuevo_vector_id = realocar_memoria_pokemon(
-			pokedex->pokes_ordenados_id,
-			(size_t)pokedex->cantidad_pokemones);
-	}
-	if (!nuevo_vector_id) {
 		return;
 	}
-	pokedex->pokes_ordenados_id = nuevo_vector_id;
+
+	pokedex->pokes_ordenados_nombre =
+		reservar_memoria_pokemon((size_t)pokedex->cantidad_pokemones);
+	if (!pokedex->pokes_ordenados_nombre) {
+		free(pokedex->pokes_ordenados_id);
+		pokedex->pokes_ordenados_id = NULL;
+		return;
+	}
+
+	rewind(pokedex->archivo);
+	for (int i = 0; i < pokedex->cantidad_pokemones; i++) {
+		char *linea = archivo_leer_linea(pokedex);
+		struct pokemon poke = parsear_pokemon(linea);
+
+		pokedex->pokes_ordenados_id[i] = poke;
+		pokedex->pokes_ordenados_id[i].nombre =
+			duplicar_string(poke.nombre);
+
+		pokedex->pokes_ordenados_nombre[i] = poke;
+		pokedex->pokes_ordenados_nombre[i].nombre =
+			duplicar_string(poke.nombre);
+
+		free((char *)poke.nombre);
+	}
+
+	ordenar_pokemones_por_id(pokedex->pokes_ordenados_id,
+				 pokedex->cantidad_pokemones);
+	ordenar_pokemones_por_nombre(pokedex->pokes_ordenados_nombre,
+				     pokedex->cantidad_pokemones);
 }
 
 pokedex_t *pokedex_abrir(const char *archivo)
@@ -337,34 +332,11 @@ pokedex_t *pokedex_abrir(const char *archivo)
 		struct pokemon poke = parsear_pokemon(linea);
 		if (es_linea_valida(poke)) {
 			pokedex->cantidad_pokemones++;
-
-			agrandar_vectores_pokemones(pokedex);
-			if (!pokedex->pokes_ordenados_id ||
-			    !pokedex->pokes_ordenados_nombre) {
-				if (pokedex->pokes_ordenados_id)
-					free(pokedex->pokes_ordenados_id);
-				if (pokedex->pokes_ordenados_nombre)
-					free(pokedex->pokes_ordenados_nombre);
-				fclose(pokedex->archivo);
-				free((char *)pokedex->ultima_linea);
-				free(pokedex);
-				return NULL;
-			}
-
-			pokedex->pokes_ordenados_id[pokedex->cantidad_pokemones -
-						    1] = poke;
-
-			pokedex->pokes_ordenados_nombre
-				[pokedex->cantidad_pokemones - 1] = poke;
-			pokedex->pokes_ordenados_nombre
-				[pokedex->cantidad_pokemones - 1]
-					.nombre = duplicar_string(poke.nombre);
-
 			linea = archivo_leer_linea(pokedex);
 		} else {
-			free((char *)poke.nombre);
 			linea_invalida = true;
 		}
+		free((char *)poke.nombre);
 	}
 
 	if (pokedex->cantidad_pokemones == 0) {
@@ -375,10 +347,7 @@ pokedex_t *pokedex_abrir(const char *archivo)
 		return NULL;
 	}
 
-	ordenar_pokemones_por_id(pokedex->pokes_ordenados_id,
-				 pokedex->cantidad_pokemones);
-	ordenar_pokemones_por_nombre(pokedex->pokes_ordenados_nombre,
-				     pokedex->cantidad_pokemones);
+	cargar_pokemones_ordenados(pokedex);
 	return pokedex;
 }
 
@@ -541,10 +510,8 @@ unsigned pokedex_iterar_pokemones(pokedex_t *pokedex, enum modo_iteracion modo,
 	bool continuar_iterando = true;
 	for (int i = 0; i < pokedex->cantidad_pokemones && continuar_iterando;
 	     i++) {
-		struct pokemon poke_temp;
-		poke_temp = arreglo[i];
+		struct pokemon poke_temp = arreglo[i];
 		poke_temp.nombre = duplicar_string(arreglo[i].nombre);
-
 		if (poke_temp.nombre) {
 			continuar_iterando = funcion(&poke_temp, ctx);
 			pokemones_iterados++;
@@ -570,19 +537,19 @@ void pokedex_destruir(pokedex_t *pokedex)
 			free((char *)pokedex->poke_buscado->nombre);
 			free(pokedex->poke_buscado);
 		}
-		if (pokedex->pokes_ordenados_id) {
-			for (int i = 0; i < pokedex->cantidad_pokemones; i++) {
-				free((char *)pokedex->pokes_ordenados_id[i]
-					     .nombre);
-			}
-			free(pokedex->pokes_ordenados_id);
-		}
 		if (pokedex->pokes_ordenados_nombre) {
 			for (int i = 0; i < pokedex->cantidad_pokemones; i++) {
 				free((char *)pokedex->pokes_ordenados_nombre[i]
 					     .nombre);
 			}
 			free(pokedex->pokes_ordenados_nombre);
+		}
+		if (pokedex->pokes_ordenados_id) {
+			for (int i = 0; i < pokedex->cantidad_pokemones; i++) {
+				free((char *)pokedex->pokes_ordenados_id[i]
+					     .nombre);
+			}
+			free(pokedex->pokes_ordenados_id);
 		}
 		free(pokedex);
 		pokedex = NULL;
