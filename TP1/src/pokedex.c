@@ -300,6 +300,7 @@ void cargar_pokemones_ordenados(pokedex_t *pokedex)
 			duplicar_string(poke.nombre);
 
 		free((char *)poke.nombre);
+		poke.nombre = NULL;
 	}
 
 	ordenar_pokemones_por_id(pokedex->pokes_ordenados_id,
@@ -416,6 +417,7 @@ const struct pokemon *pokedex_buscar_pokemon_nombre(pokedex_t *pokedex,
 		char *nombre_duplicado = duplicar_string(poke->nombre);
 		if (!nombre_duplicado) {
 			free(poke);
+			poke = NULL;
 			return NULL;
 		}
 		poke->nombre = nombre_duplicado;
@@ -479,6 +481,7 @@ const struct pokemon *pokedex_buscar_pokemon_id(pokedex_t *pokedex, unsigned id)
 		char *nombre_duplicado = duplicar_string(poke->nombre);
 		if (!nombre_duplicado) {
 			free(poke);
+			poke = NULL;
 			return NULL;
 		}
 		poke->nombre = nombre_duplicado;
