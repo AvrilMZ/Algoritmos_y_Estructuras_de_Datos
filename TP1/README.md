@@ -51,7 +51,7 @@ Se utiliza principalmente una estructura de datos `struct pokedex` que contiene 
 </div>
 
 <div align="center">
-	<img src="img/Diagrama_pokedex_memoria.png" alt="Diagrama en memoria estructura pokedex" width="800"/>
+	<img src="img/Diagrama_pokedex_memoria.png" alt="Diagrama en memoria estructura pokedex" width="900"/>
 </div>
 
 <br>
@@ -70,7 +70,7 @@ Se encarga de inicializar la estructura de datos `pokedex` abriendo el archivo C
 </div>
 
 <div align="center">
-	<img src="img/Diagrama_pokedex_abrir().png" alt="Diagrama de flujo función pokedex_abrir()" width="800">
+	<img src="img/Diagrama_pokedex_abrir().png" alt="Diagrama de flujo función pokedex_abrir()" width="900">
 </div>
 
 <br>  
