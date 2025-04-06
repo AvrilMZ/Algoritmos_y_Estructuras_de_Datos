@@ -38,15 +38,15 @@ valgrind --leak-check=full --track-origins=yes --show-reachable=yes --error-exit
 
 El programa implementa una pokédex que permite gestionar y consultar información sobre pokémons a partir de un archivo en formato CSV. El archivo debe contener datos de pokémons, donde cada línea representa un pokémon siguendo el formato `id;nombre;tipo;fuerza;destreza;inteligencia`.
 
-Entre sus principales funcionalidades, el programa permite la búsqueda de pokémons según tres criterios: por ID, por nombre y por tipo. También ofrece la opción de listar todos los pokémon almacenados, permitiendo ordenarlos por nombre o por ID.
+Entre sus principales funcionalidades, el programa permite la búsqueda de pokémons según tres criterios: por ID, por nombre y por tipo. También ofrece la opción de listar todos los pokémons almacenados, permitiendo ordenarlos por nombre o por ID.
 
 Se utiliza principalmente una estructura de datos `struct pokedex` que contiene los siguientes campos:
 - `archivo`: puntero al archivo CSV.
 - `cantidad_pokemones`: entero que representa la cantidad de pokémons válidos.
 - `ultima_linea`: string que almacena la última línea leída del archivo.
 - `poke_buscado`: puntero a un `struct pokemon` que almacena el pokémon buscado, ya sea por nombre o por ID.
-- `pokes_ordenados_nombre`: puntero a un arreglo de punteros a `struct pokemon`, que almacena los pokémons ordenados por nombre.
-- `pokes_ordenados_id`: puntero a un arreglo de punteros a `struct pokemon`, que almacena los pokémons ordenados por ID.
+- `pokes_ordenados_nombre`: puntero a un arreglo de tipo `struct pokemon`, que almacena los pokémons ordenados por nombre.
+- `pokes_ordenados_id`: puntero a un arreglo de tipo `struct pokemon`, que almacena los pokémons ordenados por ID.
 
 </div>
 
