@@ -285,6 +285,11 @@ bool lista_iterador_quedan_elementos_por_recorrer(lista_iterador_t *iterador)
 
 void lista_iterador_proxima_iteracion(lista_iterador_t *iterador)
 {
+	if (!iterador) {
+		return;
+	}
+
+	iterador->actual = iterador->actual->nodo_siguiente;
 }
 
 void *lista_iterador_obtener_elemento(lista_iterador_t *iterador)
