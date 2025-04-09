@@ -130,6 +130,26 @@ void *lista_sacar_de_posicion(lista_t *lista, int posicion)
 
 void *lista_sacar_elemento(lista_t *lista, void *elemento)
 {
+	if (!lista) {
+		return NULL;
+	}
+
+	nodo_t *nodo_actual = lista->primero;
+	int posicion = 0;
+	bool encontrado = false;
+	while (nodo_actual && !encontrado) {
+		if (nodo_actual->dato == elemento) {
+			encontrado = true;
+		} else {
+			nodo_actual = nodo_actual->nodo_siguiente;
+			posicion++;
+		}
+	}
+
+	if (encontrado) {
+		return lista_sacar_de_posicion(lista, posicion);
+	}
+	return NULL;
 }
 
 int lista_buscar_posicion(lista_t *lista, void *elemento)
