@@ -15,12 +15,41 @@ struct lista_iterador {
 	nodo_t *actual;
 };
 
+// Reserva memoria para un 'nodo_t' y devuelve su puntero.
+nodo_t *reservar_memoria_nodo()
+{
+	nodo_t *nodo = calloc(1, sizeof(nodo_t));
+	if (!nodo) {
+		return NULL;
+	}
+	return nodo;
+}
+
 lista_t *lista_crear()
 {
 }
 
 bool lista_insertar(lista_t *lista, void *elemento)
 {
+	if (!lista) {
+		return false;
+	}
+
+	nodo_t *nodo_nuevo = reservar_memoria_nodo();
+	if (!nodo_nuevo) {
+		return false;
+	}
+
+	nodo_nuevo->dato = elemento;
+	if (!lista->primero) {
+		lista->primero = nodo_nuevo;
+		lista->ultimo = nodo_nuevo;
+	} else {
+		lista->ultimo->nodo_siguiente = nodo_nuevo;
+		lista->ultimo = nodo_nuevo;
+	}
+	lista->cantidad++;
+	return true;
 }
 
 bool lista_insertar_en_posicion(lista_t *lista, int posicion, void *elemento)
