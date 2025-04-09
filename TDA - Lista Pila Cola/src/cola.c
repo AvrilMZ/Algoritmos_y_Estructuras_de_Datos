@@ -38,7 +38,6 @@ bool cola_encolar(cola_t *cola, void *elemento)
 	if (!cola) {
 		return NULL;
 	}
-
 	return lista_insertar(cola->lista, elemento);
 }
 
@@ -47,7 +46,6 @@ void *cola_desencolar(cola_t *cola)
 	if (!cola || lista_esta_vacia(cola->lista)) {
 		return NULL;
 	}
-
 	return lista_sacar_de_posicion(cola->lista, 0);
 }
 
@@ -56,12 +54,12 @@ bool cola_vacía(cola_t *cola)
 	return lista_tamanio(cola->lista) == 0;
 }
 
-bool cola_vacía(cola_t *cola)
-{
-}
-
 size_t cola_tamanio(cola_t *cola)
 {
+	if (!cola) {
+		return 0;
+	}
+	return lista_tamanio(cola->lista);
 }
 
 void *cola_frente(cola_t *cola)
