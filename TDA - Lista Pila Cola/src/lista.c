@@ -128,10 +128,10 @@ void *lista_sacar_de_posicion(lista_t *lista, int posicion)
 	return dato;
 }
 
-void *lista_sacar_elemento(lista_t *lista, void *elemento)
+int lista_buscar_posicion(lista_t *lista, void *elemento)
 {
 	if (!lista) {
-		return NULL;
+		return -1;
 	}
 
 	nodo_t *nodo_actual = lista->primero;
@@ -147,13 +147,22 @@ void *lista_sacar_elemento(lista_t *lista, void *elemento)
 	}
 
 	if (encontrado) {
+		return posicion;
+	}
+	return -1;
+}
+
+void *lista_sacar_elemento(lista_t *lista, void *elemento)
+{
+	if (!lista) {
+		return NULL;
+	}
+
+	int posicion = lista_buscar_posicion(lista, elemento);
+	if (posicion != -1) {
 		return lista_sacar_de_posicion(lista, posicion);
 	}
 	return NULL;
-}
-
-int lista_buscar_posicion(lista_t *lista, void *elemento)
-{
 }
 
 void *lista_buscar(lista_t *lista, bool (*criterio)(void *, void *),
