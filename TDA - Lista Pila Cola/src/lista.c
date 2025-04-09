@@ -25,8 +25,23 @@ nodo_t *reservar_memoria_nodo()
 	return nodo;
 }
 
+// Reserva memoria para un 'lista_t' y devuelve su puntero.
+lista_t *reservar_memoria_lista()
+{
+	lista_t *lista = calloc(1, sizeof(lista_t));
+	if (!lista) {
+		return NULL;
+	}
+	return lista;
+}
+
 lista_t *lista_crear()
 {
+	lista_t *lista = reservar_memoria_lista();
+	if (!lista) {
+		return NULL;
+	}
+	return lista;
 }
 
 bool lista_insertar_en_posicion(lista_t *lista, int posicion, void *elemento)
