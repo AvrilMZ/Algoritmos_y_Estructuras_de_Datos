@@ -250,7 +250,7 @@ void lista_destruir(lista_t *lista)
 	lista = NULL;
 }
 
-// Reserva memoria para un 'lista_t' y devuelve su puntero.
+// Reserva memoria para un 'lista_iterador_t' y devuelve su puntero.
 lista_iterador_t *reservar_memoria_iterador()
 {
 	lista_iterador_t *iterador = calloc(1, sizeof(lista_iterador_t));
@@ -276,6 +276,11 @@ lista_iterador_t *lista_iterador_crear(lista_t *lista)
 
 bool lista_iterador_quedan_elementos_por_recorrer(lista_iterador_t *iterador)
 {
+	if (!iterador) {
+		return false;
+	}
+
+	return iterador->actual != NULL;
 }
 
 void lista_iterador_proxima_iteracion(lista_iterador_t *iterador)
