@@ -294,6 +294,11 @@ void lista_iterador_proxima_iteracion(lista_iterador_t *iterador)
 
 void *lista_iterador_obtener_elemento(lista_iterador_t *iterador)
 {
+	if (!iterador || !iterador->actual) {
+		return NULL;
+	}
+
+	return iterador->actual->dato;
 }
 
 void lista_iterador_destruir(lista_iterador_t *iterador)
