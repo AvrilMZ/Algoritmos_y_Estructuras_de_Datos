@@ -75,4 +75,10 @@ void *pila_tope(pila_t *pila)
 
 void pila_destruir(pila_t *pila)
 {
+	if (!pila) {
+		return;
+	}
+	lista_destruir(pila->lista);
+	free(pila);
+	pila = NULL;
 }
