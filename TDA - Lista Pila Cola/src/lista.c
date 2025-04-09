@@ -46,7 +46,7 @@ lista_t *lista_crear()
 
 bool lista_insertar_en_posicion(lista_t *lista, int posicion, void *elemento)
 {
-	if (!lista || posicion < 0 || posicion >= lista->cantidad) {
+	if (!lista || posicion < 0 || posicion > lista->cantidad) {
 		return false;
 	}
 
@@ -180,58 +180,46 @@ void *lista_sacar_elemento(lista_t *lista, void *elemento)
 	return NULL;
 }
 
-/**
- * Si se encuentra un elemento que hace que función devuelva true, se guarda el puntero al nodo 
- * correspondiente en 'nodo_encontrado' y se devuelve su posición en la lista. Si no se encuentra, 
- * se devuelve -1 y 'nodo_encontrado' no se modifica.
- */
-int recorrer_lista(lista_t *lista, bool (*funcion)(void *, void *),
-		   void *contexto, nodo_t **nodo_encontrado)
-{
-	if (!lista || !funcion) {
-		if (nodo_encontrado) {
-			*nodo_encontrado = NULL;
-		}
-		return 0;
-	}
-
-	nodo_t *actual = lista->primero;
-	int posicion = 0;
-	bool encontrado = false;
-	while (actual && !encontrado) {
-		posicion++;
-		encontrado = funcion(actual->dato, contexto);
-
-		if (!encontrado) {
-			actual = actual->nodo_siguiente;
-		}
-	}
-
-	if (nodo_encontrado) {
-		if (encontrado) {
-			*nodo_encontrado = actual;
-		} else {
-			*nodo_encontrado = NULL;
-		}
-	}
-	return posicion;
-}
-
 void *lista_buscar(lista_t *lista, bool (*criterio)(void *, void *),
 		   void *contexto)
 {
-	nodo_t *nodo = NULL;
-	recorrer_lista(lista, criterio, contexto, &nodo);
+	if (!lista || !criterio) {
+		return NULL;
+	}
 
-	if (nodo) {
-		return nodo->dato;
+	nodo_t *actual = lista->primero;
+	bool encontrado = false;
+	while (actual && !encontrado) {
+		if (criterio(actual->dato, contexto)) {
+			encontrado = true;
+		}
+		actual = actual->nodo_siguiente;
+	}
+
+	if (encontrado) {
+		return actual->dato;
 	}
 	return NULL;
 }
 
 int lista_iterar(lista_t *lista, bool (*f)(void *, void *), void *contexto)
 {
-	return recorrer_lista(lista, f, contexto, NULL);
+	if (!lista || !f) {
+		return 0;
+	}
+
+	nodo_t *actual = lista->primero;
+	int elementos_recorridos = 0;
+	bool detener = false;
+	while (actual && !detener) {
+		if (!f(actual->dato, contexto)) {
+			detener = true;
+		}
+		actual = actual->nodo_siguiente;
+		elementos_recorridos++;
+	}
+
+	return elementos_recorridos;
 }
 
 void lista_destruir(lista_t *lista)
