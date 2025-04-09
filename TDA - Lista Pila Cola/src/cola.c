@@ -36,7 +36,7 @@ cola_t *cola_crear()
 bool cola_encolar(cola_t *cola, void *elemento)
 {
 	if (!cola) {
-		return NULL;
+		return false;
 	}
 	return lista_insertar(cola->lista, elemento);
 }
@@ -51,6 +51,9 @@ void *cola_desencolar(cola_t *cola)
 
 bool cola_vacía(cola_t *cola)
 {
+	if (!cola) {
+		return true;
+	}
 	return lista_tamanio(cola->lista) == 0;
 }
 
