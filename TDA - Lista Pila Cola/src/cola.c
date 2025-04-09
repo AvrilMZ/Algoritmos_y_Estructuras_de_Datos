@@ -72,4 +72,10 @@ void *cola_frente(cola_t *cola)
 
 void cola_destruir(cola_t *cola)
 {
+	if (!cola) {
+		return;
+	}
+	lista_destruir(cola->lista);
+	free(cola);
+	cola = NULL;
 }
