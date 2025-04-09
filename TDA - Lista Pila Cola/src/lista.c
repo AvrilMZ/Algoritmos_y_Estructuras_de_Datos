@@ -34,6 +34,15 @@ size_t lista_tamanio(lista_t *lista)
 
 void *lista_obtener_elemento(lista_t *lista, int posicion)
 {
+	if (!lista || posicion < 0 || posicion >= lista->cantidad)
+		return NULL;
+
+	nodo_t *nodo_sig = lista->primero;
+	for (int i = 0; i < posicion; i++) {
+		nodo_sig = nodo_sig->nodo_siguiente;
+	}
+
+	return nodo_sig->dato;
 }
 
 void *lista_sacar_de_posicion(lista_t *lista, int posicion)
