@@ -54,6 +54,36 @@ bool lista_insertar(lista_t *lista, void *elemento)
 
 bool lista_insertar_en_posicion(lista_t *lista, int posicion, void *elemento)
 {
+	if (!lista || posicion < 0 || posicion >= lista->cantidad) {
+		return false;
+	}
+
+	nodo_t *nodo_nuevo = reservar_memoria_nodo();
+	if (!nodo_nuevo) {
+		return false;
+	}
+	nodo_nuevo->dato = elemento;
+
+	if (posicion == 0) {
+		nodo_nuevo->nodo_siguiente = lista->primero;
+		lista->primero = nodo_nuevo;
+		if (lista->cantidad == 0)
+			lista->ultimo = nodo_nuevo;
+	} else {
+		nodo_t *nodo_ant = lista->primero;
+		for (int i = 0; i < posicion - 1; i++) {
+			nodo_ant = nodo_ant->nodo_siguiente;
+		}
+		nodo_nuevo->nodo_siguiente = nodo_ant->nodo_siguiente;
+		nodo_ant->nodo_siguiente = nodo_nuevo;
+
+		if (nodo_nuevo->nodo_siguiente == NULL) {
+			lista->ultimo = nodo_nuevo;
+		}
+	}
+
+	lista->cantidad++;
+	return true;
 }
 
 size_t lista_tamanio(lista_t *lista)
@@ -63,8 +93,9 @@ size_t lista_tamanio(lista_t *lista)
 
 void *lista_obtener_elemento(lista_t *lista, int posicion)
 {
-	if (!lista || posicion < 0 || posicion >= lista->cantidad)
+	if (!lista || posicion < 0 || posicion >= lista->cantidad) {
 		return NULL;
+	}
 
 	nodo_t *nodo_sig = lista->primero;
 	for (int i = 0; i < posicion; i++) {
