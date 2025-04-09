@@ -29,6 +29,7 @@ bool lista_insertar_en_posicion(lista_t *lista, int posicion, void *elemento)
 
 size_t lista_tamanio(lista_t *lista)
 {
+	return lista->cantidad;
 }
 
 void *lista_obtener_elemento(lista_t *lista, int posicion)
