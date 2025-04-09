@@ -183,6 +183,24 @@ void *lista_sacar_elemento(lista_t *lista, void *elemento)
 void *lista_buscar(lista_t *lista, bool (*criterio)(void *, void *),
 		   void *contexto)
 {
+	if (!lista || !criterio) {
+		return NULL;
+	}
+
+	nodo_t *actual = lista->primero;
+	bool encontrado = false;
+	while (actual && !encontrado) {
+		if (criterio(actual->dato, contexto)) {
+			encontrado = true;
+		} else {
+			actual = actual->nodo_siguiente;
+		}
+	}
+
+	if (encontrado) {
+		return actual->dato;
+	}
+	return NULL;
 }
 
 int lista_iterar(lista_t *lista, bool (*f)(void *, void *), void *contexto)
