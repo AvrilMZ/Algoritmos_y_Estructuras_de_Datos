@@ -1,6 +1,9 @@
 #include "cola.h"
+#include "lista.h"
 
-struct cola {};
+struct cola {
+	lista_t *lista;
+};
 
 cola_t *cola_crear()
 {

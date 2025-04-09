@@ -1,6 +1,9 @@
 #include "pila.h"
+#include "lista.h"
 
-struct pila {};
+struct pila {
+	lista_t *lista;
+};
 
 pila_t *pila_crear()
 {
