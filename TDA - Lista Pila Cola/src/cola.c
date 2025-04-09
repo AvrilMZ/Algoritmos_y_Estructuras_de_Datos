@@ -33,6 +33,15 @@ cola_t *cola_crear()
 	return cola;
 }
 
+bool cola_encolar(cola_t *cola, void *elemento)
+{
+	if (!cola) {
+		return NULL;
+	}
+
+	return lista_insertar(cola->lista, elemento);
+}
+
 void *cola_desencolar(cola_t *cola)
 {
 	if (!cola || lista_esta_vacia(cola->lista)) {
