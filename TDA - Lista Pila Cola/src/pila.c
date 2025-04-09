@@ -33,26 +33,30 @@ pila_t *pila_crear()
 	return pila;
 }
 
-bool pila_apilar(pila_t *, void *elemento)
+bool pila_apilar(pila_t *pila, void *elemento)
+{
+	if (!pila) {
+		return false;
+	}
+	return lista_insertar_en_posicion(pila->lista, 0, elemento);
+}
+
+void *pila_desapilar(pila_t *pila)
 {
 }
 
-void *pila_desapilar(pila_t *)
+bool pila_vacía(pila_t *pila)
 {
 }
 
-bool pila_vacía(pila_t *)
+size_t pila_tamanio(pila_t *pila)
 {
 }
 
-size_t pila_tamanio(pila_t *)
+void *pila_tope(pila_t *pila)
 {
 }
 
-void *pila_tope(pila_t *)
-{
-}
-
-void pila_destruir(pila_t *)
+void pila_destruir(pila_t *pila)
 {
 }
