@@ -191,6 +191,18 @@ int lista_iterar(lista_t *lista, bool (*f)(void *, void *), void *contexto)
 
 void lista_destruir(lista_t *lista)
 {
+	if (!lista) {
+		return;
+	}
+
+	nodo_t *actual = lista->primero;
+	while (actual) {
+		nodo_t *siguiente = actual->nodo_siguiente;
+		free(actual);
+		actual = siguiente;
+	}
+	free(lista);
+	lista = NULL;
 }
 
 lista_iterador_t *lista_iterador_crear(lista_t *lista)
