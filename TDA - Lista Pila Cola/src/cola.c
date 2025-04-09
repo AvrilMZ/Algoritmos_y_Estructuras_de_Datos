@@ -35,9 +35,11 @@ cola_t *cola_crear()
 
 void *cola_desencolar(cola_t *cola)
 {
-	if (!cola || !cola->lista) {
+	if (!cola || lista_esta_vacia(cola->lista)) {
 		return NULL;
 	}
+
+	return lista_sacar_de_posicion(cola->lista, 0);
 }
 
 bool cola_vacía(cola_t *cola)
