@@ -67,6 +67,10 @@ size_t pila_tamanio(pila_t *pila)
 
 void *pila_tope(pila_t *pila)
 {
+	if (!pila || lista_esta_vacia(pila->lista)) {
+		return NULL;
+	}
+	return lista_obtener_elemento(pila->lista, 0);
 }
 
 void pila_destruir(pila_t *pila)
