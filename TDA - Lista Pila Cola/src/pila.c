@@ -51,6 +51,10 @@ void *pila_desapilar(pila_t *pila)
 
 bool pila_vacía(pila_t *pila)
 {
+	if (!pila) {
+		return true;
+	}
+	return lista_tamanio(pila->lista) == 0;
 }
 
 size_t pila_tamanio(pila_t *pila)
