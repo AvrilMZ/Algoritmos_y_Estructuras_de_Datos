@@ -33,12 +33,16 @@ cola_t *cola_crear()
 	return cola;
 }
 
-bool cola_encolar(cola_t *cola, void *elemento)
-{
-}
-
 void *cola_desencolar(cola_t *cola)
 {
+	if (!cola || !cola->lista) {
+		return NULL;
+	}
+}
+
+bool cola_vacía(cola_t *cola)
+{
+	return lista_tamanio(cola->lista) == 0;
 }
 
 bool cola_vacía(cola_t *cola)
