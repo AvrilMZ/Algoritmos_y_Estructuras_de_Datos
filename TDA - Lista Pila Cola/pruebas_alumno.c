@@ -1,4 +1,7 @@
 #include "pa2m.h"
+#include "src/lista.h"
+#include "src/cola.h"
+#include "src/pila.h"
 
 void prueba_simple()
 {
