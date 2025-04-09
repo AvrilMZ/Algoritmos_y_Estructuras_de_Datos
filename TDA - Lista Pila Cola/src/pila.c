@@ -43,7 +43,7 @@ bool pila_apilar(pila_t *pila, void *elemento)
 
 void *pila_desapilar(pila_t *pila)
 {
-	if (!pila) {
+	if (!pila || lista_esta_vacia(pila->lista)) {
 		return NULL;
 	}
 	return lista_sacar_de_posicion(pila->lista, 0);
@@ -59,6 +59,10 @@ bool pila_vacía(pila_t *pila)
 
 size_t pila_tamanio(pila_t *pila)
 {
+	if (!pila) {
+		return 0;
+	}
+	return lista_tamanio(pila->lista);
 }
 
 void *pila_tope(pila_t *pila)
