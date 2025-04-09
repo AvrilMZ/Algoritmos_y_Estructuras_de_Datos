@@ -64,6 +64,10 @@ size_t cola_tamanio(cola_t *cola)
 
 void *cola_frente(cola_t *cola)
 {
+	if (!cola || lista_esta_vacia(cola->lista)) {
+		return NULL;
+	}
+	return lista_obtener_elemento(cola->lista, 0);
 }
 
 void cola_destruir(cola_t *cola)
