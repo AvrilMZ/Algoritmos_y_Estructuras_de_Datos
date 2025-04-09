@@ -1,8 +1,19 @@
 #include "src/lista.h"
 
-struct lista {};
+typedef struct nodo {
+	struct nodo *nodo_siguiente;
+	void *dato;
+} nodo_t;
 
-struct lista_iterador {};
+struct lista {
+	nodo_t *primero;
+	nodo_t *ultimo;
+	int cantidad;
+};
+
+struct lista_iterador {
+	nodo_t *actual;
+};
 
 lista_t *lista_crear()
 {
