@@ -1,4 +1,4 @@
-#include "src/pila.h"
+#include "pila.h"
 
 struct pila {};
 

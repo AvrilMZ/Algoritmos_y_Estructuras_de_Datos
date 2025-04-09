@@ -1,4 +1,4 @@
-#include "src/lista.h"
+#include "lista.h"
 
 typedef struct nodo {
 	struct nodo *nodo_siguiente;
@@ -94,7 +94,7 @@ size_t lista_tamanio(lista_t *lista)
 		return 0;
 	}
 
-	return lista->cantidad;
+	return (size_t)lista->cantidad;
 }
 
 void *lista_obtener_elemento(lista_t *lista, int posicion)
