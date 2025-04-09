@@ -180,31 +180,58 @@ void *lista_sacar_elemento(lista_t *lista, void *elemento)
 	return NULL;
 }
 
-void *lista_buscar(lista_t *lista, bool (*criterio)(void *, void *),
-		   void *contexto)
+/**
+ * Si se encuentra un elemento que hace que función devuelva true, se guarda el puntero al nodo 
+ * correspondiente en 'nodo_encontrado' y se devuelve su posición en la lista. Si no se encuentra, 
+ * se devuelve -1 y 'nodo_encontrado' no se modifica.
+ */
+int recorrer_lista(lista_t *lista, bool (*funcion)(void *, void *),
+		   void *contexto, nodo_t **nodo_encontrado)
 {
-	if (!lista || !criterio) {
-		return NULL;
+	if (!lista || !funcion) {
+		if (nodo_encontrado) {
+			*nodo_encontrado = NULL;
+		}
+		return 0;
 	}
 
 	nodo_t *actual = lista->primero;
+	int posicion = 0;
 	bool encontrado = false;
 	while (actual && !encontrado) {
-		if (criterio(actual->dato, contexto)) {
-			encontrado = true;
-		} else {
+		posicion++;
+		encontrado = funcion(actual->dato, contexto);
+
+		if (!encontrado) {
 			actual = actual->nodo_siguiente;
 		}
 	}
 
-	if (encontrado) {
-		return actual->dato;
+	if (nodo_encontrado) {
+		if (encontrado) {
+			*nodo_encontrado = actual;
+		} else {
+			*nodo_encontrado = NULL;
+		}
+	}
+	return posicion;
+}
+
+void *lista_buscar(lista_t *lista, bool (*criterio)(void *, void *),
+		   void *contexto)
+{
+	nodo_t *nodo = NULL;
+	recorrer_lista(lista, criterio, contexto, &nodo);
+
+	if (nodo) {
+		return nodo->dato;
 	}
 	return NULL;
 }
 
 int lista_iterar(lista_t *lista, bool (*f)(void *, void *), void *contexto)
 {
+	return recorrer_lista(lista, f, contexto, NULL);
 }
 
 void lista_destruir(lista_t *lista)
