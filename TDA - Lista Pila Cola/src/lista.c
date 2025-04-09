@@ -303,4 +303,10 @@ void *lista_iterador_obtener_elemento(lista_iterador_t *iterador)
 
 void lista_iterador_destruir(lista_iterador_t *iterador)
 {
+	if (!iterador) {
+		return;
+	}
+
+	free(iterador);
+	iterador = NULL;
 }
