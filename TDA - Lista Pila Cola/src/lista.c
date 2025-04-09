@@ -29,29 +29,6 @@ lista_t *lista_crear()
 {
 }
 
-bool lista_insertar(lista_t *lista, void *elemento)
-{
-	if (!lista) {
-		return false;
-	}
-
-	nodo_t *nodo_nuevo = reservar_memoria_nodo();
-	if (!nodo_nuevo) {
-		return false;
-	}
-
-	nodo_nuevo->dato = elemento;
-	if (!lista->primero) {
-		lista->primero = nodo_nuevo;
-		lista->ultimo = nodo_nuevo;
-	} else {
-		lista->ultimo->nodo_siguiente = nodo_nuevo;
-		lista->ultimo = nodo_nuevo;
-	}
-	lista->cantidad++;
-	return true;
-}
-
 bool lista_insertar_en_posicion(lista_t *lista, int posicion, void *elemento)
 {
 	if (!lista || posicion < 0 || posicion >= lista->cantidad) {
@@ -67,8 +44,9 @@ bool lista_insertar_en_posicion(lista_t *lista, int posicion, void *elemento)
 	if (posicion == 0) {
 		nodo_nuevo->nodo_siguiente = lista->primero;
 		lista->primero = nodo_nuevo;
-		if (lista->cantidad == 0)
+		if (lista->cantidad == 0) {
 			lista->ultimo = nodo_nuevo;
+		}
 	} else {
 		nodo_t *nodo_ant = lista->primero;
 		for (int i = 0; i < posicion - 1; i++) {
@@ -86,8 +64,21 @@ bool lista_insertar_en_posicion(lista_t *lista, int posicion, void *elemento)
 	return true;
 }
 
+bool lista_insertar(lista_t *lista, void *elemento)
+{
+	if (!lista) {
+		return false;
+	}
+
+	return lista_insertar_en_posicion(lista, lista->cantidad, elemento);
+}
+
 size_t lista_tamanio(lista_t *lista)
 {
+	if (!lista) {
+		return 0;
+	}
+
 	return lista->cantidad;
 }
 
@@ -107,6 +98,34 @@ void *lista_obtener_elemento(lista_t *lista, int posicion)
 
 void *lista_sacar_de_posicion(lista_t *lista, int posicion)
 {
+	if (!lista || posicion < 0 || posicion >= lista->cantidad) {
+		return NULL;
+	}
+
+	nodo_t *eliminar = NULL;
+	if (posicion == 0) {
+		eliminar = lista->primero;
+		lista->primero = lista->primero->nodo_siguiente;
+		if (lista->cantidad == 1) {
+			lista->ultimo = NULL;
+		}
+	} else {
+		nodo_t *nodo_ant = lista->primero;
+		for (int i = 0; i < posicion - 1; i++) {
+			nodo_ant = nodo_ant->nodo_siguiente;
+		}
+		eliminar = nodo_ant->nodo_siguiente;
+		nodo_ant->nodo_siguiente =
+			nodo_ant->nodo_siguiente->nodo_siguiente;
+		if (eliminar == lista->ultimo) {
+			lista->ultimo = nodo_ant;
+		}
+	}
+
+	void *dato = eliminar->dato;
+	free(eliminar);
+	lista->cantidad--;
+	return dato;
 }
 
 void *lista_sacar_elemento(lista_t *lista, void *elemento)
