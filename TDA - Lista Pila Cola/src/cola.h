@@ -1,6 +1,5 @@
 #ifndef COLA_H_
 #define COLA_H_
-
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -32,7 +31,7 @@ void *cola_desencolar(cola_t *);
  *
  * Devuelve false si no lo está.
  */
-bool cola_vacía(cola_t *);
+bool cola_vacia(cola_t *);
 
 /**
  * Devuelve la cantidad de elementos presentes en la cola.
