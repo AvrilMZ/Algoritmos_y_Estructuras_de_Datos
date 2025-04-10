@@ -63,7 +63,7 @@ void test_crear_lista()
 
 void test_insertar_lista()
 {
-	char a = 'a', b = 'b', c = 'c', d = 'd';
+	char a = 'a', b = 'b', c = 'c', d = 'd', e = 'e';
 	char *elemento = NULL;
 
 	pa2m_nuevo_grupo("INSERTANDO ELEMENTO");
@@ -116,6 +116,17 @@ void test_insertar_lista()
 		     "La cantidad de elementos después de insertar NULL es 4");
 	pa2m_afirmar(lista_obtener_elemento(lista, 3) == NULL,
 		     "Se recupera NULL como cuarto elemento");
+
+	lista_insertar_en_posicion(lista, 2, &e);
+	elemento = (char *)lista_obtener_elemento(lista, 2);
+	pa2m_afirmar(
+		*elemento == e,
+		"Se puede agregar el elemento E en la posición 2 de la lista");
+	pa2m_afirmar(lista_insertar_en_posicion(
+			     lista, (int)lista_tamanio(lista), &e) == true,
+		     "Se puede agregar un elemento en la última posición");
+	pa2m_afirmar(lista_insertar_en_posicion(lista, 10, &e) == false,
+		     "No se pueden agregar elementos en posiciones invalidas");
 
 	lista_iterador_destruir(iterador);
 	lista_destruir(lista);
