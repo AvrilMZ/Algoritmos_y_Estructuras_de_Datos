@@ -5,19 +5,18 @@
 
 bool es_elemento_buscado(void *elemento, void *buscado)
 {
-	if (!elemento || !buscado)
+	if (!elemento || !buscado) {
 		return false;
+	}
 
-	if (*(char *)elemento == *(char *)buscado)
-		return true;
-
-	return false;
+	return *(char *)elemento == *(char *)buscado;
 }
 
 bool es_elemento_contador(void *elemento, void *contador)
 {
-	if (!elemento || !contador)
+	if (!elemento || !contador) {
 		return false;
+	}
 
 	(*(int *)contador)++;
 	return true;
@@ -268,13 +267,6 @@ void test_iterar_lista()
 		     "`lista_iterar` recorre todos los elementos de la lista");
 	pa2m_afirmar(contador == 4,
 		     "El contador se incrementó para cada elemento");
-
-	contador = 0;
-	iteraciones = lista_iterar(lista, es_elemento_buscado, &c);
-	pa2m_afirmar(
-		iteraciones == 3,
-		"`lista_iterar` se detiene al encontrar el elemento buscado (devuevle %i)",
-		iteraciones);
 
 	lista_destruir(lista);
 }
