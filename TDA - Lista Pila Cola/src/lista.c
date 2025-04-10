@@ -188,18 +188,16 @@ void *lista_buscar(lista_t *lista, bool (*criterio)(void *, void *),
 	}
 
 	nodo_t *actual = lista->primero;
-	bool encontrado = false;
-	while (actual && !encontrado) {
+	void *resultado = NULL;
+	while (actual && !resultado) {
 		if (criterio(actual->dato, contexto)) {
-			encontrado = true;
+			resultado = actual->dato;
+		} else {
+			actual = actual->nodo_siguiente;
 		}
-		actual = actual->nodo_siguiente;
 	}
 
-	if (encontrado) {
-		return actual->dato;
-	}
-	return NULL;
+	return resultado;
 }
 
 int lista_iterar(lista_t *lista, bool (*f)(void *, void *), void *contexto)
@@ -212,11 +210,12 @@ int lista_iterar(lista_t *lista, bool (*f)(void *, void *), void *contexto)
 	int elementos_recorridos = 0;
 	bool detener = false;
 	while (actual && !detener) {
+		elementos_recorridos++;
 		if (!f(actual->dato, contexto)) {
 			detener = true;
+		} else {
+			actual = actual->nodo_siguiente;
 		}
-		actual = actual->nodo_siguiente;
-		elementos_recorridos++;
 	}
 
 	return elementos_recorridos;
