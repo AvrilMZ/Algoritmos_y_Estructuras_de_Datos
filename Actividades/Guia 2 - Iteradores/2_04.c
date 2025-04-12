@@ -148,16 +148,15 @@ bool podio_pokemones(void *elemento, void *contexto)
 	}
 
 	pokemon_t *actual = NULL;
-	for (int i = 0; i < (int)lista_elementos(podio); i++) {
+	bool seguir = true;
+	for (int i = 0; i < (int)lista_elementos(podio) && seguir; i++) {
 		actual = lista_elemento_en_posicion(podio, i);
 		if (pokemon->rapidez > actual->rapidez) {
 			lista_insertar_en_posicion(podio, pokemon, i);
-
 			if (lista_elementos(podio) > 3) {
 				lista_borrar(podio);
 			}
-
-			return true;
+			seguir = false;
 		}
 	}
 
