@@ -286,7 +286,7 @@ bool lista_iterador_quedan_elementos_por_recorrer(lista_iterador_t *iterador)
 
 void lista_iterador_proxima_iteracion(lista_iterador_t *iterador)
 {
-	if (!iterador) {
+	if (!iterador || !iterador->actual) {
 		return;
 	}
 
