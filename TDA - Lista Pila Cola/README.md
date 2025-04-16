@@ -65,11 +65,12 @@ La lista simplemente enlazada fue implementada siguiendo las siguientes primitiv
 
 <div align="center">
 	<img src="img/Diagrama_lista_sacar_de_posicion().png" alt="Diagrama función 'lista_sacar_de_posicion()'" width="800"/>
+	<sup>(El color gris representa lo eliminado)</sup>
 </div>
 
-<div style="text-align: justify">
-
 <br>
+
+<div style="text-align: justify">
 
 Por otro lado se implementaron dos tipos de iteradores para la lista simplemente enlazada: un iterador interno y un iterador externo.
 
@@ -136,6 +137,7 @@ Una lista doblemente enlazada es una variante de la lista enlazada en la que cad
 
 <div align="center">
 	<img src="img/Diagrama_lista_doblemente_enlazada.png" alt="Diagrama general lista doblemente enlazada" width="800"/>
+	<sup>(El color gris representa la implementación de una lista enlazada previamente explicada)</sup>
 </div>
 
 
@@ -148,8 +150,10 @@ Una lista circular es una lista donde el último nodo está conectado de nuevo a
 
 <div align="center">
 	<img src="img/Diagrama_lista_circular_simplemente_enlazada.png" alt="Diagrama general lista circular simplemente enlazada" width="800"/>
+	<sup>(El color gris representa la implementación de una lista simplemente enlazada previamente explicada)</sup>
 </div>
 
 <div align="center">
 	<img src="img/Diagrama_lista_circular_doblemente_enlazada.png" alt="Diagrama general lista circular doblemente enlazada" width="800"/>
+	<sup>(El color gris representa la implementación de una lista doblemente enlazada previamente explicada)</sup>
 </div>
