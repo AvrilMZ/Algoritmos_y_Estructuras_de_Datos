@@ -27,7 +27,7 @@ valgrind --leak-check=full --track-origins=yes --show-reachable=yes --error-exit
 ##  Funcionamiento
 <div style="text-align: justify">
 
-El programa implementa tres estructuras de datos: una lista simplemente enlazada, una pila y una cola. La lista, que sirve de base para las otras dos, se representa mediante una estructura que incluye un puntero al primer nodo, otro al último, y un contador de elementos. Cada nodo contiene un puntero a sus datos y otro al siguiente nodo.
+El programa implementa tres estructuras de datos: una lista simplemente enlazada, una pila y una cola. La lista, que sirve de base para las otras dos, se representa mediante una estructura que incluye un puntero al primer nodo, otro al último y un contador de elementos. Cada nodo contiene un puntero a sus datos y otro al siguiente nodo.
 
 <div align="center">
 	<img src="img/Diagrama_lista_simplemente_enlazada.png" alt="Diagrama general lista simplemente enlazada" width="800"/>
@@ -87,9 +87,9 @@ Por otro lado se implementaron dos tipos de iteradores para la lista simplemente
 
 El **iterador interno** permite que la lista recorra automáticamente sus elementos. Esto significa que el proceso de iteración es gestionado por la propia lista y el usuario no necesita interactuar con el recorrido, esto facilita su uso ya que el código que recorre los elementos está encapsulado en la estructura de la lista misma. En el caso de la lista simplemente enlazada, el iterador interno comenzaría desde el primer nodo y avanzaría automáticamente hasta el último.
 
-En contraste, el **iterador externo** es diseñado para darle mayor control al usuario sobre el recorrido de la lista. A diferencia del iterador interno, el iterador externo permite al usuario manejar directamente cómo y cuándo recorrer los nodos. El usuario puede, por ejemplo, decidir en qué punto comenzar o terminar la iteración, o incluso interrumpirla en cualquier momento, por lo que proporciona flexibilidad y control sobre el proceso de iteración.
+En contraste, el **iterador externo** es diseñado para darle mayor control al usuario sobre el recorrido de la lista. A diferencia del iterador interno, éste permite al usuario manejar directamente cómo y cuándo recorrer los nodos. El usuario puede, por ejemplo, decidir en qué punto comenzar o terminar la iteración, o incluso interrumpirla en cualquier momento, por lo que proporciona flexibilidad y control sobre el proceso de iteración.
 
-Las principales diferencias entre los dos tipos de iteradores radican en el control que tienen sobre el proceso de recorrido: el iterador interno se encarga de todo automáticamente, mientras que el iterador externo le permite al usuario gestionarlo y personalizarlo. El iterador interno fue implementado con la función `lista_iterar()`, mientras que el iterador externo utiliza las funciones las siguientes primitivas:
+Las principales diferencias entre los dos tipos de iteradores radican en el control que tienen sobre el proceso de recorrido: el iterador interno se encarga de todo automáticamente, mientras que el iterador externo le permite al usuario gestionarlo y personalizarlo. El iterador interno fue implementado con la función `lista_iterar()`, mientras que el iterador externo utiliza las siguientes primitivas:
 - `lista_iterador_crear()`: crea un iterador externo para la lista.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_iterador_quedan_elementos_por_recorrer()`: verifica si quedan elementos por recorrer.
@@ -106,7 +106,7 @@ Las principales diferencias entre los dos tipos de iteradores radican en el cont
 ### Pila
 <div style="text-align: justify">
 
-Una pila es una estructura de datos que sigue el principio LIFO (Last In, First Out), donde el último elemento en ingresar es el primero en salir, esto hace que sea más adecuada para contextos donde se necesita retroceder o deshacer acciones. En este caso se llevo a cabo utilizando una lista simplemente enlazada, con el objetivo de simplificar su implementación. Se siguieron las siguientes primitivas:
+Una pila es una estructura de datos que sigue el principio LIFO (Last In, First Out), donde el último elemento en ingresar es el primero en salir.  Este tipo de estructura es clave en la ejecución de programas, ya que se usa para almacenar los _stack frames_ de las funciones. Cada vez que una función se llama, se apila un nuevo frame con sus variables y contexto; cuando termina, se desapila y se retoma la ejecución anterior. En este caso se llevo a cabo utilizando una lista simplemente enlazada, con el objetivo de simplificar su implementación. Se siguieron las siguientes primitivas:
 - `pila_crear()`: crea una pila vacía.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `pila_apilar()`: apila un elemento en la pila.
@@ -125,7 +125,7 @@ Una pila es una estructura de datos que sigue el principio LIFO (Last In, First 
 ### Cola
 <div style="text-align: justify">
 
-Una cola es una estructura de datos lineal que sigue el principio FIFO (First In, First Out), donde el primer elemento en ingresar es el primero en salir, siendo útil para procesar elementos en el mismo orden en que fueron agregados. En este caso se llevo a cabo utilizando una lista simplemente enlazada, manteniendo referencias al primer y último nodo para permitir inserciones al final y eliminaciones al inicio de manera eficiente. A diferencia de la pila, que opera sobre un único extremo de la lista, la cola requiere operar en ambos extremos para preservar el orden de llegada. Se siguieron las siguientes primitivas:
+Una cola es una estructura de datos que sigue el principio FIFO (First In, First Out), donde el primer elemento en ingresar es el primero en salir, siendo útil para procesar elementos en el mismo orden en que fueron agregados. En este caso se llevo a cabo utilizando una lista simplemente enlazada, manteniendo referencias al primer y último nodo para permitir inserciones al final y eliminaciones al inicio de manera eficiente. A diferencia de la pila, que opera sobre un único extremo de la lista, la cola requiere operar en ambos extremos para preservar el orden de llegada. Se siguieron las siguientes primitivas:
 - `cola_crear()`: crea una cola vacía.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `cola_encolar()`: encola un elemento en la cola.
@@ -155,7 +155,7 @@ Hay algunos conceptos, que si bien no fueron implementados en este trabajo pract
 ### Lista doblemente enlazada
 <div style="text-align: justify">
 
-Una lista doblemente enlazada es una variante de la lista enlazada en la que cada nodo contiene dos punteros: uno que apunta al siguiente nodo y otro que apunta al nodo anterior. Esto permite recorrer la lista en ambas direcciones, lo que la hace más flexible que una lista simplemente enlazada. A pesar de esta ventaja, la lista doblemente enlazada utiliza más memoria por nodo, ya que debe almacenar dos punteros en lugar de uno, lo que incrementa el uso de memoria en comparación con las listas simplemente enlazadas. Las operaciones de inserción y eliminación son más eficientes en cualquier lugar de la lista, ya que se puede acceder al nodo anterior de manera inmediata, sin necesidad de recorrer la lista desde el principio.
+Una lista doblemente enlazada es una implementación específica de una lista en la que cada nodo contiene dos punteros: uno que apunta al siguiente nodo y otro que apunta al nodo anterior. Esto permite recorrer la lista en ambas direcciones, lo que la hace más flexible que una lista simplemente enlazada. A pesar de esta ventaja, la lista doblemente enlazada utiliza más memoria por nodo, ya que debe almacenar dos punteros en lugar de uno, lo que incrementa el uso de memoria en comparación con las listas simplemente enlazadas. Las operaciones de inserción y eliminación son más eficientes en cualquier lugar de la lista, ya que se puede acceder al nodo anterior de manera inmediata, sin necesidad de recorrer la lista desde el principio.
 
 </div>
 
@@ -169,7 +169,7 @@ Una lista doblemente enlazada es una variante de la lista enlazada en la que cad
 ### Lista circular
 <div style="text-align: justify">
 
-Una lista circular es una lista donde el último nodo está conectado de nuevo al primero, creando un ciclo. Esto se aplica tanto a las listas simplemente enlazadas como a las doblemente enlazadas, generando una estructura donde, al llegar al final de la lista, se puede volver al inicio sin necesidad de verificar si se ha llegado al final. En una lista circular simplemente enlazada, el último nodo apunta al primer nodo, mientras que en una lista circular doblemente enlazada, el primer nodo apunta al último y el último nodo apunta al primero. La principal ventaja de las listas circulares es que no es necesario realizar verificaciones adicionales para determinar el fin de la lista, lo que puede simplificar algunas operaciones, como la inserción y eliminación de nodos en una estructura cíclica.
+Una lista circular es una lista donde el último nodo está conectado de nuevo al primero, creando un ciclo. Esto se aplica tanto a las listas simplemente enlazadas como a las doblemente enlazadas, generando una estructura donde, al llegar al final de la lista, se puede volver al inicio sin necesidad de verificar si se ha llegado al final. En una lista circular simplemente enlazada, el último nodo apunta al primer nodo, mientras que en una lista circular doblemente enlazada, el primer nodo apunta al último y el último apunta al primero. La principal ventaja de las listas circulares es que no es necesario realizar verificaciones adicionales para determinar el fin de la lista, lo que puede simplificar algunas operaciones, como la inserción y eliminación de nodos en una estructura cíclica, pero también implica que no sabés fácilmente cuándo termina el recorrido.
 
 </div>
 
