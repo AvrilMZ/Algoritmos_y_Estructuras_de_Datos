@@ -113,6 +113,8 @@ Una pila es una estructura de datos que sigue el principio LIFO (Last In, First 
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `pila_desapilar()`: desapila un elemento de la pila.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
+- `pila_vacia()`: verifica si la pila está vacía.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `pila_tamanio()`: devuelve el tamaño de la pila.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `pila_tope()`: devuelve el elemento en el tope de la pila.
@@ -132,9 +134,9 @@ Una cola es una estructura de datos que sigue el principio FIFO (First In, First
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `cola_desencolar()`: desencola un elemento de la cola.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
-- `cola_tamanio()`: devuelve el tamaño de la cola.
-	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `cola_vacia()`: verifica si la cola está vacía.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
+- `cola_tamanio()`: devuelve el tamaño de la cola.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `cola_frente()`: devuelve el elemento en el frente de la cola.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
