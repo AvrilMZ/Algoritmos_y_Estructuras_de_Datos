@@ -42,16 +42,27 @@ Una **lista simplemente enlazada** es una implementación específica de una lis
 
 La lista simplemente enlazada fue implementada siguiendo las siguientes primitivas:
 - `lista_crear()`: crea una lista simplemente enlazada vacía.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_insertar()`: inserta un elemento al final de la lista.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_insertar_en_posicion()`: inserta un elemento en una posición específica de la lista.
+	- Complejidad: $`O(1)`$ en tiempo si la posicion es cero, en caso contrario $`O(n)`$, y $`O(1)`$ en espacio.
 - `lista_tamanio()`: devuelve el tamaño de la lista.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_obtener_elemento()`: devuelve el elemento en una posición específica de la lista.
+	- Complejidad: $`O(1)`$ en tiempo si la posicion es cero, en caso contrario $`O(n)`$, y $`O(1)`$ en espacio.
 - `lista_sacar_de_posicion()`: saca un elemento de una posición específica de la lista.
+	- Complejidad: $`O(1)`$ en tiempo si la posicion es cero, en caso contrario $`O(n)`$, y $`O(1)`$ en espacio.
 - `lista_sacar_elemento()`: saca un elemento de la lista.
+	- Complejidad: $`O(n)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_buscar_posicion()`: busca un elemento en la lista y devuelve su posición.
+	- Complejidad: $`O(n)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_buscar()`: busca un elemento de la lista aplicando una función de comparación.
+	- Complejidad: $`O(n)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_iterar()`: itera sobre los elementos de la lista y aplica una función a cada elemento.
+	- Complejidad: $`O(n)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_destruir()`: destruye la lista y libera la memoria ocupada por los nodos y los datos.
+	- Complejidad: $`O(n)`$ en tiempo y $`O(1)`$ en espacio.
 
 </div>
 
@@ -84,10 +95,15 @@ Las principales diferencias entre estos dos tipos de iteradores radican en el co
 
 El iterador externo fue implementado usando las siguientes primitivas:
 - `lista_iterador_crear()`: crea un iterador externo para la lista.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_iterador_quedan_elementos_por_recorrer()`: verifica si quedan elementos por recorrer.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_iterador_proxima_iteracion()`: devuelve el siguiente elemento en la iteración.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_iterador_obtener_elemento()`: devuelve el elemento actual en la iteración.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_iterador_destruir()`: destruye el iterador externo y libera la memoria ocupada por el iterador.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 
 </div>
 
@@ -98,11 +114,17 @@ Una pila es una estructura de datos lineal que sigue el principio LIFO (Last In,
 
 La pila fue implementada siguiendo las siguientes primitivas:
 - `pila_crear()`: crea una pila vacía.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `pila_apilar()`: apila un elemento en la pila.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `pila_desapilar()`: desapila un elemento de la pila.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `pila_tamanio()`: devuelve el tamaño de la pila.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `pila_tope()`: devuelve el elemento en el tope de la pila.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `pila_destruir()`: destruye la pila y libera la memoria ocupada por los nodos y los datos.
+	- Complejidad: $`O(n)`$ en tiempo y $`O(1)`$ en espacio.
 
 </div>
 
@@ -113,11 +135,19 @@ Una cola es una estructura de datos lineal que sigue el principio FIFO (First In
 
 La cola fue implementada siguiendo las siguientes primitivas:
 - `cola_crear()`: crea una cola vacía.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `cola_encolar()`: encola un elemento en la cola.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `cola_desencolar()`: desencola un elemento de la cola.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `cola_tamanio()`: devuelve el tamaño de la cola.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
+- `cola_vacia()`: verifica si la cola está vacía.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `cola_frente()`: devuelve el elemento en el frente de la cola.
+	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `cola_destruir()`: destruye la cola y libera la memoria ocupada por los nodos y los datos.
+	- Complejidad: $`O(n)`$ en tiempo y $`O(1)`$ en espacio.
 
 </div>
 
