@@ -27,7 +27,7 @@ valgrind --leak-check=full --track-origins=yes --show-reachable=yes --error-exit
 ##  Funcionamiento
 <div style="text-align: justify">
 
-El programa implementa tres estructuras de datos: una lista simplemente enlazada, una pila (LIFO) y una cola (FIFO). La lista, que sirve de base para las otras dos, se representa mediante una estructura que incluye un puntero al primer nodo, otro al último, y un contador de elementos. Cada nodo contiene un puntero a sus datos y otro al siguiente nodo.
+El programa implementa tres estructuras de datos: una lista simplemente enlazada, una pila y una cola. La lista, que sirve de base para las otras dos, se representa mediante una estructura que incluye un puntero al primer nodo, otro al último, y un contador de elementos. Cada nodo contiene un puntero a sus datos y otro al siguiente nodo.
 
 <div align="center">
 	<img src="img/Diagrama_lista_simplemente_enlazada.png" alt="Diagrama general lista simplemente enlazada" width="800"/>
@@ -36,24 +36,22 @@ El programa implementa tres estructuras de datos: una lista simplemente enlazada
 ### Lista simplemente enlazada
 <div style="text-align: justify">
 
-Una **lista** es una estructura de datos que almacena elementos en un orden específico, permitiendo la inserción, eliminación y acceso a elementos según su posición relativa. A diferencia de los arreglos, no requiere un tamaño fijo y gestiona la memoria de manera dinámica. Sin embargo, el acceso a los elementos de una lista generalmente se realiza de forma secuencial, lo que hace que la búsqueda de un elemento por índice sea más lenta en comparación con los arreglos, donde el acceso directo por índice es rápido. Además, las listas pueden estar implementadas de varias maneras, lo que les otorga flexibilidad en la gestión de memoria.
+Una **lista** es una estructura de datos que almacena elementos en un orden específico, permitiendo la inserción, eliminación y acceso a elementos según su posición. No requiere un tamaño fijo y gestiona la memoria de manera dinámica, lo que le otorga flexibilidad. Además, puede implementarse de distintas formas según las necesidades del problema.
 
-Una **lista simplemente enlazada** es una implementación específica de una lista, donde cada elemento (nodo) contiene un valor y un puntero al siguiente nodo. Esto permite la inserción y eliminación de elementos de manera eficiente, ya que solo es necesario modificar los punteros de los nodos adyacentes. Sin embargo, como en otras listas, el acceso a un nodo específico es secuencial, lo que significa que se debe recorrer la lista desde el principio hasta encontrar el elemento deseado. En comparación con las listas que pueden estar implementadas con arreglos, la lista simplemente enlazada tiene la ventaja de no requerir una memoria contigua, lo que le otorga mayor flexibilidad. Sin embargo, cada nodo adicional requiere más memoria para almacenar el puntero al siguiente nodo, lo que aumenta el uso de memoria en comparación con un arreglo.
-
-La lista simplemente enlazada fue implementada siguiendo las siguientes primitivas:
+Una **lista simplemente enlazada** es una implementación específica de una lista, en la que cada elemento (nodo) contiene un valor y un puntero al siguiente nodo. Esta estructura permite insertar y eliminar elementos de forma eficiente, ya que solo es necesario ajustar los punteros de los nodos vecinos. Sin embargo, el acceso a un nodo específico es secuencial, ya que se deben recorrer los nodos desde el principio hasta encontrar el deseado. A diferencia de las listas implementadas con arreglos, no requiere memoria contigua, lo que la hace más flexible. No obstante, cada nodo necesita espacio adicional para almacenar el puntero, lo que implica un mayor consumo de memoria en comparación con un arreglo. Se siguieron las siguientes primitivas:
 - `lista_crear()`: crea una lista simplemente enlazada vacía.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_insertar()`: inserta un elemento al final de la lista.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_insertar_en_posicion()`: inserta un elemento en una posición específica de la lista.
-	- Complejidad: $`O(1)`$ en tiempo si la posicion es cero, en caso contrario $`O(n)`$, y $`O(1)`$ en espacio.
+	- Complejidad: $`O(1)`$ en tiempo si la posicion es cero, $`O(n)`$ en otras posiciones, y $`O(1)`$ en espacio.
 - `lista_tamanio()`: devuelve el tamaño de la lista.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_obtener_elemento()`: devuelve el elemento en una posición específica de la lista.
-	- Complejidad: $`O(1)`$ en tiempo si la posicion es cero, en caso contrario $`O(n)`$, y $`O(1)`$ en espacio.
+	- Complejidad: $`O(1)`$ en tiempo si la posicion es cero, $`O(n)`$ en otras posiciones, y $`O(1)`$ en espacio.
 - `lista_sacar_de_posicion()`: saca un elemento de una posición específica de la lista.
-	- Complejidad: $`O(1)`$ en tiempo si la posicion es cero, en caso contrario $`O(n)`$, y $`O(1)`$ en espacio.
-- `lista_sacar_elemento()`: saca un elemento de la lista.
+	- Complejidad: $`O(1)`$ en tiempo si la posicion es cero, $`O(n)`$ en otras posiciones, y $`O(1)`$ en espacio.
+- `lista_sacar_elemento()`: busca y saca un elemento de la lista.
 	- Complejidad: $`O(n)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_buscar_posicion()`: busca un elemento en la lista y devuelve su posición.
 	- Complejidad: $`O(n)`$ en tiempo y $`O(1)`$ en espacio.
@@ -87,13 +85,11 @@ La lista simplemente enlazada fue implementada siguiendo las siguientes primitiv
 
 Por otro lado se implementaron dos tipos de iteradores para la lista simplemente enlazada: un iterador interno y un iterador externo.
 
-El **iterador interno** permite que la lista recorra automáticamente sus elementos. Esto significa que el proceso de iteración es gestionado por la propia lista, y el usuario no necesita interactuar con el ciclo de recorrido. El iterador interno facilita el uso de la lista, ya que el código que recorre los elementos está encapsulado en la estructura de la lista misma. En el caso de la lista simplemente enlazada, el iterador interno comenzaría desde el primer nodo y avanzaría automáticamente hasta el último, de acuerdo con la estructura de los punteros de los nodos.
+El **iterador interno** permite que la lista recorra automáticamente sus elementos. Esto significa que el proceso de iteración es gestionado por la propia lista y el usuario no necesita interactuar con el recorrido, esto facilita su uso ya que el código que recorre los elementos está encapsulado en la estructura de la lista misma. En el caso de la lista simplemente enlazada, el iterador interno comenzaría desde el primer nodo y avanzaría automáticamente hasta el último.
 
-En contraste, el **iterador externo** es diseñado para darle mayor control al usuario sobre el recorrido de la lista. A diferencia del iterador interno, el iterador externo permite al usuario manejar directamente cómo y cuándo recorrer los nodos. El usuario puede, por ejemplo, decidir en qué punto comenzar o terminar la iteración, o incluso interrumpirla en cualquier momento, por lo que proporciona flexibilidad y control explícito sobre el proceso de iteración.
+En contraste, el **iterador externo** es diseñado para darle mayor control al usuario sobre el recorrido de la lista. A diferencia del iterador interno, el iterador externo permite al usuario manejar directamente cómo y cuándo recorrer los nodos. El usuario puede, por ejemplo, decidir en qué punto comenzar o terminar la iteración, o incluso interrumpirla en cualquier momento, por lo que proporciona flexibilidad y control sobre el proceso de iteración.
 
-Las principales diferencias entre estos dos tipos de iteradores radican en el control que tienen sobre el proceso de recorrido: el iterador interno se encarga de todo automáticamente, mientras que el iterador externo le permite al usuario gestionar y personalizar el recorrido de la lista. El iterador interno fue implementado con la función `lista_iterar()`, mientras que el iterador externo utiliza las funciones `lista_iterador_crear()`, `lista_iterador_quedan_elementos_por_recorrer()`, etc.
-
-El iterador externo fue implementado usando las siguientes primitivas:
+Las principales diferencias entre los dos tipos de iteradores radican en el control que tienen sobre el proceso de recorrido: el iterador interno se encarga de todo automáticamente, mientras que el iterador externo le permite al usuario gestionarlo y personalizarlo. El iterador interno fue implementado con la función `lista_iterar()`, mientras que el iterador externo utiliza las funciones las siguientes primitivas:
 - `lista_iterador_crear()`: crea un iterador externo para la lista.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `lista_iterador_quedan_elementos_por_recorrer()`: verifica si quedan elementos por recorrer.
@@ -110,9 +106,7 @@ El iterador externo fue implementado usando las siguientes primitivas:
 ### Pila
 <div style="text-align: justify">
 
-Una pila es una estructura de datos lineal que sigue el principio LIFO (Last In, First Out), es decir, el último elemento en ingresar es el primero en salir. En este caso fue implementada utilizando una lista simplemente enlazada, aprovechando la eficiencia de insertar y eliminar elementos al inicio de la lista. Esta decisión simplifica la implementación, ya que permite que tanto la operación de apilar como la de desapilar se realicen en tiempo constante, sin necesidad de recorrer la lista.
-
-La pila fue implementada siguiendo las siguientes primitivas:
+Una pila es una estructura de datos que sigue el principio LIFO (Last In, First Out), donde el último elemento en ingresar es el primero en salir, esto hace que sea más adecuada para contextos donde se necesita retroceder o deshacer acciones. En este caso se llevo a cabo utilizando una lista simplemente enlazada, con el objetivo de simplificar su implementación. Se siguieron las siguientes primitivas:
 - `pila_crear()`: crea una pila vacía.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `pila_apilar()`: apila un elemento en la pila.
@@ -131,9 +125,7 @@ La pila fue implementada siguiendo las siguientes primitivas:
 ### Cola
 <div style="text-align: justify">
 
-Una cola es una estructura de datos lineal que sigue el principio FIFO (First In, First Out), donde el primer elemento en ingresar es el primero en salir. En este caso fue implementada utilizando una lista simplemente enlazada, manteniendo referencias al primer y último nodo para permitir inserciones al final y eliminaciones al inicio de manera eficiente. A diferencia de la pila, que opera sobre un único extremo de la lista y sigue una lógica LIFO, la cola requiere operar en ambos extremos para preservar el orden de llegada. Esta diferencia hace que la pila sea más adecuada para contextos donde se necesita retroceder o deshacer acciones, mientras que la cola es útil para procesar elementos en el mismo orden en que fueron agregados, como en colas de impresión o gestión de tareas.
-
-La cola fue implementada siguiendo las siguientes primitivas:
+Una cola es una estructura de datos lineal que sigue el principio FIFO (First In, First Out), donde el primer elemento en ingresar es el primero en salir, siendo útil para procesar elementos en el mismo orden en que fueron agregados. En este caso se llevo a cabo utilizando una lista simplemente enlazada, manteniendo referencias al primer y último nodo para permitir inserciones al final y eliminaciones al inicio de manera eficiente. A diferencia de la pila, que opera sobre un único extremo de la lista, la cola requiere operar en ambos extremos para preservar el orden de llegada. Se siguieron las siguientes primitivas:
 - `cola_crear()`: crea una cola vacía.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `cola_encolar()`: encola un elemento en la cola.
@@ -170,7 +162,7 @@ Una lista doblemente enlazada es una variante de la lista enlazada en la que cad
 <div align="center">
 	<img src="img/Diagrama_lista_doblemente_enlazada.png" alt="Diagrama general lista doblemente enlazada" width="800"/>
 
-<sup>(El color gris representa la implementación de una lista enlazada previamente explicada)</sup>
+<sup>(El color gris representa la implementación de una lista simplemente enlazada previamente explicada)</sup>
 
 </div>
 
