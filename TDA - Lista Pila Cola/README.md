@@ -106,7 +106,7 @@ Las principales diferencias entre los dos tipos de iteradores radican en el cont
 ### Pila
 <div style="text-align: justify">
 
-Una pila es una estructura de datos que sigue el principio LIFO (Last In, First Out), donde el último elemento en ingresar es el primero en salir.  Este tipo de estructura es clave en la ejecución de programas, ya que se usa para almacenar los _stack frames_ de las funciones. Cada vez que una función se llama, se apila un nuevo frame con sus variables y contexto; cuando termina, se desapila y se retoma la ejecución anterior. En este caso se llevo a cabo utilizando una lista simplemente enlazada, con el objetivo de simplificar su implementación. Se siguieron las siguientes primitivas:
+Una pila es una estructura de datos que sigue el principio LIFO (Last In, First Out), donde el último elemento en ingresar es el primero en salir.  Este tipo de estructura es clave en la ejecución de programas, ya que se usa para almacenar los _stack frames_ de las funciones. Cada vez que una función se llama, se apila un nuevo frame con sus variables y contexto; cuando termina, se desapila y se retoma la ejecución anterior. En este caso se llevó a cabo utilizando una lista simplemente enlazada, con el objetivo de simplificar su implementación. Se siguieron las siguientes primitivas:
 - `pila_crear()`: crea una pila vacía.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `pila_apilar()`: apila un elemento en la pila.
@@ -127,7 +127,7 @@ Una pila es una estructura de datos que sigue el principio LIFO (Last In, First 
 ### Cola
 <div style="text-align: justify">
 
-Una cola es una estructura de datos que sigue el principio FIFO (First In, First Out), donde el primer elemento en ingresar es el primero en salir, siendo útil para procesar elementos en el mismo orden en que fueron agregados. En este caso se llevo a cabo utilizando una lista simplemente enlazada, manteniendo referencias al primer y último nodo para permitir inserciones al final y eliminaciones al inicio de manera eficiente. A diferencia de la pila, que opera sobre un único extremo de la lista, la cola requiere operar en ambos extremos para preservar el orden de llegada. Se siguieron las siguientes primitivas:
+Una cola es una estructura de datos que sigue el principio FIFO (First In, First Out), donde el primer elemento en ingresar es el primero en salir, siendo útil para procesar elementos en el mismo orden en que fueron agregados. En este caso se llevó a cabo utilizando una lista simplemente enlazada, manteniendo referencias al primer y último nodo para permitir inserciones al final y eliminaciones al inicio de manera eficiente. A diferencia de la pila, que opera sobre un único extremo de la lista, la cola requiere operar en ambos extremos para preservar el orden de llegada. Se siguieron las siguientes primitivas:
 - `cola_crear()`: crea una cola vacía.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `cola_encolar()`: encola un elemento en la cola.
@@ -147,10 +147,10 @@ Una cola es una estructura de datos que sigue el principio FIFO (First In, First
 
 <br>
 
-##  Conceptos teoricos
+##  Conceptos teóricos
 <div style="text-align: justify">
 
-Hay algunos conceptos, que si bien no fueron implementados en este trabajo practico, son de alta relevancia mencionar.
+Hay algunos conceptos, que si bien no fueron implementados en este trabajo práctico, son de alta relevancia mencionar.
 
 </div>
 
