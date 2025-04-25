@@ -120,6 +120,7 @@ size_t abb_tamanio(const abb_t *abb)
 
 bool abb_vacio(const abb_t *abb)
 {
+	return !abb || !abb->raiz;
 }
 
 size_t abb_recorrer(const abb_t *abb, enum abb_recorrido modo,
