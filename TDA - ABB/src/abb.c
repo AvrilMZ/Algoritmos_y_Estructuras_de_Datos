@@ -95,6 +95,15 @@ bool abb_existe(const abb_t *abb, const void *elemento)
 
 void *abb_buscar(const abb_t *abb, const void *elemento)
 {
+	if (!abb || !elemento) {
+		return NULL;
+	}
+
+	nodo_t *nodo_buscado = encontrar_nodo_rec(abb, elemento, abb->raiz);
+	if (!nodo_buscado) {
+		return NULL;
+	}
+	return nodo_buscado->elemento;
 }
 
 void *abb_sacar(abb_t *abb, const void *elemento)
