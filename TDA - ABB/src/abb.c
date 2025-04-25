@@ -65,8 +65,32 @@ bool abb_insertar(abb_t *abb, const void *elemento)
 	return true;
 }
 
+/**
+ * Recorre recursivamente el abb hasta encontrar el nodo con el elemento pasado por parametro y lo devuelve.
+ * En caso de no encontrarlo devuelve NULL.
+ */
+nodo_t *encontrar_nodo_rec(const abb_t *abb, const void *elemento,
+			   nodo_t *actual)
+{
+	if (!abb || !elemento || !actual) {
+		return NULL;
+	}
+
+	int cmp = abb->comparador(elemento, actual->elemento);
+	if (cmp == 0) {
+		return actual;
+	} else if (cmp < 0) {
+		return encontrar_nodo_rec(abb, elemento, actual->izq);
+	}
+	return encontrar_nodo_rec(abb, elemento, actual->der);
+}
+
 bool abb_existe(const abb_t *abb, const void *elemento)
 {
+	if (!abb || !elemento) {
+		return false;
+	}
+	return encontrar_nodo_rec(abb, elemento, abb->raiz) != NULL;
 }
 
 void *abb_buscar(const abb_t *abb, const void *elemento)
