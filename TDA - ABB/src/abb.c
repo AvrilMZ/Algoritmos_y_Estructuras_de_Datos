@@ -123,9 +123,62 @@ bool abb_vacio(const abb_t *abb)
 	return !abb || !abb->raiz;
 }
 
+// Recorre recursivamente el abb según el modo pasado e incrementa, en caso de pasarlo por parámetro, un contador.
+bool recorrer_rec(nodo_t *raiz, enum abb_recorrido modo,
+		  bool (*f)(void *, void *), void *ctx, size_t *contador)
+{
+	if (!raiz) {
+		return true;
+	}
+
+	if (modo == ABB_PREORDEN) {
+		if (!f(raiz->elemento, ctx)) {
+			return false;
+		}
+		if (contador) {
+			(*contador)++;
+		}
+	}
+
+	if (!recorrer_rec(raiz->izq, modo, f, ctx, contador)) {
+		return false;
+	}
+
+	if (modo == ABB_INORDEN) {
+		if (!f(raiz->elemento, ctx)) {
+			return false;
+		}
+		if (contador) {
+			(*contador)++;
+		}
+	}
+
+	if (!recorrer_rec(raiz->der, modo, f, ctx, contador)) {
+		return false;
+	}
+
+	if (modo == ABB_POSTORDEN) {
+		if (!f(raiz->elemento, ctx)) {
+			return false;
+		}
+		if (contador) {
+			(*contador)++;
+		}
+	}
+
+	return true;
+}
+
 size_t abb_recorrer(const abb_t *abb, enum abb_recorrido modo,
 		    bool (*f)(void *, void *), void *ctx)
 {
+	if (!abb || !f || abb->nodos == 0) {
+		return 0;
+	}
+
+	size_t contador = 0;
+	recorrer_rec(abb->raiz, modo, f, ctx, &contador);
+	return contador;
 }
 
 size_t abb_vectorizar(const abb_t *abb, enum abb_recorrido modo, void **vector,
