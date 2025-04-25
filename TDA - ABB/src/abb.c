@@ -1,6 +1,12 @@
 #include "abb.h"
 #include "abb_estructura_privada.h"
 
+typedef struct abb_vectorizado {
+	void **vector;
+	size_t capacidad;
+	size_t tope;
+} abb_vectorizado_t;
+
 // Reserva memoria para un nodo y devuelve su puntero.
 nodo_t *reservar_memoria_nodo()
 {
@@ -35,7 +41,7 @@ bool abb_insertar(abb_t *abb, const void *elemento)
 	if (!nuevo) {
 		return false;
 	}
-	nuevo->elemento = elemento;
+	nuevo->elemento = (void *)elemento;
 
 	if (!abb->raiz) {
 		abb->raiz = nuevo;
@@ -181,9 +187,36 @@ size_t abb_recorrer(const abb_t *abb, enum abb_recorrido modo,
 	return contador;
 }
 
+// Agrega el elemento al vector pasados por parámetro.
+bool agregar_elemento_vector(void *vector, void *elemento)
+{
+	if (!vector || !elemento) {
+		return false;
+	}
+
+	abb_vectorizado_t *vec = (abb_vectorizado_t *)vector;
+
+	if (vec->tope >= vec->capacidad) {
+		return false;
+	}
+	vec->vector[vec->tope] = elemento;
+	return true;
+}
+
 size_t abb_vectorizar(const abb_t *abb, enum abb_recorrido modo, void **vector,
 		      size_t capacidad)
 {
+	if (!abb || !vector || capacidad == 0) {
+		return 0;
+	}
+
+	abb_vectorizado_t vec = {
+		.vector = vector,
+		.capacidad = capacidad,
+		.tope = 0,
+	};
+	recorrer_rec(abb->raiz, modo, agregar_elemento_vector, &vec, &vec.tope);
+	return vec.tope;
 }
 
 void abb_destruir(abb_t *abb)
