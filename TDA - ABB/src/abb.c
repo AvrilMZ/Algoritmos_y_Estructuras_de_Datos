@@ -112,6 +112,10 @@ void *abb_sacar(abb_t *abb, const void *elemento)
 
 size_t abb_tamanio(const abb_t *abb)
 {
+	if (!abb) {
+		return 0;
+	}
+	return abb->nodos;
 }
 
 bool abb_vacio(const abb_t *abb)
