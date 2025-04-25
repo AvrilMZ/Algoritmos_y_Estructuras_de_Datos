@@ -219,8 +219,25 @@ size_t abb_vectorizar(const abb_t *abb, enum abb_recorrido modo, void **vector,
 	return vec.tope;
 }
 
+// Destruye los nodos recursivamente.
+void destruir_nodos_rec(nodo_t *nodo)
+{
+	if (!nodo) {
+		return;
+	}
+	destruir_nodos_rec(nodo->izq);
+	destruir_nodos_rec(nodo->der);
+	free(nodo);
+}
+
 void abb_destruir(abb_t *abb)
 {
+	if (!abb) {
+		return;
+	}
+	destruir_nodos_rec(abb->raiz);
+	free(abb);
+	abb = NULL;
 }
 
 void abb_destruir_todo(abb_t *abb, void (*destructor)(void *))
