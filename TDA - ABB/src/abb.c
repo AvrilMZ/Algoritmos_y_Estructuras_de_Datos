@@ -185,41 +185,65 @@ bool abb_vacio(const abb_t *abb)
 	return !abb || !abb->raiz;
 }
 
-// Recorre recursivamente el abb según el modo pasado e incrementa, en caso de pasarlo por parámetro, un contador.
+/**
+ * Recorre recursivamente el ABB según el modo pasado, si 'f' no es NULL, se le aplica a cada elemento.
+ * Si se le pasa un 'contador' este se incrementa por cada elemento recorrido.
+ * Si se le pasa un 'vector' el elemento se almacena en el mismo, si es que no supera su 'tope'.
+ * Devuelve true si se recorrieron todos los elementos del ABB, en caso contrario false.
+ */
 bool recorrer_rec(nodo_t *raiz, enum abb_recorrido modo,
-		  bool (*f)(void *, void *), void *ctx, size_t *contador)
+		  bool (*f)(void *, void *), void *ctx, size_t *contador,
+		  void **vector, size_t *tope)
 {
 	if (!raiz) {
 		return true;
 	}
 
 	if (modo == ABB_PREORDEN) {
-		if (!f(raiz->elemento, ctx)) {
+		if (f && ctx && !f(raiz->elemento, ctx)) {
 			return false;
 		}
 		if (contador) {
+			if (vector && tope && *contador < *tope) {
+				vector[*contador] = raiz->elemento;
+			}
+			if (tope && *contador == *tope) {
+				return false;
+			}
 			(*contador)++;
 		}
 	}
 
-	recorrer_rec(raiz->izq, modo, f, ctx, contador);
+	recorrer_rec(raiz->izq, modo, f, ctx, contador, vector, tope);
 
 	if (modo == ABB_INORDEN) {
-		if (!f(raiz->elemento, ctx)) {
+		if (f && ctx && !f(raiz->elemento, ctx)) {
 			return false;
 		}
 		if (contador) {
+			if (vector && tope && *contador < *tope) {
+				vector[*contador] = raiz->elemento;
+			}
+			if (tope && *contador == *tope) {
+				return false;
+			}
 			(*contador)++;
 		}
 	}
 
-	recorrer_rec(raiz->der, modo, f, ctx, contador);
+	recorrer_rec(raiz->der, modo, f, ctx, contador, vector, tope);
 
 	if (modo == ABB_POSTORDEN) {
-		if (!f(raiz->elemento, ctx)) {
+		if (f && ctx && !f(raiz->elemento, ctx)) {
 			return false;
 		}
 		if (contador) {
+			if (vector && tope && *contador < *tope) {
+				vector[*contador] = raiz->elemento;
+			}
+			if (tope && *contador == *tope) {
+				return false;
+			}
 			(*contador)++;
 		}
 	}
@@ -235,7 +259,7 @@ size_t abb_recorrer(const abb_t *abb, enum abb_recorrido modo,
 	}
 
 	size_t contador = 0;
-	recorrer_rec(abb->raiz, modo, f, ctx, &contador);
+	recorrer_rec(abb->raiz, modo, f, ctx, &contador, NULL, NULL);
 	return contador;
 }
 
@@ -245,7 +269,11 @@ size_t abb_vectorizar(const abb_t *abb, enum abb_recorrido modo, void **vector,
 	if (!abb || !vector || capacidad == 0) {
 		return 0;
 	}
-	return 0;
+
+	size_t contador = 0;
+	recorrer_rec(abb->raiz, modo, NULL, NULL, &contador, vector,
+		     &capacidad);
+	return contador;
 }
 
 // Destruye los nodos aplicandoles una función destructora, si es que se pasa.
