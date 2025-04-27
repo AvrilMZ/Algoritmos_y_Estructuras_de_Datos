@@ -1,16 +1,6 @@
 #include "abb.h"
 #include "abb_estructura_privada.h"
 
-// Reserva memoria para un nodo y devuelve su puntero.
-nodo_t *reservar_memoria_nodo()
-{
-	nodo_t *nodo = calloc(1, sizeof(nodo_t));
-	if (!nodo) {
-		return NULL;
-	}
-	return nodo;
-}
-
 abb_t *abb_crear(int (*cmp)(const void *, const void *))
 {
 	if (!cmp) {
@@ -31,7 +21,7 @@ bool abb_insertar(abb_t *abb, const void *elemento)
 		return false;
 	}
 
-	nodo_t *nuevo = reservar_memoria_nodo();
+	nodo_t *nuevo = calloc(1, sizeof(nodo_t));
 	if (!nuevo) {
 		return false;
 	}
@@ -66,7 +56,7 @@ bool abb_insertar(abb_t *abb, const void *elemento)
 }
 
 /**
- * Recorre recursivamente el abb hasta encontrar el nodo con el elemento pasado por parametro y lo devuelve.
+ * Recorre recursivamente el abb hasta encontrar el nodo con el elemento pasado por parámetro y lo devuelve.
  * En caso de no encontrarlo devuelve NULL.
  * En caso que se le pase un doble puntero 'padre' lo actualiza.
  */
