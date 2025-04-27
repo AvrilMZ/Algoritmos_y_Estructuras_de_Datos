@@ -74,9 +74,10 @@ bool abb_insertar(abb_t *abb, const void *elemento)
 /**
  * Recorre recursivamente el abb hasta encontrar el nodo con el elemento pasado por parametro y lo devuelve.
  * En caso de no encontrarlo devuelve NULL.
+ * En caso que se le pase un doble puntero 'padre' lo actualiza.
  */
 nodo_t *encontrar_nodo_rec(const abb_t *abb, const void *elemento,
-			   nodo_t *actual)
+			   nodo_t *actual, nodo_t **padre)
 {
 	if (!abb || !elemento || !actual) {
 		return NULL;
@@ -86,9 +87,15 @@ nodo_t *encontrar_nodo_rec(const abb_t *abb, const void *elemento,
 	if (cmp == 0) {
 		return actual;
 	} else if (cmp < 0) {
-		return encontrar_nodo_rec(abb, elemento, actual->izq);
+		if (padre) {
+			*padre = actual;
+		}
+		return encontrar_nodo_rec(abb, elemento, actual->izq, padre);
 	}
-	return encontrar_nodo_rec(abb, elemento, actual->der);
+	if (padre) {
+		*padre = actual;
+	}
+	return encontrar_nodo_rec(abb, elemento, actual->der, padre);
 }
 
 bool abb_existe(const abb_t *abb, const void *elemento)
@@ -96,7 +103,7 @@ bool abb_existe(const abb_t *abb, const void *elemento)
 	if (!abb || !elemento) {
 		return false;
 	}
-	return encontrar_nodo_rec(abb, elemento, abb->raiz) != NULL;
+	return encontrar_nodo_rec(abb, elemento, abb->raiz, NULL) != NULL;
 }
 
 void *abb_buscar(const abb_t *abb, const void *elemento)
@@ -105,7 +112,8 @@ void *abb_buscar(const abb_t *abb, const void *elemento)
 		return NULL;
 	}
 
-	nodo_t *nodo_buscado = encontrar_nodo_rec(abb, elemento, abb->raiz);
+	nodo_t *nodo_buscado =
+		encontrar_nodo_rec(abb, elemento, abb->raiz, NULL);
 	if (!nodo_buscado) {
 		return NULL;
 	}
@@ -114,6 +122,70 @@ void *abb_buscar(const abb_t *abb, const void *elemento)
 
 void *abb_sacar(abb_t *abb, const void *elemento)
 {
+	if (!abb || !abb->raiz || !elemento) {
+		return NULL;
+	}
+
+	nodo_t *padre = NULL;
+	nodo_t *nodo_buscado =
+		encontrar_nodo_rec(abb, elemento, abb->raiz, &padre);
+	if (!nodo_buscado) {
+		return NULL;
+	}
+
+	void *eliminar = nodo_buscado->elemento;
+
+	if (!nodo_buscado->der && !nodo_buscado->izq) {
+		if (padre) {
+			if (padre->izq == nodo_buscado) {
+				padre->izq = NULL;
+			} else {
+				padre->der = NULL;
+			}
+		} else {
+			abb->raiz = NULL;
+		}
+	} else if (!nodo_buscado->der) {
+		if (padre) {
+			if (padre->izq == nodo_buscado) {
+				padre->izq = nodo_buscado->izq;
+			} else {
+				padre->der = nodo_buscado->izq;
+			}
+		} else {
+			abb->raiz = nodo_buscado->izq;
+		}
+	} else if (!nodo_buscado->izq) {
+		if (padre) {
+			if (padre->izq == nodo_buscado) {
+				padre->izq = nodo_buscado->der;
+			} else {
+				padre->der = nodo_buscado->der;
+			}
+		} else {
+			abb->raiz = nodo_buscado->der;
+		}
+	} else {
+		nodo_t *padre_reemplazo = nodo_buscado;
+		nodo_t *reemplazo = nodo_buscado->der;
+		while (reemplazo->izq) {
+			padre_reemplazo = reemplazo;
+			reemplazo = reemplazo->izq;
+		}
+		if (padre_reemplazo == nodo_buscado) {
+			nodo_buscado->der = reemplazo->der;
+		} else {
+			padre_reemplazo->izq = reemplazo->der;
+		}
+		nodo_buscado->elemento = reemplazo->elemento;
+		free(reemplazo);
+		abb->nodos--;
+		return eliminar;
+	}
+
+	free(nodo_buscado);
+	abb->nodos--;
+	return eliminar;
 }
 
 size_t abb_tamanio(const abb_t *abb)
