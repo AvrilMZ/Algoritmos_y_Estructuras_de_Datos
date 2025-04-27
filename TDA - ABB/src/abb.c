@@ -167,15 +167,15 @@ void *abb_sacar(abb_t *abb, const void *elemento)
 		}
 	} else {
 		nodo_t *padre_reemplazo = nodo_buscado;
-		nodo_t *reemplazo = nodo_buscado->der;
-		while (reemplazo->izq) {
+		nodo_t *reemplazo = nodo_buscado->izq;
+		while (reemplazo->der) {
 			padre_reemplazo = reemplazo;
-			reemplazo = reemplazo->izq;
+			reemplazo = reemplazo->der;
 		}
 		if (padre_reemplazo == nodo_buscado) {
-			nodo_buscado->der = reemplazo->der;
+			nodo_buscado->izq = reemplazo->izq;
 		} else {
-			padre_reemplazo->izq = reemplazo->der;
+			padre_reemplazo->der = reemplazo->izq;
 		}
 		nodo_buscado->elemento = reemplazo->elemento;
 		free(reemplazo);
