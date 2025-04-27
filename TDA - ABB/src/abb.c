@@ -1,12 +1,6 @@
 #include "abb.h"
 #include "abb_estructura_privada.h"
 
-typedef struct abb_vectorizado {
-	void **vector;
-	size_t capacidad;
-	size_t tope;
-} abb_vectorizado_t;
-
 // Reserva memoria para un nodo y devuelve su puntero.
 nodo_t *reservar_memoria_nodo()
 {
@@ -218,9 +212,7 @@ bool recorrer_rec(nodo_t *raiz, enum abb_recorrido modo,
 		}
 	}
 
-	if (!recorrer_rec(raiz->izq, modo, f, ctx, contador)) {
-		return false;
-	}
+	recorrer_rec(raiz->izq, modo, f, ctx, contador);
 
 	if (modo == ABB_INORDEN) {
 		if (!f(raiz->elemento, ctx)) {
@@ -231,9 +223,7 @@ bool recorrer_rec(nodo_t *raiz, enum abb_recorrido modo,
 		}
 	}
 
-	if (!recorrer_rec(raiz->der, modo, f, ctx, contador)) {
-		return false;
-	}
+	recorrer_rec(raiz->der, modo, f, ctx, contador);
 
 	if (modo == ABB_POSTORDEN) {
 		if (!f(raiz->elemento, ctx)) {
@@ -259,36 +249,13 @@ size_t abb_recorrer(const abb_t *abb, enum abb_recorrido modo,
 	return contador;
 }
 
-// Agrega el elemento al vector pasados por parámetro.
-bool agregar_elemento_vector(void *vector, void *elemento)
-{
-	if (!vector || !elemento) {
-		return false;
-	}
-
-	abb_vectorizado_t *vec = (abb_vectorizado_t *)vector;
-
-	if (vec->tope >= vec->capacidad) {
-		return false;
-	}
-	vec->vector[vec->tope] = elemento;
-	return true;
-}
-
 size_t abb_vectorizar(const abb_t *abb, enum abb_recorrido modo, void **vector,
 		      size_t capacidad)
 {
 	if (!abb || !vector || capacidad == 0) {
 		return 0;
 	}
-
-	abb_vectorizado_t vec = {
-		.vector = vector,
-		.capacidad = capacidad,
-		.tope = 0,
-	};
-	recorrer_rec(abb->raiz, modo, agregar_elemento_vector, &vec, &vec.tope);
-	return vec.tope;
+	return 0;
 }
 
 // Destruye los nodos aplicandoles una función destructora, si es que se pasa.
