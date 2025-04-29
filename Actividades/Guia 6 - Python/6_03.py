@@ -7,7 +7,7 @@ Ayudalo a ver si las listas son iguales o no, ya que si faltan elementos el expe
 
 def revisar_listas(comprados, recibidos):
 	if not comprados:
-		return false
+		return False
 
 	iguales = True
 	for elemento in comprados:
