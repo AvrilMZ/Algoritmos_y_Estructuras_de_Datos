@@ -5,5 +5,14 @@ Dada una lista de elementos y otra de posiciones, se pide quitar de la lista ori
 '''
 
 def sacar_elementos(lista, posiciones):
-	posiciones = set(posiciones)
-	return [elemento for i, elemento in enumerate(lista) if i not in posiciones]
+	if not lista:
+		return lista
+		
+	posiciones_ordenadas = sorted(posiciones, reverse=True)
+	resultado = lista.copy()
+	
+	for pos in posiciones_ordenadas:
+		if 0 <= pos < len(resultado):
+			resultado.pop(pos)
+
+	return resultado
