@@ -19,22 +19,13 @@ void bubble_sort(char vector_desordenado[MAX_VECTOR],
 
 	for (int i = 0; i < tope - 1; i++) {
 		for (int j = 0; j < tope - i - 1; j++) {
-			if (ascendente) {
-				if (vector_ordenado[j] >
-				    vector_ordenado[j + 1]) {
-					char aux = vector_ordenado[j];
-					vector_ordenado[j] =
-						vector_ordenado[j + 1];
-					vector_ordenado[j + 1] = aux;
-				}
-			} else {
-				if (vector_ordenado[j] <
-				    vector_ordenado[j + 1]) {
-					char aux = vector_ordenado[j];
-					vector_ordenado[j] =
-						vector_ordenado[j + 1];
-					vector_ordenado[j + 1] = aux;
-				}
+			if ((ascendente &&
+			     vector_ordenado[j] > vector_ordenado[j + 1]) ||
+			    (!ascendente &&
+			     vector_ordenado[j] < vector_ordenado[j + 1])) {
+				char aux = vector_ordenado[j];
+				vector_ordenado[j] = vector_ordenado[j + 1];
+				vector_ordenado[j + 1] = aux;
 			}
 		}
 	}

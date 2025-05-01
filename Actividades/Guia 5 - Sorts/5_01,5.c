@@ -22,22 +22,13 @@ void bubble_sort(char string_desordenado[MAX_VECTOR],
 
 	for (size_t i = 0; i < tope - 1; i++) {
 		for (size_t j = 0; j < tope - i - 1; j++) {
-			if (ascendente) {
-				if (string_ordenado[j] >
-				    string_ordenado[j + 1]) {
-					char aux = string_ordenado[j];
-					string_ordenado[j] =
-						string_ordenado[j + 1];
-					string_ordenado[j + 1] = aux;
-				}
-			} else {
-				if (string_ordenado[j] <
-				    string_ordenado[j + 1]) {
-					char aux = string_ordenado[j];
-					string_ordenado[j] =
-						string_ordenado[j + 1];
-					string_ordenado[j + 1] = aux;
-				}
+			if ((ascendente &&
+			     string_ordenado[j] > string_ordenado[j + 1]) ||
+			    (!ascendente &&
+			     string_ordenado[j] < string_ordenado[j + 1])) {
+				char aux = string_ordenado[j];
+				string_ordenado[j] = string_ordenado[j + 1];
+				string_ordenado[j + 1] = aux;
 			}
 		}
 	}
