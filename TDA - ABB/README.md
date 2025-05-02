@@ -35,6 +35,7 @@ El árbol se implementa con un puntero al nodo raíz, un contador de nodos y una
 
 <div id="imagen1" align="center">
 	<img src="img/Diagrama_general_abb.png" alt="Diagrama general árbol binario de búsqueda" width="1000"/>
+	
 <sup>Figura 1 (Ejemplo de implementación TDA árbol binario de búsqueda)</sup>
 </div>
 
@@ -69,26 +70,31 @@ Se implementan las siguientes primitivas para el ABB:
 
 <div id="imagen2" align="center">
 	<img src="img/Diagrama_abb_insertar().png" alt="Diagrama función 'abb_insertar()'" width="1000"/>
+
 <sup>Figura 2 (Ejemplo de comparación para insertar un nuevo elemento)</sup>
 </div>
 
 <div id="imagen3" align="center">
 	<img src="img/Diagrama_abb_sacar().png" alt="Diagrama función 'abb_sacar()'" width="1000"/>
+
 <sup>Figura 3 (Representa una eliminación de un nodo con dos hijos. El color gris representa lo que se elimina)</sup>
 </div>
 
 <div id="imagen4" align="center">
-	<img src="img/Diagrama_recorrido_preorden.png" alt="Diagrama recorrer modo preorden" width="800"/>
+	<img src="img/Diagrama_recorrido_preorden.png" alt="Diagrama recorrer modo preorden" width="1000"/>
+
 <sup>Figura 4 (Ejemplo de un recorrido preorden. El color gris representa a los nodos previamente mostrados)</sup>
 </div>
 
 <div id="imagen5" align="center">
-	<img src="img/Diagrama_recorrido_inorden.png" alt="Diagrama recorrer modo inorden" width="800"/>
+	<img src="img/Diagrama_recorrido_inorden.png" alt="Diagrama recorrer modo inorden" width="1000"/>
+
 <sup>Figura 5 (Ejemplo de un recorrido inorden. El color gris representa a los nodos previamente mostrados)</sup>
 </div>
 
 <div id="imagen6" align="center">
-	<img src="img/Diagrama_recorrido_postorden.png" alt="Diagrama recorrer modo postorden" width="800"/>
+	<img src="img/Diagrama_recorrido_postorden.png" alt="Diagrama recorrer modo postorden" width="1000"/>
+
 <sup>Figura 6 (Ejemplo de un recorrido postorden. El color gris representa a los nodos previamente mostrados)</sup>
 </div>
 
@@ -102,7 +108,8 @@ Un **árbol** es una estructura de datos jerárquica que consiste en nodos conec
 </div>
 
 <div id="imagen7" align="center">
-	<img src="img/Diagrama_general_arbol.png" alt="Diagrama general árbol" width="800"/>
+	<img src="img/Diagrama_general_arbol.png" alt="Diagrama general árbol" width="1000"/>
+
 <sup>Figura 7 (Ejemplo de implementación TDA árbol)</sup>
 </div>
 
@@ -115,6 +122,7 @@ Un **árbol binario** es un tipo de árbol en el que cada nodo tiene como máxim
 </div>
 
 <div id="imagen8" align="center">
-	<img src="img/Diagrama_general_arbol_binario.png" alt="Diagrama general árbol binario" width="800"/>
+	<img src="img/Diagrama_general_arbol_binario.png" alt="Diagrama general árbol binario" width="1000"/>
+
 <sup>Figura 8 (Ejemplo de implementación TDA árbol binario)</sup>
 </div>
