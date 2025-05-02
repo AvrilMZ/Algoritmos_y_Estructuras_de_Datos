@@ -35,7 +35,7 @@ El árbol se implementa con un puntero al nodo raíz, un contador de nodos y una
 
 <div id="imagen1" align="center">
 	<img src="img/Diagrama_general_abb.png" alt="Diagrama general árbol binario de búsqueda" width="1000"/>
-	
+
 <sup>Figura 1 (Ejemplo de implementación TDA árbol binario de búsqueda)</sup>
 </div>
 
@@ -47,15 +47,15 @@ Se implementan las siguientes primitivas para el ABB:
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `abb_insertar`: Se compara el elemento de la raíz con el nuevo. Si este es menor, se pasa al subárbol izquierdo; si es mayor, al derecho. La comparación se repite hasta encontrar un nodo con la misma clave, que por convención se inserta en el subárbol derecho, o hasta llegar al final del subárbol correspondiente, donde se debe insertar el nuevo elemento en el lado adecuado. La logica de comparación se puede ver en la [figura 2](#imagen2).
 	- Complejidad: $`O(log(n))`$ en tiempo si el árbol esta balanciado, en caso contrario $`O(n)`$, y $`O(1)`$ en espacio.
-- `abb_existe`: Devuelve verdadero si el elemento buscado existe en el árbol.
+- `abb_existe`: Devuelve true si el elemento buscado existe en el árbol, de lo contrario false.
 	- Complejidad: $`O(log(n))`$ en tiempo si el árbol esta balanciado, en caso contrario $`O(n)`$, y $`O(h)`$ en espacio, ya que se hace de forma recursiva, donde $`h`$ es la altura del árbol.
 - `abb_buscar`: Devuelve el elemento que coincide con el buscado.
 	- Complejidad: $`O(log(n))`$ en tiempo si el árbol esta balanciado, en caso contrario $`O(n)`$, y $`O(h)`$ en espacio, ya que se hace de forma recursiva, donde $`h`$ es la altura del árbol.
-- `abb_sacar`: Devuelve y elimina la primer aparicion del nodo cuyo elemento coincida con el buscado. Si se saca un nodo con dos hijos no nulos se reemplaza dicho nodo con el predecesor inorden, tal como se visualiza en la [figura 3](#imagen3).
+- `abb_sacar`: Devuelve y elimina la primer aparicion del nodo cuyo elemento coincida con el buscado. Si se saca un nodo con dos hijos no nulos se reemplaza dicho nodo con el predecesor inorden, tal como se visualiza en la [figura 3](#imagen3). Esta muestra que, tras encontrar el nodo a eliminar, se toma el sucesor inmediato izquierdo y se recorren los nodos a la derecha de este hasta llegar al último, que reemplaza al nodo original. Finalmente, se elimina el nodo que ocupaba la posición del sucesor.
 	- Complejidad: $`O(log(n))`$ en tiempo si el árbol esta balanciado, en caso contrario $`O(n)`$, y $`O(h)`$ en espacio, ya que se hace de forma recursiva, donde $`h`$ es la altura del árbol.
 - `abb_tamanio`: Devuelve la cantidad de nodos que tiene el árbol.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
-- `abb_vacio`: Devuelve verdadero si el árbol está vacío.
+- `abb_vacio`: Devuelve true si el árbol está vacío, de lo contrario false.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `abb_recorrer`: Recorre el árbol en el orden indicado (inorden, preorden o postorden) aplicando la función dada a cada elemento, finalmente devuelve la cantidad de elementos recorridos. El [preorden](#imagen4) primero recorre la raíz, luego el subárbol izquierdo y finalmente el derecho, lo que permite recrear el árbol. El [inorden](#imagen5) primero recorre el subárbol izquierdo, luego la raíz y finalmente el derecho, lo que facilita obtener todos los elementos en orden. El [postorden](#imagen6) primero recorre el subárbol izquierdo, luego el derecho y finalmente la raíz, siendo ideal para la eliminación de nodos.
 	- Complejidad: $`O(n)`$ en tiempo y $`O(h)`$ en espacio, ya que se hace de forma recursiva, donde $`h`$ es la altura del árbol.
@@ -112,8 +112,6 @@ Un **árbol** es una estructura de datos jerárquica que consiste en nodos conec
 
 <sup>Figura 7 (Ejemplo de implementación TDA árbol)</sup>
 </div>
-
-<br>
 
 <div style="text-align: justify">
 
