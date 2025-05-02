@@ -27,7 +27,7 @@ make valgrind-alumno
 ## Funcionamiento
 <div style="text-align: justify">
 
-El progrmama implementa un **árbol binario de búsqueda** (ABB), este tipo de estructura de datos permite almacenar elementos de manera ordenada, ya que los elementos del subárbol izquierdo son menores con respecto al subárbol derecho.  Esta caracteristica permite realizar búsquedas eficientes en tiempo $`O(log(n))`$, por lo que sus usos suelen ser para optimizar búsquedas.
+El progrmama implementa un **árbol binario de búsqueda** (ABB), este tipo de estructura de datos permite almacenar elementos de manera ordenada, ya que los elementos del subárbol izquierdo son menores con respecto al subárbol derecho. Esta caracteristica permite realizar búsquedas eficientes en tiempo $`O(log(n))`$, en caso de que este balanceado, por lo que sus usos suelen ser para optimizar búsquedas.
 
 El árbol se implementa con un puntero al nodo raíz, un contador de nodos y una función comparadora para determinar el orden de los elementos. Cada nodo del árbol contiene un elemento, un puntero al hijo izquierdo y un puntero al hijo derecho.
 
