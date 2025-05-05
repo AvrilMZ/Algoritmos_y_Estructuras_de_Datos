@@ -17,7 +17,7 @@ abb_t *abb_crear(int (*cmp)(const void *, const void *))
 
 bool abb_insertar(abb_t *abb, const void *elemento)
 {
-	if (!abb || !elemento) {
+	if (!abb) {
 		return false;
 	}
 
@@ -63,7 +63,7 @@ bool abb_insertar(abb_t *abb, const void *elemento)
 nodo_t *encontrar_nodo_rec(const abb_t *abb, const void *elemento,
 			   nodo_t *actual, nodo_t **padre)
 {
-	if (!abb || !elemento || !actual) {
+	if (!abb || !abb->raiz || !actual) {
 		return NULL;
 	}
 
@@ -84,7 +84,7 @@ nodo_t *encontrar_nodo_rec(const abb_t *abb, const void *elemento,
 
 bool abb_existe(const abb_t *abb, const void *elemento)
 {
-	if (!abb || !elemento) {
+	if (!abb || !abb->raiz) {
 		return false;
 	}
 	return encontrar_nodo_rec(abb, elemento, abb->raiz, NULL) != NULL;
@@ -92,7 +92,7 @@ bool abb_existe(const abb_t *abb, const void *elemento)
 
 void *abb_buscar(const abb_t *abb, const void *elemento)
 {
-	if (!abb || !elemento) {
+	if (!abb || !abb->raiz) {
 		return NULL;
 	}
 
@@ -102,6 +102,65 @@ void *abb_buscar(const abb_t *abb, const void *elemento)
 		return NULL;
 	}
 	return nodo_buscado->elemento;
+}
+
+// Elimina un nodo hoja del ABB dado.
+void eliminar_nodo_hoja(abb_t *abb, nodo_t *nodo, nodo_t *padre)
+{
+	if (padre) {
+		if (padre->izq == nodo) {
+			padre->izq = NULL;
+		} else {
+			padre->der = NULL;
+		}
+	} else {
+		abb->raiz = NULL;
+	}
+	free(nodo);
+	abb->nodos--;
+}
+
+// Elimina un nodo con un hijo del ABB dado.
+void eliminar_nodo_con_un_hijo(abb_t *abb, nodo_t *nodo, nodo_t *padre)
+{
+	nodo_t *hijo;
+	if (nodo->izq) {
+		hijo = nodo->izq;
+	} else {
+		hijo = nodo->der;
+	}
+
+	if (padre) {
+		if (padre->izq == nodo) {
+			padre->izq = hijo;
+		} else {
+			padre->der = hijo;
+		}
+	} else {
+		abb->raiz = hijo;
+	}
+	free(nodo);
+	abb->nodos--;
+}
+
+// Elimina un nodo con dos hijos del ABB dado.
+void eliminar_nodo_con_dos_hijos(abb_t *abb, nodo_t *nodo, nodo_t *padre)
+{
+	nodo_t *padre_reemplazo = nodo;
+	nodo_t *reemplazo = nodo->izq;
+	while (reemplazo->der) {
+		padre_reemplazo = reemplazo;
+		reemplazo = reemplazo->der;
+	}
+
+	if (padre_reemplazo == nodo) {
+		nodo->izq = reemplazo->izq;
+	} else {
+		padre_reemplazo->der = reemplazo->izq;
+	}
+	nodo->elemento = reemplazo->elemento;
+	free(reemplazo);
+	abb->nodos--;
 }
 
 void *abb_sacar(abb_t *abb, const void *elemento)
@@ -120,61 +179,19 @@ void *abb_sacar(abb_t *abb, const void *elemento)
 	void *eliminar = nodo_buscado->elemento;
 
 	if (!nodo_buscado->der && !nodo_buscado->izq) {
-		if (padre) {
-			if (padre->izq == nodo_buscado) {
-				padre->izq = NULL;
-			} else {
-				padre->der = NULL;
-			}
-		} else {
-			abb->raiz = NULL;
-		}
-	} else if (!nodo_buscado->der) {
-		if (padre) {
-			if (padre->izq == nodo_buscado) {
-				padre->izq = nodo_buscado->izq;
-			} else {
-				padre->der = nodo_buscado->izq;
-			}
-		} else {
-			abb->raiz = nodo_buscado->izq;
-		}
-	} else if (!nodo_buscado->izq) {
-		if (padre) {
-			if (padre->izq == nodo_buscado) {
-				padre->izq = nodo_buscado->der;
-			} else {
-				padre->der = nodo_buscado->der;
-			}
-		} else {
-			abb->raiz = nodo_buscado->der;
-		}
+		eliminar_nodo_hoja(abb, nodo_buscado, padre);
+	} else if (!nodo_buscado->der || !nodo_buscado->izq) {
+		eliminar_nodo_con_un_hijo(abb, nodo_buscado, padre);
 	} else {
-		nodo_t *padre_reemplazo = nodo_buscado;
-		nodo_t *reemplazo = nodo_buscado->izq;
-		while (reemplazo->der) {
-			padre_reemplazo = reemplazo;
-			reemplazo = reemplazo->der;
-		}
-		if (padre_reemplazo == nodo_buscado) {
-			nodo_buscado->izq = reemplazo->izq;
-		} else {
-			padre_reemplazo->der = reemplazo->izq;
-		}
-		nodo_buscado->elemento = reemplazo->elemento;
-		free(reemplazo);
-		abb->nodos--;
-		return eliminar;
+		eliminar_nodo_con_dos_hijos(abb, nodo_buscado, padre);
 	}
 
-	free(nodo_buscado);
-	abb->nodos--;
 	return eliminar;
 }
 
 size_t abb_tamanio(const abb_t *abb)
 {
-	if (!abb) {
+	if (!abb || !abb->raiz) {
 		return 0;
 	}
 	return abb->nodos;
@@ -182,7 +199,34 @@ size_t abb_tamanio(const abb_t *abb)
 
 bool abb_vacio(const abb_t *abb)
 {
-	return !abb || !abb->raiz;
+	return (!abb || !abb->raiz || abb_tamanio(abb) == 0);
+}
+
+/**
+ * Si 'f' no es NULL, se le aplica a cada elemento.
+ * Si se le pasa un 'contador' este se incrementa.
+ * Si se le pasa un 'vector' el elemento se almacena en el mismo, si es que no supera su 'tope'.
+ * Devuelve true si al aplicar 'f' esta no retorna false y si el contador no es igual o mayor al tope.
+ */
+bool aplicar_funcion_y_almacenar(nodo_t *nodo, bool (*f)(void *, void *),
+				 void *ctx, size_t *contador, void **vector,
+				 size_t *tope)
+{
+	if (contador) {
+		if (tope && *contador >= *tope) {
+			return false;
+		}
+		if (vector && tope) {
+			vector[*contador] = nodo->elemento;
+		}
+		(*contador)++;
+	}
+
+	if (f && ctx && !f(nodo->elemento, ctx)) {
+		return false;
+	}
+
+	return true;
 }
 
 /**
@@ -200,51 +244,31 @@ bool recorrer_rec(nodo_t *raiz, enum abb_recorrido modo,
 	}
 
 	if (modo == ABB_PREORDEN) {
-		if (f && ctx && !f(raiz->elemento, ctx)) {
+		if (!aplicar_funcion_y_almacenar(raiz, f, ctx, contador, vector,
+						 tope)) {
 			return false;
-		}
-		if (contador) {
-			if (vector && tope && *contador < *tope) {
-				vector[*contador] = raiz->elemento;
-			}
-			if (tope && *contador == *tope) {
-				return false;
-			}
-			(*contador)++;
 		}
 	}
 
-	recorrer_rec(raiz->izq, modo, f, ctx, contador, vector, tope);
+	if (!recorrer_rec(raiz->izq, modo, f, ctx, contador, vector, tope)) {
+		return false;
+	}
 
 	if (modo == ABB_INORDEN) {
-		if (f && ctx && !f(raiz->elemento, ctx)) {
+		if (!aplicar_funcion_y_almacenar(raiz, f, ctx, contador, vector,
+						 tope)) {
 			return false;
-		}
-		if (contador) {
-			if (vector && tope && *contador < *tope) {
-				vector[*contador] = raiz->elemento;
-			}
-			if (tope && *contador == *tope) {
-				return false;
-			}
-			(*contador)++;
 		}
 	}
 
-	recorrer_rec(raiz->der, modo, f, ctx, contador, vector, tope);
+	if (!recorrer_rec(raiz->der, modo, f, ctx, contador, vector, tope)) {
+		return false;
+	}
 
 	if (modo == ABB_POSTORDEN) {
-		if (f && ctx && !f(raiz->elemento, ctx)) {
+		if (!aplicar_funcion_y_almacenar(raiz, f, ctx, contador, vector,
+						 tope)) {
 			return false;
-		}
-		if (contador) {
-			if (vector && tope && *contador < *tope) {
-				vector[*contador] = raiz->elemento;
-			}
-			if (tope && *contador == *tope) {
-				return false;
-			}
-			(*contador)++;
 		}
 	}
 
@@ -254,7 +278,7 @@ bool recorrer_rec(nodo_t *raiz, enum abb_recorrido modo,
 size_t abb_recorrer(const abb_t *abb, enum abb_recorrido modo,
 		    bool (*f)(void *, void *), void *ctx)
 {
-	if (!abb || !f || abb->nodos == 0) {
+	if (!abb || !abb->raiz || !f || abb_tamanio(abb) == 0) {
 		return 0;
 	}
 
@@ -266,7 +290,7 @@ size_t abb_recorrer(const abb_t *abb, enum abb_recorrido modo,
 size_t abb_vectorizar(const abb_t *abb, enum abb_recorrido modo, void **vector,
 		      size_t capacidad)
 {
-	if (!abb || !vector || capacidad == 0) {
+	if (!abb || !abb->raiz || !vector || capacidad == 0) {
 		return 0;
 	}
 
