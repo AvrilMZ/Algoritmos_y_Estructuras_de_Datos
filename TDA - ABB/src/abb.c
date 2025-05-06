@@ -165,7 +165,7 @@ void eliminar_nodo_con_dos_hijos(abb_t *abb, nodo_t *nodo, nodo_t *padre)
 
 void *abb_sacar(abb_t *abb, const void *elemento)
 {
-	if (!abb || !abb->raiz || !elemento) {
+	if (!abb || !abb->raiz) {
 		return NULL;
 	}
 
