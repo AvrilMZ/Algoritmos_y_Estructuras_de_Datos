@@ -48,11 +48,11 @@ Se implementan las siguientes primitivas para el ABB:
 - `abb_insertar`: Se compara el elemento de la raíz con el nuevo. Si este es menor, se pasa al subárbol izquierdo; si es mayor, al derecho. La comparación se repite hasta encontrar un nodo con la misma clave, que por convención se inserta en el subárbol derecho o hasta llegar al final del subárbol correspondiente, donde se debe insertar el nuevo elemento en el lado adecuado. La logica de comparación se puede ver en la [figura 2](#imagen2).
 	- Complejidad: $`O(log(n))`$ en tiempo si el árbol esta balanceado, en caso contrario $`O(n)`$, y $`O(1)`$ en espacio.
 - `abb_existe`: Devuelve true si el elemento buscado existe en el árbol, de lo contrario false.
-	- Complejidad: $`O(log(n))`$ en tiempo si el árbol esta balanceado, en caso contrario $`O(n)`$, y $`O(h)`$ en espacio, ya que se hace de forma recursiva, donde $`h`$ es la altura del árbol.
+	- Complejidad: $`O(log(n))`$ en tiempo si el árbol esta balanceado, en caso contrario $`O(n)`$, y $`O(h)`$ en espacio, ya que se busca el nodo de forma recursiva, donde $`h`$ es la altura del árbol.
 - `abb_buscar`: Devuelve el elemento que coincide con el buscado.
-	- Complejidad: $`O(log(n))`$ en tiempo si el árbol esta balanceado, en caso contrario $`O(n)`$, y $`O(h)`$ en espacio, ya que se hace de forma recursiva, donde $`h`$ es la altura del árbol.
+	- Complejidad: $`O(log(n))`$ en tiempo si el árbol esta balanceado, en caso contrario $`O(n)`$, y $`O(h)`$ en espacio, ya que se busca el nodo de forma recursiva, donde $`h`$ es la altura del árbol.
 - `abb_sacar`: Devuelve y elimina la primer aparición del nodo cuyo elemento coincida con el buscado. Si se saca un nodo con dos hijos no nulos se reemplaza dicho nodo con el predecesor inorden, tal como se visualiza en la [figura 3](#imagen3). Esta muestra que, tras encontrar el nodo a eliminar, se toma el sucesor inmediato izquierdo y se recorren los nodos a la derecha de este hasta llegar al último, que reemplaza al nodo original. Finalmente, se elimina el nodo que ocupaba la posición del sucesor.
-	- Complejidad: $`O(log(n))`$ en tiempo si el árbol esta balanceado, en caso contrario $`O(n)`$, y $`O(h)`$ en espacio, ya que se hace de forma recursiva, donde $`h`$ es la altura del árbol.
+	- Complejidad: $`O(log(n))`$ en tiempo si el árbol esta balanceado, en caso contrario $`O(n)`$, y $`O(h)`$ en espacio, ya que se busca el nodo de forma recursiva, donde $`h`$ es la altura del árbol.
 - `abb_tamanio`: Devuelve la cantidad de nodos que tiene el árbol.
 	- Complejidad: $`O(1)`$ en tiempo y $`O(1)`$ en espacio.
 - `abb_vacio`: Devuelve true si el árbol está vacío, de lo contrario false.
@@ -62,9 +62,9 @@ Se implementan las siguientes primitivas para el ABB:
 - `abb_vectorizar`: Crea un vector con los elementos del árbol en el orden indicado (inorden, preorden o postorden).
 	- Complejidad: $`O(n)`$ en tiempo y $`O(h)`$ en espacio, ya que se hace de forma recursiva, donde $`h`$ es la altura del árbol.
 - `abb_destruir`: Destruye el árbol y libera la memoria ocupada por sus nodos.
-	- Complejidad: $`O(n)`$ en tiempo y $`O(1)`$ en espacio.
+	- Complejidad: $`O(n)`$ en tiempo y $`O(h)`$ en espacio, ya que se hace de forma recursiva, donde $`h`$ es la altura del árbol.
 - `abb_destruir_todo`: Destruye el árbol y libera la memoria ocupada por sus nodos aplicando la función dada a cada elemento.
-	- Complejidad: $`O(n)`$ en tiempo y $`O(1)`$ en espacio.
+	- Complejidad: $`O(n)`$ en tiempo y $`O(h)`$ en espacio, ya que se hace de forma recursiva, donde $`h`$ es la altura del árbol.
 
 </div>
 
