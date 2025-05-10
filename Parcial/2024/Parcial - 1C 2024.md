@@ -1,12 +1,32 @@
 # Ejercicio 1
-## 1A y 1B
+## 1A
 Para el primer codigo dado vemos una complejidad $`O(n)`$, donde n es la cantidad de elementos de la pila. Esto es debido a que el codigo se ejecuta mientras haya elementos en la pila para quitarlos, implicando recorrer uno por uno realizando esta operación.  
 Luego, para el segundo código, si bien a simple vista parece tener complejidad $`O(n^2)`$ por los dos for anidados, hay que tener en cuenta que dentro del bucle interno se incrementa manualmente la variable `i` cuando `j == 10`. Esto hace que el bucle externo avance más rápido, ya que `i` se incrementa dos veces en esa iteración: una por el for y otra por el `if`. Por lo tanto, la cantidad total de iteraciones del cuerpo interno es menor a $`n * n`$, pero está acotada superiormente por $`O(n^2)`$ que terminaria siendo la complejidad final.  
 En ningúno de los dos casos es posible aplicar el teorema maestro ya que no son recursivos.
 
 # Ejercicio 2
-## 2A y 2B
+## 2A
+Quicksort es un algoritmo de ordenamiento del tipo divide y conquista el cual sigue los siguientes pasos:  
+1. Se elige un elemento X de la lista L de elementos al que se le llama pivote.
+2. Se particiona la lista L en tres listas:
+	- L1 - contiene todos los elementos de L menos X que sean menores o iguales que X.
+	- L2 - elemento X
+	- L3 - contiene todos los elementos de L menos X que sean mayores o iguales que X.
+3. Se repiten los primeros dos pasos sobre L1 y L3.
+4. Se unen todas las soluciones que darán forma final a la lista L finalmente ordenada.
+```txt
+V = [2, 3, 5, 0, 2, 1, 9, 7]
 
+Se toma el último elemento siempre como pivote:
+    [2, 3, 5, 0, 2, 1]                      [7]            [9]
+  [0]       [1]      [2, 3, 5, 2]
+                 [2, 2]        [3, 5]
+	                         [3]    [5]
+
+Entonces uniendo todos los vectores unitarios (a excepcion de alguno con valores repetidos):
+	[0] + [1] + [2, 2] + [3] + [5] + [7] + [9]
+	=> V = [0, 1, 2, 2, 3, 5, 7, 9]
+```
 
 
 # Ejercicio 3
@@ -61,6 +81,7 @@ int main()
 	elemento_t *ele1 = crear_elemento();
 	if (!ele1) {
 		free(nodo1);
+		nodo1 = NULL;
 		return 0;
 	}
 	nodo1->hijo_izquierdo = ele1;
@@ -70,7 +91,9 @@ int main()
 	elemento_t *ele2 = crear_elemento();
 	if (!ele2) {
 		free(ele1);
+		ele1 = NULL;
 		free(nodo1);
+		nodo1 = NULL;
 		return 0;
 	}
 	nodo1->hijo_derecho = ele2;
@@ -80,8 +103,11 @@ int main()
 	nodo_t *nodo2 = crear_nodo();
 	if (!nodo2) {
 		free(ele2);
+		ele2 = NULL;
 		free(ele1);
+		ele1 = NULL;
 		free(nodo1);
+		nodo1 = NULL;
 		return 0;
 	}
 	nodo1->hermano = nodo2;
@@ -90,9 +116,13 @@ int main()
 	elemento_t *ele3 = crear_elemento();
 	if (!ele3) {
 		free(ele2);
+		ele2 = NULL;
 		free(ele1);
+		ele1 = NULL;
 		free(nodo2);
+		nodo2 = NULL;
 		free(nodo1);
+		nodo1 = NULL;
 		return 0;
 	}
 	nodo2->hijo_derecho = ele3;
@@ -102,10 +132,15 @@ int main()
 	nodo_t *nodo3 = crear_nodo();
 	if (!nodo3) {
 		free(ele3);
+		ele3 = NULL;
 		free(ele2);
+		ele2 = NULL;
 		free(ele1);
+		ele1 = NULL;
 		free(nodo2);
+		nodo2 = NULL;
 		free(nodo1);
+		nodo1 = NULL;
 		return 0;
 	}
 	nodo2->hermano = nodo3;
@@ -114,11 +149,17 @@ int main()
 	elemento_t *ele4 = crear_elemento();
 	if (!ele4) {
 		free(ele3);
+		ele3 = NULL;
 		free(ele2);
+		ele2 = NULL;
 		free(ele1);
+		ele1 = NULL;
 		free(nodo3);
+		nodo3 = NULL;
 		free(nodo2);
+		nodo2 = NULL;
 		free(nodo1);
+		nodo1 = NULL;
 		return 0;
 	}
 	nodo3->hijo_derecho = ele4;
@@ -126,18 +167,25 @@ int main()
 	ele4->letra = &texto[3];
 
 	free(ele4);
+	ele4 = NULL;
 	free(ele3);
+	ele3 = NULL;
 	free(ele2);
+	ele2 = NULL;
 	free(ele1);
+	ele1 = NULL;
 	free(nodo3);
+	nodo3 = NULL;
 	free(nodo2);
+	nodo2 = NULL;
 	free(nodo1);
+	nodo1 = NULL;
 
 	return 0;
 }
 ```
 
-## 3B
+## 3B (MAL -> REVISAR)
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -159,19 +207,8 @@ nodo_t *crear_nodo() {
 	return nodo;
 }
 
-// Libera la memoria reservada de todos los nodos enlazados.
-void liberar_nodos(nodo_t *nodo) 
-{
-	if (!nodo) {
-		return;
-	}
-	liberar_nodos(nodo->siguiente);
-	free(nodo);
-	nodo = NULL;
-}
-
 // Libera todos los elementos reservados en el arreglo 'lista'.
-void liberar_arreglo(void **lista) 
+void liberar_arreglo(nodo_t **lista) 
 {
 	if (!lista) {
 		return;
@@ -201,8 +238,8 @@ int main()
 
 	nodo_t *nodo2 = crear_nodo();
 	if (!nodo2) {
-		liberar_nodos(nodo1);
 		liberar_arreglo(lista);
+		free(nodo1);
 		return 0;
 	}
 	nodo2->anterior = nodo1;
@@ -212,8 +249,9 @@ int main()
 
 	nodo_t *nodo3 = crear_nodo();
 	if (!nodo3) {
-		liberar_nodos(nodo1);
 		liberar_arreglo(lista);
+		free(nodo1);
+		free(nodo2);
 		return 0;
 	}
 	nodo3->anterior = nodo2;
@@ -223,8 +261,10 @@ int main()
 
 	nodo_t *nodo4 = crear_nodo();
 	if (!nodo4) {
-		liberar_nodos(nodo1);
 		liberar_arreglo(lista);
+		free(nodo1);
+		free(nodo2);
+		free(nodo3);
 		return 0;
 	}
 	nodo4->anterior = nodo3;
@@ -233,8 +273,11 @@ int main()
 	nodo4->elemento = lista[1];
 	lista[3] = nodo4;
 
-	liberar_nodos(nodo1);
 	liberar_arreglo(lista);
+	free(nodo1);
+	free(nodo2);
+	free(nodo3);
+	free(nodo4);
 
 	return 0;
 }
@@ -242,8 +285,36 @@ int main()
 
 # Ejercicio 4
 ## 4A
-
-## 4B
+???
 
 
 # Ejercicio 5
+```c
+void swap(int *a, int *b)
+{
+	int aux = *a;
+	*a = *b;
+	*b = aux;
+}
+
+void bubble_sort(int arreglo[], int tope)
+{
+	if (tope == 1) {
+		return;
+	}
+	
+	int contador = 0;
+	for (int i = 0; i < tope - 1; i++) {
+		if (arreglo[i] > arreglo[i + 1]) {
+			swap(&arreglo[i], &arreglo[i + 1]);
+			contador++;
+		}
+	}
+
+	if (contador == 0) {
+		return;
+	}
+
+	bubble_sort(arreglo, tope - 1);
+}
+```
