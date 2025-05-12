@@ -285,7 +285,18 @@ int main()
 
 # Ejercicio 4
 ## 4A
-???
+La linea que falta mostrar por pantalla es la de postorden. Para saber cuales serian sus valores de salida podemos reconstruir el árbol usando la salida de preorden y respetando el orden de la salida de inorden:
+```txt
+Árbol original:
+   0
+  / \
+ 1   9
+  \   \
+  6    13
+ /     / \
+8    18   25
+```
+Por lo que la salida postorden seria [8, 6, 1, 18, 25, 13, 9, 0], ya que se sigue la logica IDN (hijo izquierda, hijo derecha, nodo).
 
 
 # Ejercicio 5
