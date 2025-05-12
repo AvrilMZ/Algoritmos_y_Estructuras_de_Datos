@@ -4,6 +4,28 @@ El algoritmo de ordenamiento mergesort es del tipo divide y venceras, este sigue
 2- Ordenar cada sublista recursivamente aplicando el ordenamiento por mezcla.  
 3- Mezclar las dos sublistas en una sola lista ordenada.
 
+**Complejidad:**  
+Al ser un problema del tipo divide y venceras podemos aplicar el teorema maestro:  
+$`T(n) = A \cdot T(\frac{n}{B}) + O(f(n))`$
+- $`A`$ = $`2`$, ya que realiza dos llamadas recursivas.
+- $`B`$ = $`2`$, ya que el problema (vector) se divide en dos.
+- $`f(n)`$ = $`n`$, unir las dos mitades seria un trabajo de $`n`$ elementos.
+
+$`T(n) = 2 \cdot T(\frac{n}{2}) + O(n)`$  
+Comparamos $`f(n)`$ con $`n^{log_{B}(A)} = n^{log_{2}(2)} = n 	\Rightarrow f(n) = n^{log_{B}(A)}`$.  
+Por lo tanto la complejidad final es $`n \cdot log(n)`$.
+
+En la 6ta invocacion quedaria:
+```txt
+                [1, 7, 2, 9, 21, 3, 11, 15, 4, 0]
+         [1, 7, 2, 9, 21]
+    [1, 7, 2]  
+ [1, 7] 
+[1]  [7]
+```
+Ninguna parte del vector se la podria considerar ordenada ya que no se conoce si al momento de ordenar y hacer merge algún elemento va a ser menor a uno o estar entre uno y siete.
+
+Completando la corrida del algoritmo:
 ```txt
 V = [1, 7, 2, 9, 21, 3, 11, 15, 4, 0]
 
@@ -23,9 +45,103 @@ Mergeamos y ordemanos:
 ```
 
 # Ejercicio 2
+Un AVL es un árbol autobalanceado, este contiene un campo llamado "factor de balanceo" el cual mantiene valores de -1, 0 o 1, en caso de ser mayor a dos, habria que reequilibrarlo haciendo rotaciones simples o compuestas dependiendo el caso hasta conseguir los parámetros válidos. Esto garantiza busquedas en tiempo $`log(n)`$.
 
+Ejemplos de rotaciones: 
+- Rotación Simple:
+```txt
+Teniendo el árbol:
+            10
+           /  \
+          5    15
+        /  \
+       1    6
+      /  \
+     0    2
 
-# Ejercicio 3
+Luego de la rotación:
+          5 
+        /   \
+       1     10
+      /  \   /  \
+     0   2  6    15
+```
+- Rotación Doble:
+```txt
+Teniendo el árbol:
+   5
+ /  \
+2   10
+   /  \
+   8   15
+ /  \
+6    9
+
+Luego de la primer rotación:
+   5
+ /  \
+2    8
+    /  \
+   6   10
+      /  \
+     9    15
+
+Luego de la segunda rotación:
+       8
+    /    \
+   5      10
+ /  \    /  \
+ 2   6  9    15
+```
+
+Una posible inserción de elementos seria:
+```txt
+    4
+   / \
+  2   8
+     /
+    5
+
+      10
+     /  \
+    4   11
+   / \
+  2   8
+     /
+    5
+
+        12
+       /  \
+      10   14
+     /  \
+    4   11
+   / \
+  2   8
+     /
+    5
+
+Hago la rotacion doble:
+        12
+       /  \
+      10   14
+     /  \
+    5   11
+   / \
+  4   8
+ /
+2
+
+Hago la rotacion simple:
+      10
+     /  \
+    4    12
+  /  \   /  \
+ 2    8 11   14
+     /
+    5
+```
+
+# Ejercicio 3 (A revisar)
 ```c
 #include <stdlib.h>
 #include <string.h>
@@ -90,7 +206,19 @@ int main()
 ```
 
 # Ejercicio 4
+1- Una función recursiva escrita como recursiva de cola es mas eficiente que la misma función sin aplicar dicha técnica.  
+2- Un algoritmo que utiliza el mecanismo de backtracking suele ser el mas eficiente para encontrar la respuesta de un problema.  
+3- Un puntero doble ocupa requiere mas espacio en memoria que uno simple.  
+4- Solamente existen 3 recorridos en profundidad aplicables a árboles binarios.  
+5- Lo algoritmos de ordenamiento estables son mas eficientes que los no estables.  
+6- Un fragmento de código que consiste en 2 for anidados con límites de iteración independientes entre 0 y n y contenido constante resultan en una complejidad computacional O(n²).  
 
+1- Verdadero, ya que se utiliza menos memoria por no apilar stackframes (solo se apila uno en vez de varios). 
+2- Falso, ya que en el peor de los casos recorre todo el problema. 
+3- Falso, ocupa mas espacio el hecho de que se necesitan dos variables del tipo puntero, pero el tipo en sí ocupa lo mismo.  
+4- Falso, se pueden hacer $`2^3`$ recorridos (combinaciones) con el nodo, su hijo derecho y su hijo izquierdo.
+5- Falso, ya que existen algoritmos de ordenamiento estables con complejidad mayor a algunos inestables. Por ejemplo bubble sort $`(n^2)`$ y quicksort $`(n\cdot log(n))`$.  
+6- Falso, ya que depende del paso de los `for`.  
 
 # Ejercicio 5 (MAL)
 ```c
