@@ -9,11 +9,12 @@ En ningúno de los dos casos es posible aplicar el teorema maestro ya que no son
 Quicksort es un algoritmo de ordenamiento del tipo divide y conquista el cual sigue los siguientes pasos:  
 1. Se elige un elemento X de la lista L de elementos al que se le llama pivote.
 2. Se particiona la lista L en tres listas:
-	- L1 - contiene todos los elementos de L menos X que sean menores o iguales que X.
+	- L1 - contiene todos los elementos de L menos X que sean menores.
 	- L2 - elemento X
-	- L3 - contiene todos los elementos de L menos X que sean mayores o iguales que X.
+	- L3 - contiene todos los elementos de L menos X que sean mayores.
 3. Se repiten los primeros dos pasos sobre L1 y L3.
-4. Se unen todas las soluciones que darán forma final a la lista L finalmente ordenada.
+4. Se unen todas las soluciones para formar la lista ordenada final.
+
 ```txt
 V = [2, 3, 5, 0, 2, 1, 9, 7]
 
@@ -27,7 +28,6 @@ Entonces uniendo todos los vectores unitarios (a excepcion de alguno con valores
 	[0] + [1] + [2, 2] + [3] + [5] + [7] + [9]
 	=> V = [0, 1, 2, 2, 3, 5, 7, 9]
 ```
-
 
 # Ejercicio 3
 ## 3A

@@ -18,10 +18,96 @@ Resultando en la complejidad final.
 La complejidad de mergesort puede ser calculada mediante el teorema maestro ya que su problema se divide siempre en dos partes iguales, en cambio quicksort elige un pivote y realiza tres subdivisiones desiguales que dependen de la posición del pivote elegido, siendo imposible definir un $`b`$ para el teorema.
 
 # Ejercicio 2
-(No vimos heapsort)
+Heapsort es un algortimo de ordenamiento que trabaja sobre un heap binario, en donde siempre retira la raiz del mismo y luego la reemplaza con el último elemento. El elemento retirado se lo excuye y considera ordenado, mientras que el reemplazo se lo acomoda realizando sift down. El proceso se repite hasta haber sacado todos los elementos.
+
+```txt
+V = [6, 1, 3, 6, 8, 4, 2]
+
+Construyo un heap minimal: (Me pedian de menor a mayor asi que era con un heap maximal)
+      1
+     / \
+  2       3
+ / \     / \
+8   6   4   6
+V = [1, 2, 3, 8, 6, 4, 6]
+
+      6
+     / \
+  2       3
+ / \     /
+8   6   4
+V = [6, 2, 3, 8, 6, 4] [1]
+
+Sift down:
+      2
+     / \
+  3       4
+ / \     /
+8   6   6
+V = [2, 3, 4, 8, 6, 6] [1]
+
+      6
+     / \
+  3       4
+ / \     
+8   6  
+V = [6, 3, 4, 8, 6] [2, 1]
+
+Sift down:
+      3
+     / \
+  4       6
+ / \     
+8   6  
+V = [3, 4, 6, 8, 6] [2, 1]
+
+      6
+     / \
+  4       6
+ /   
+8  
+V = [6, 4, 6, 8] [3, 2, 1]
+
+Sift down:
+      4
+     / \
+  6       6
+ /   
+8  
+V = [4, 6, 6, 8] [3, 2, 1]
+
+      8
+     / \
+  6       6  
+V = [8, 6, 6] [4, 3, 2, 1]
+
+Sift down:
+      6
+     / \
+  6       8  
+V = [6, 6, 8] [4, 3, 2, 1]
+
+      8
+     /
+  6  
+V = [8, 6] [6, 4, 3, 2, 1]
+
+Sift down:
+      6
+     /
+  8  
+V = [6, 8] [6, 4, 3, 2, 1]
+
+      8
+V = [8] [6, 6, 4, 3, 2, 1]
+
+=> V = [8, 6, 6, 4, 3, 2, 1]
+
+```
 
 # Ejercicio 3
-
+```c
+```
 
 # Ejercicio 4
 Un árbol rojo/negro es similar a un ABB solo con la diferencia de un campo en sus nodos que determina si este es rojo o negro. Ese color se utiliza para seguir ciertas reglas de este TDA y conseguir un árbol balanceado. Las reglas son:
@@ -39,6 +125,7 @@ typedef struct nodo {
 	struct nodo *hijo_izquierdo;
 	struct nodo *hijo_derecho;
 	bool rojo;
+	void *elemento;
 } nodo_t;
 
 typedef struct arbol_rn {

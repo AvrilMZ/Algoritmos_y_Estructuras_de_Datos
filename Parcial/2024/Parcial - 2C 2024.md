@@ -216,7 +216,7 @@ int main()
 1- Verdadero, ya que se utiliza menos memoria por no apilar stackframes (solo se apila uno en vez de varios). 
 2- Falso, ya que en el peor de los casos recorre todo el problema. 
 3- Falso, ocupa mas espacio el hecho de que se necesitan dos variables del tipo puntero, pero el tipo en sí ocupa lo mismo.  
-4- Falso, se pueden hacer $`2^3`$ recorridos (combinaciones) con el nodo, su hijo derecho y su hijo izquierdo.
+4- Falso, se pueden hacer $`2^3`$ recorridos (combinaciones) con el nodo, su hijo derecho y su hijo izquierdo.  
 5- Falso, ya que existen algoritmos de ordenamiento estables con complejidad mayor a algunos inestables. Por ejemplo bubble sort $`(n^2)`$ y quicksort $`(n\cdot log(n))`$.  
 6- Falso, ya que depende del paso de los `for`.  
 
