@@ -296,7 +296,6 @@ void lista_destruir_todo(lista_t *lista, void (*destructor)(void *))
 	}
 	destruir_nodos(lista->primero, destructor);
 	free(lista);
-	lista = NULL;
 }
 
 // Reserva memoria para un 'lista_iterador_t' y devuelve su puntero.
@@ -353,5 +352,4 @@ void lista_iterador_destruir(lista_iterador_t *iterador)
 		return;
 	}
 	free(iterador);
-	iterador = NULL;
 }
