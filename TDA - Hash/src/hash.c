@@ -1,6 +1,8 @@
 #include "hash.h"
 #include "lista.h"
 
+const int CAPACIDAD_MINIMA = 3;
+
 typedef struct elemento_hash {
 	char *clave;
 	void *valor;
@@ -37,8 +39,8 @@ hash_t *hash_crear_con_funcion(size_t capacidad_inicial,
 {
 	if (!f) {
 		return NULL;
-	} else if (capacidad_inicial < 3) {
-		capacidad_inicial = 3;
+	} else if (capacidad_inicial < CAPACIDAD_MINIMA) {
+		capacidad_inicial = CAPACIDAD_MINIMA;
 	}
 
 	hash_t *hash = calloc(1, sizeof(hash_t));
