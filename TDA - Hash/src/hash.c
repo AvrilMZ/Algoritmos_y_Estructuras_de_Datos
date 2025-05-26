@@ -82,12 +82,26 @@ size_t hash_tamanio(hash_t *h)
 	return h->cantidad;
 }
 
+/**
+ * Función destructora para un dato tipo 'elemento_hash_t'.
+ */
+void destruir_elemento_hash(void *dato)
+{
+	if (!dato) {
+		return;
+	}
+	elemento_hash_t *elemento = (elemento_hash_t *)dato;
+	free(elemento->valor);
+	free(elemento->clave);
+	free(elemento);
+}
+
 void hash_destruir(hash_t *h)
 {
 	if (!h) {
 		return;
 	}
-	hash_destruir_todo(h, NULL);
+	hash_destruir_todo(h, destruir_elemento_hash);
 }
 
 void hash_destruir_todo(hash_t *h, void (*destructor)(void *))
