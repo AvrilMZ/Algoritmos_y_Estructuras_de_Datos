@@ -1,5 +1,6 @@
 #include "hash.h"
 #include "lista.h"
+#include <string.h>
 
 const float MAX_FACTOR_DE_CARGA = 0.75;
 const int CAPACIDAD_MINIMA = 3;
@@ -68,7 +69,7 @@ float factor_carga(size_t cantidad, size_t capacidad)
 }
 
 /**
- * Devuelve la posición indicada en la tabla hash.
+ * Devuelve la posición correspondiente en la tabla hash.
  */
 size_t obtener_posicion_hash(size_t clave, size_t capacidad)
 {
@@ -233,6 +234,29 @@ void *hash_sacar(hash_t *h, const char *clave)
 
 void *hash_buscar(hash_t *h, const char *clave)
 {
+	if (!h || !clave) {
+		return NULL;
+	}
+
+	size_t clave_hash = h->funcion_hash(clave);
+	size_t posicion = obtener_posicion_hash(clave_hash, h->capacidad);
+	lista_t *lista = h->indices[posicion];
+
+	elemento_hash_t *buscado = NULL;
+	bool encontrado = false;
+	for (size_t i = 0; i < lista_tamanio(lista) && !encontrado; i++) {
+		elemento_hash_t *elemento =
+			lista_obtener_elemento(lista, (int)i);
+		if (strcmp(elemento->clave, clave) == 0) {
+			buscado = elemento;
+			encontrado = true;
+		}
+	}
+
+	if (buscado) {
+		return buscado;
+	}
+	return NULL;
 }
 
 bool hash_existe(hash_t *h, const char *clave)
@@ -245,6 +269,10 @@ size_t hash_tamanio(hash_t *h)
 		return 0;
 	}
 	return h->cantidad;
+}
+
+size_t hash_iterar_claves(hash_t *h, bool (*f)(const char *, void *), void *ctx)
+{
 }
 
 void hash_destruir(hash_t *h)
@@ -267,8 +295,4 @@ void hash_destruir_todo(hash_t *h, void (*destructor)(void *))
 	}
 	free(h->indices);
 	free(h);
-}
-
-size_t hash_iterar_claves(hash_t *h, bool (*f)(const char *, void *), void *ctx)
-{
 }
