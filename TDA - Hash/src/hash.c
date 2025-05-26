@@ -1,6 +1,16 @@
 #include "hash.h"
+#include "lista.h"
 
-struct hash {};
+typedef struct elemento_hash {
+	char *clave;
+	void *valor;
+} elemento_hash_t;
+
+struct hash {
+	size_t capacidad;
+	size_t cantidad;
+	lista_t **indices;
+};
 
 hash_t *hash_crear(size_t capacidad_inicial)
 {
