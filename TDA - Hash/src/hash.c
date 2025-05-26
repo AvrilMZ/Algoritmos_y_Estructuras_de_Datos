@@ -82,10 +82,24 @@ size_t hash_tamanio(hash_t *h)
 
 void hash_destruir(hash_t *h)
 {
+	if (!h) {
+		return;
+	}
+	hash_destruir_todo(h, NULL);
 }
 
 void hash_destruir_todo(hash_t *h, void (*destructor)(void *))
 {
+	if (!h) {
+		return;
+	}
+	for (size_t i = 0; i < h->capacidad; i++) {
+		if (h->indices[i]) {
+			lista_destruir_todo(h->indices[i], destructor);
+		}
+	}
+	free(h->indices);
+	free(h);
 }
 
 size_t hash_iterar_claves(hash_t *h, bool (*f)(const char *, void *), void *ctx)
