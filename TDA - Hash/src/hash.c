@@ -169,6 +169,16 @@ bool rehash(hash_t *hash)
 }
 
 /**
+ * Devuelve true si la clave del elemento pasado es igual a 'clave_buscada', en caso contrario false.
+ */
+bool criterio_buscar_clave(void *elemento, void *clave_buscada)
+{
+	elemento_hash_t *elem = (elemento_hash_t *)elemento;
+	const char *clave = (const char *)clave_buscada;
+	return strcmp(elem->clave, clave) == 0;
+}
+
+/**
  * Función destructora para un dato tipo 'elemento_hash_t'.
  */
 void destruir_elemento_hash(void *dato)
@@ -188,26 +198,25 @@ bool hash_insertar(hash_t *h, const char *clave, void *valor, void **anterior)
 		return false;
 	}
 
-	if (factor_carga(h->cantidad, h->capacidad) >= MAX_FACTOR_DE_CARGA) {
+	if (factor_carga(hash_tamanio(h), h->capacidad) >=
+	    MAX_FACTOR_DE_CARGA) {
 		if (!rehash(h)) {
 			return false;
 		}
 	}
 
-	size_t posicion =
-		obtener_posicion_hash(h->funcion_hash(clave), h->capacidad);
-	lista_t *lista = h->indices[posicion];
-	for (size_t i = 0; i < lista_tamanio(lista); i++) {
-		elemento_hash_t *elemento =
-			(elemento_hash_t *)lista_obtener_elemento(lista,
-								  (int)i);
-		if (strcmp(elemento->clave, clave) == 0) {
-			if (anterior) {
-				*anterior = elemento->valor;
-			}
-			elemento->valor = valor;
-			return true;
+	size_t clave_hash = h->funcion_hash(clave);
+	size_t pos = obtener_posicion_hash(clave_hash, h->capacidad);
+	lista_t *lista = h->indices[pos];
+
+	elemento_hash_t *elem_existente =
+		lista_buscar(lista, criterio_buscar_clave, (void *)clave);
+	if (elem_existente) {
+		if (anterior) {
+			*anterior = elem_existente->valor;
 		}
+		elem_existente->valor = valor;
+		return true;
 	}
 
 	elemento_hash_t *nuevo = crear_elemento_hash(clave, valor);
@@ -241,22 +250,10 @@ void *hash_buscar(hash_t *h, const char *clave)
 	size_t clave_hash = h->funcion_hash(clave);
 	size_t posicion = obtener_posicion_hash(clave_hash, h->capacidad);
 	lista_t *lista = h->indices[posicion];
+	elemento_hash_t *buscado =
+		lista_buscar(lista, criterio_buscar_clave, (void *)clave);
 
-	elemento_hash_t *buscado = NULL;
-	bool encontrado = false;
-	for (size_t i = 0; i < lista_tamanio(lista) && !encontrado; i++) {
-		elemento_hash_t *elemento =
-			lista_obtener_elemento(lista, (int)i);
-		if (strcmp(elemento->clave, clave) == 0) {
-			buscado = elemento;
-			encontrado = true;
-		}
-	}
-
-	if (buscado) {
-		return buscado;
-	}
-	return NULL;
+	return buscado;
 }
 
 bool hash_existe(hash_t *h, const char *clave)
