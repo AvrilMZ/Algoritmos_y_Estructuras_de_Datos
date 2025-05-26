@@ -14,6 +14,20 @@ struct hash {
 
 hash_t *hash_crear(size_t capacidad_inicial)
 {
+	if (capacidad_inicial < 3) {
+		capacidad_inicial = 3;
+	}
+	hash_t *hash = calloc(1, sizeof(hash_t));
+	if (!hash) {
+		return NULL;
+	}
+	hash->capacidad = capacidad_inicial;
+	hash->indices = calloc(capacidad_inicial, sizeof(lista_t *));
+	if (!hash->indices) {
+		free(hash);
+		return NULL;
+	}
+	return hash;
 }
 
 hash_t *hash_crear_con_funcion(size_t capacidad_inicial,
