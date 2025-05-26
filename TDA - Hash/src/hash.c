@@ -10,6 +10,7 @@ struct hash {
 	size_t capacidad;
 	size_t cantidad;
 	lista_t **indices;
+	size_t (*funcion_hash)(const char *);
 };
 
 hash_t *hash_crear(size_t capacidad_inicial)
@@ -33,6 +34,23 @@ hash_t *hash_crear(size_t capacidad_inicial)
 hash_t *hash_crear_con_funcion(size_t capacidad_inicial,
 			       size_t (*f)(const char *))
 {
+	if (!f) {
+		return NULL;
+	} else if (capacidad_inicial < 3) {
+		capacidad_inicial = 3;
+	}
+	hash_t *hash = calloc(1, sizeof(hash_t));
+	if (!hash) {
+		return NULL;
+	}
+	hash->capacidad = capacidad_inicial;
+	hash->funcion_hash = f;
+	hash->indices = calloc(capacidad_inicial, sizeof(lista_t *));
+	if (!hash->indices) {
+		free(hash);
+		return NULL;
+	}
+	return hash;
 }
 
 bool hash_insertar(hash_t *h, const char *clave, void *valor, void **anterior)
