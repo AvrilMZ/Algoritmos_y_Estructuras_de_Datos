@@ -261,6 +261,7 @@ void *hash_buscar(hash_t *h, const char *clave)
 
 bool hash_existe(hash_t *h, const char *clave)
 {
+	return hash_buscar(h, clave) != NULL;
 }
 
 size_t hash_tamanio(hash_t *h)
