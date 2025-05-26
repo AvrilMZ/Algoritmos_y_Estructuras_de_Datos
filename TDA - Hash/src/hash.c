@@ -74,6 +74,10 @@ bool hash_existe(hash_t *h, const char *clave)
 
 size_t hash_tamanio(hash_t *h)
 {
+	if (!h) {
+		return 0;
+	}
+	return h->cantidad;
 }
 
 void hash_destruir(hash_t *h)
