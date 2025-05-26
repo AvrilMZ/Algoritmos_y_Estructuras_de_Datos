@@ -15,30 +15,10 @@ struct lista_iterador {
 	nodo_t *actual;
 };
 
-// Reserva memoria para un 'nodo_t' y devuelve su puntero.
-nodo_t *reservar_memoria_nodo()
-{
-	nodo_t *nodo = calloc(1, sizeof(nodo_t));
-	if (!nodo) {
-		return NULL;
-	}
-	return nodo;
-}
-
-// Reserva memoria para un 'lista_t' y devuelve su puntero.
-lista_t *reservar_memoria_lista()
-{
-	lista_t *lista = calloc(1, sizeof(lista_t));
-	if (!lista) {
-		return NULL;
-	}
-	return lista;
-}
-
 // Reserva memoria para un nodo y le asigna el dato pasado por parámetro.
 nodo_t *crear_nodo_con_dato(void *dato)
 {
-	nodo_t *nodo = reservar_memoria_nodo();
+	nodo_t *nodo = calloc(1, sizeof(nodo_t));
 	if (!nodo) {
 		return NULL;
 	}
@@ -76,7 +56,7 @@ nodo_t *nodo_en_posicion(lista_t *lista, int posicion)
 
 lista_t *lista_crear()
 {
-	lista_t *lista = reservar_memoria_lista();
+	lista_t *lista = calloc(1, sizeof(lista_t));
 	if (!lista) {
 		return NULL;
 	}
@@ -90,23 +70,29 @@ bool lista_insertar_en_posicion(lista_t *lista, int posicion, void *elemento)
 	}
 
 	nodo_t *nodo_nuevo = crear_nodo_con_dato(elemento);
+	if (!nodo_nuevo) {
+		return false;
+	}
+
 	if (posicion == 0) {
 		nodo_nuevo->nodo_siguiente = lista->primero;
 		lista->primero = nodo_nuevo;
 		if (lista->cantidad == 0) {
 			lista->ultimo = nodo_nuevo;
 		}
+	} else if (posicion == lista->cantidad) {
+		lista->ultimo->nodo_siguiente = nodo_nuevo;
+		lista->ultimo = nodo_nuevo;
+		nodo_nuevo->nodo_siguiente = NULL;
 	} else {
-		nodo_t *nodo_ant = lista->primero;
-		for (int i = 0; i < posicion - 1; i++) {
-			nodo_ant = nodo_ant->nodo_siguiente;
-		}
+		nodo_t *nodo_ant = nodo_en_posicion(lista, posicion - 1);
 		nodo_nuevo->nodo_siguiente = nodo_ant->nodo_siguiente;
 		nodo_ant->nodo_siguiente = nodo_nuevo;
 		if (nodo_nuevo->nodo_siguiente == NULL) {
 			lista->ultimo = nodo_nuevo;
 		}
 	}
+
 	lista->cantidad++;
 	return true;
 }
@@ -118,6 +104,10 @@ bool lista_insertar(lista_t *lista, void *elemento)
 	}
 
 	nodo_t *nodo_nuevo = crear_nodo_con_dato(elemento);
+	if (!nodo_nuevo) {
+		return false;
+	}
+
 	if (!lista->primero) {
 		lista->primero = nodo_nuevo;
 		lista->ultimo = nodo_nuevo;
@@ -125,6 +115,7 @@ bool lista_insertar(lista_t *lista, void *elemento)
 		lista->ultimo->nodo_siguiente = nodo_nuevo;
 		lista->ultimo = nodo_nuevo;
 	}
+
 	lista->cantidad++;
 	return true;
 }
@@ -175,6 +166,7 @@ void *lista_sacar_de_posicion(lista_t *lista, int posicion)
 		}
 		eliminar_nodo(nodo_ant, eliminar);
 	}
+
 	lista->cantidad--;
 	return dato;
 }
