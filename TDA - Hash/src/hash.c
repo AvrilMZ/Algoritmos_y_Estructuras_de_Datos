@@ -1,10 +1,11 @@
 #include "hash.h"
 #include "lista.h"
 
+const float MAX_FACTOR_DE_CARGA = 0.75;
 const int CAPACIDAD_MINIMA = 3;
 
 typedef struct elemento_hash {
-	char *clave;
+	const char *clave;
 	void *valor;
 } elemento_hash_t;
 
@@ -58,8 +59,172 @@ hash_t *hash_crear_con_funcion(size_t capacidad_inicial,
 	return hash;
 }
 
+/**
+ * Devuelve el factor de carga de la tabla hash.
+ */
+float factor_carga(size_t cantidad, size_t capacidad)
+{
+	return (float)cantidad / (float)capacidad;
+}
+
+/**
+ * Devuelve la posición indicada en la tabla hash.
+ */
+size_t obtener_posicion_hash(size_t clave, size_t capacidad)
+{
+	return clave % capacidad;
+}
+
+/**
+ * Crea un 'elemento_hash_t' con la clave y valor pasados.
+ */
+elemento_hash_t *crear_elemento_hash(const char *clave, void *valor)
+{
+	if (!clave) {
+		return NULL;
+	}
+
+	elemento_hash_t *elemento = calloc(1, sizeof(elemento_hash_t));
+	if (!elemento) {
+		return NULL;
+	}
+
+	char *clave_copia = calloc(strlen(clave) + 1, sizeof(char));
+	if (!clave_copia) {
+		free(elemento);
+		return NULL;
+	}
+	strcpy(clave_copia, clave);
+
+	elemento->clave = clave_copia;
+	elemento->valor = valor;
+
+	return elemento;
+}
+
+/**
+ * Crea y devuelve una lista, de la capacidad dada, de punteros a listas simplemente enlazadas.
+ * 
+ * Devuelve NULL en caso de error.
+ */
+lista_t **crear_indices(size_t capacidad)
+{
+	lista_t **indices = calloc(capacidad, sizeof(lista_t *));
+	if (!indices) {
+		return NULL;
+	}
+
+	for (size_t i = 0; i < capacidad; i++) {
+		indices[i] = lista_crear();
+		if (!indices[i]) {
+			for (size_t j = 0; j < i; j++) {
+				lista_destruir(indices[j]);
+			}
+			free(indices);
+			return NULL;
+		}
+	}
+
+	return indices;
+}
+
+/**
+ * Duplica la capacidad del hash dado y rehashea los elementos previamente guardados.
+ * 
+ * Devuelve true si se pudo hacer el rehash, en caso contrario false.
+ */
+bool rehash(hash_t *hash)
+{
+	if (!hash) {
+		return false;
+	}
+
+	size_t capacidad_nueva = hash->capacidad * 2;
+	lista_t **nuevos_indices = crear_indices(capacidad_nueva);
+	if (!nuevos_indices) {
+		return false;
+	}
+
+	for (size_t i = 0; i < hash->capacidad; i++) {
+		lista_t *lista_actual = hash->indices[i];
+		for (size_t j = 0; j < lista_tamanio(lista_actual); j++) {
+			elemento_hash_t *elemento =
+				(elemento_hash_t *)lista_obtener_elemento(
+					lista_actual, (int)j);
+			size_t clave_nueva =
+				hash->funcion_hash(elemento->clave);
+			size_t nueva_pos = obtener_posicion_hash(
+				clave_nueva, capacidad_nueva);
+			lista_insertar(nuevos_indices[nueva_pos], elemento);
+		}
+		lista_destruir(lista_actual);
+	}
+
+	free(hash->indices);
+	hash->indices = nuevos_indices;
+	hash->capacidad = capacidad_nueva;
+
+	return true;
+}
+
+/**
+ * Función destructora para un dato tipo 'elemento_hash_t'.
+ */
+void destruir_elemento_hash(void *dato)
+{
+	if (!dato) {
+		return;
+	}
+	elemento_hash_t *elemento = (elemento_hash_t *)dato;
+	free(elemento->valor);
+	free(elemento->clave);
+	free(elemento);
+}
+
 bool hash_insertar(hash_t *h, const char *clave, void *valor, void **anterior)
 {
+	if (!h || !clave) {
+		return false;
+	}
+
+	if (factor_carga(h->cantidad, h->capacidad) >= MAX_FACTOR_DE_CARGA) {
+		if (!rehash(h)) {
+			return false;
+		}
+	}
+
+	size_t posicion =
+		obtener_posicion_hash(h->funcion_hash(clave), h->capacidad);
+	lista_t *lista = h->indices[posicion];
+	for (size_t i = 0; i < lista_tamanio(lista); i++) {
+		elemento_hash_t *elemento =
+			(elemento_hash_t *)lista_obtener_elemento(lista,
+								  (int)i);
+		if (strcmp(elemento->clave, clave) == 0) {
+			if (anterior) {
+				*anterior = elemento->valor;
+			}
+			elemento->valor = valor;
+			return true;
+		}
+	}
+
+	elemento_hash_t *nuevo = crear_elemento_hash(clave, valor);
+	if (!nuevo) {
+		return false;
+	}
+
+	if (!lista_insertar(lista, nuevo)) {
+		destruir_elemento_hash(nuevo);
+		return false;
+	}
+
+	if (anterior) {
+		*anterior = NULL;
+	}
+
+	h->cantidad++;
+	return true;
 }
 
 void *hash_sacar(hash_t *h, const char *clave)
@@ -80,20 +245,6 @@ size_t hash_tamanio(hash_t *h)
 		return 0;
 	}
 	return h->cantidad;
-}
-
-/**
- * Función destructora para un dato tipo 'elemento_hash_t'.
- */
-void destruir_elemento_hash(void *dato)
-{
-	if (!dato) {
-		return;
-	}
-	elemento_hash_t *elemento = (elemento_hash_t *)dato;
-	free(elemento->valor);
-	free(elemento->clave);
-	free(elemento);
 }
 
 void hash_destruir(hash_t *h)
