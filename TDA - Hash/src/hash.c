@@ -13,22 +13,23 @@ struct hash {
 	size_t (*funcion_hash)(const char *);
 };
 
-hash_t *hash_crear(size_t capacidad_inicial)
+/**
+ * Algoritmo djb2 usado como función de hash por default.
+ */
+size_t hash_djb2(const char *clave)
 {
-	if (capacidad_inicial < 3) {
-		capacidad_inicial = 3;
-	}
-	hash_t *hash = calloc(1, sizeof(hash_t));
-	if (!hash) {
-		return NULL;
-	}
-	hash->capacidad = capacidad_inicial;
-	hash->indices = calloc(capacidad_inicial, sizeof(lista_t *));
-	if (!hash->indices) {
-		free(hash);
-		return NULL;
+	size_t hash = 5381;
+	while (*clave != '\0') {
+		unsigned char caracter = (unsigned char)(*clave);
+		hash = hash * 33 + caracter;
+		clave++;
 	}
 	return hash;
+}
+
+hash_t *hash_crear(size_t capacidad_inicial)
+{
+	return hash_crear_con_funcion(capacidad_inicial, hash_djb2);
 }
 
 hash_t *hash_crear_con_funcion(size_t capacidad_inicial,
@@ -39,6 +40,7 @@ hash_t *hash_crear_con_funcion(size_t capacidad_inicial,
 	} else if (capacidad_inicial < 3) {
 		capacidad_inicial = 3;
 	}
+
 	hash_t *hash = calloc(1, sizeof(hash_t));
 	if (!hash) {
 		return NULL;
@@ -50,6 +52,7 @@ hash_t *hash_crear_con_funcion(size_t capacidad_inicial,
 		free(hash);
 		return NULL;
 	}
+
 	return hash;
 }
 
