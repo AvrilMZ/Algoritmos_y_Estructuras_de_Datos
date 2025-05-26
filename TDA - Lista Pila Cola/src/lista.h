@@ -90,6 +90,13 @@ int lista_iterar(lista_t *lista, bool (*f)(void *, void *), void *contexto);
 void lista_destruir(lista_t *lista);
 
 /**
+ * Destruye la lista y libera toda la memoria asignada, aplicando la función destructor a cada elemento.
+ * 
+ * Si el destructor es NULL, no se aplica ninguna función a los elementos.
+ */
+void lista_destruir_todo(lista_t *lista, void (*destructor)(void *));
+
+/**
  * Crea un iterador para la lista.
  * 
  * Devuelve el iterador o NULL en caso de error.
