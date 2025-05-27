@@ -17,6 +17,11 @@ struct hash {
 	size_t (*funcion_hash)(const char *);
 };
 
+typedef struct parametros_iteracion {
+	bool (*funcion_original)(const char *, void *);
+	void *ctx_original;
+} parametros_iteracion_t;
+
 /**
  * Algoritmo djb2 usado como función de hash por default.
  */
@@ -188,7 +193,7 @@ void destruir_elemento_hash(void *dato)
 	}
 	elemento_hash_t *elemento = (elemento_hash_t *)dato;
 	free(elemento->valor);
-	free(elemento->clave);
+	free((void *)elemento->clave);
 	free(elemento);
 }
 
@@ -239,7 +244,7 @@ bool hash_insertar(hash_t *h, const char *clave, void *valor, void **anterior)
 
 void *hash_sacar(hash_t *h, const char *clave)
 {
-	if (!h || !clave) {
+	if (!h || !clave || hash_tamanio(h) == 0) {
 		return NULL;
 	}
 
@@ -272,7 +277,7 @@ void *hash_sacar(hash_t *h, const char *clave)
 
 void *hash_buscar(hash_t *h, const char *clave)
 {
-	if (!h || !clave) {
+	if (!h || !clave || hash_tamanio(h) == 0) {
 		return NULL;
 	}
 
@@ -307,12 +312,9 @@ size_t hash_tamanio(hash_t *h)
 bool iterar_clave(void *elemento, void *contexto)
 {
 	elemento_hash_t *elem = (elemento_hash_t *)elemento;
+	parametros_iteracion_t *params = (parametros_iteracion_t *)contexto;
 
-	void **params = (void **)contexto;
-	bool (*funcion_original)(const char *, void *) = params[0];
-	void *contexto_original = params[1];
-
-	return funcion_original(elem->clave, contexto_original);
+	return params->funcion_original(elem->clave, params->ctx_original);
 }
 
 size_t hash_iterar_claves(hash_t *h, bool (*f)(const char *, void *), void *ctx)
@@ -321,20 +323,20 @@ size_t hash_iterar_claves(hash_t *h, bool (*f)(const char *, void *), void *ctx)
 		return 0;
 	}
 
-	void *params[2] = { (void *)f, ctx };
+	parametros_iteracion_t params = { f, ctx };
 
 	int contador = 0;
 	bool parar = false;
 	for (size_t i = 0; i < hash_tamanio(h) && !parar; i++) {
 		int iteraciones =
-			lista_iterar(h->indices[i], iterar_clave, params);
+			lista_iterar(h->indices[i], iterar_clave, &params);
 		contador += iteraciones;
 		if (iteraciones != (int)lista_tamanio(h->indices[i])) {
 			parar = true;
 		}
 	}
 
-	return contador;
+	return (size_t)contador;
 }
 
 void hash_destruir(hash_t *h)
