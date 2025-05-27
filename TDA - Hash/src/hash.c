@@ -269,8 +269,43 @@ size_t hash_tamanio(hash_t *h)
 	return h->cantidad;
 }
 
+/**
+ * Función auxiliar para 'hash_iterar_claves' para adaptar un 'elemento_hash_t' y poder usarlo en 'lista_iterar'.
+ * Extrae la clave de un 'elemento_hash_t' y la pasa a la función de iteración dada a través de 'contexto'.
+ * 
+ * Devuelve el resultado de llamar a la función del usuario con la clave extraída.
+ */
+bool iterar_clave(void *elemento, void *contexto)
+{
+	elemento_hash_t *elem = (elemento_hash_t *)elemento;
+
+	void **params = (void **)contexto;
+	bool (*funcion_original)(const char *, void *) = params[0];
+	void *contexto_original = params[1];
+
+	return funcion_original(elem->clave, contexto_original);
+}
+
 size_t hash_iterar_claves(hash_t *h, bool (*f)(const char *, void *), void *ctx)
 {
+	if (!h || !f) {
+		return 0;
+	}
+
+	void *params[2] = { (void *)f, ctx };
+
+	int contador = 0;
+	bool parar = false;
+	for (size_t i = 0; i < hash_tamanio(h) && !parar; i++) {
+		int iteraciones =
+			lista_iterar(h->indices[i], iterar_clave, params);
+		contador += iteraciones;
+		if (iteraciones != (int)lista_tamanio(h->indices[i])) {
+			parar = true;
+		}
+	}
+
+	return contador;
 }
 
 void hash_destruir(hash_t *h)
