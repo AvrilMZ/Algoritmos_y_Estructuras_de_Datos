@@ -239,6 +239,35 @@ bool hash_insertar(hash_t *h, const char *clave, void *valor, void **anterior)
 
 void *hash_sacar(hash_t *h, const char *clave)
 {
+	if (!h || !clave) {
+		return NULL;
+	}
+
+	size_t clave_hash = h->funcion_hash(clave);
+	size_t posicion = obtener_posicion_hash(clave_hash, h->capacidad);
+	lista_t *lista = h->indices[posicion];
+
+	elemento_hash_t *a_eliminar =
+		lista_buscar(lista, criterio_buscar_clave, (void *)clave);
+	if (!a_eliminar) {
+		return NULL;
+	}
+
+	void *valor = a_eliminar->valor;
+	int posicion_eliminar = lista_buscar_posicion(lista, a_eliminar);
+	if (posicion_eliminar == -1) {
+		return NULL;
+	}
+
+	elemento_hash_t *eliminado =
+		lista_sacar_de_posicion(lista, posicion_eliminar);
+	if (eliminado) {
+		free((void *)eliminado->clave);
+		free(eliminado);
+		h->cantidad--;
+	}
+
+	return valor;
 }
 
 void *hash_buscar(hash_t *h, const char *clave)
@@ -253,7 +282,7 @@ void *hash_buscar(hash_t *h, const char *clave)
 	elemento_hash_t *buscado =
 		lista_buscar(lista, criterio_buscar_clave, (void *)clave);
 
-	return buscado;
+	return buscado->valor;
 }
 
 bool hash_existe(hash_t *h, const char *clave)
