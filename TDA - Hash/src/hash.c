@@ -226,6 +226,17 @@ size_t hash_iterar_claves(hash_t *h, bool (*f)(const char *, void *), void *ctx)
 	if (!h || !f) {
 		return 0;
 	}
+
+	size_t contador = 0;
+	bool seguir = true;
+	for (size_t i = 0; i < h->capacidad && seguir; i++) {
+		if (h->tabla[i].clave && !h->tabla[i].fue_eliminado) {
+			contador++;
+			seguir = f(h->tabla[i].clave, ctx);
+		}
+	}
+
+	return contador;
 }
 
 void hash_destruir(hash_t *h)
