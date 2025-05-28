@@ -1,26 +1,14 @@
 #include "hash.h"
-#include "lista.h"
 #include <string.h>
 
 const float MAX_FACTOR_DE_CARGA = 0.75;
 const int CAPACIDAD_MINIMA = 3;
 
-typedef struct elemento_hash {
-	const char *clave;
-	void *valor;
-} elemento_hash_t;
-
 struct hash {
 	size_t capacidad;
 	size_t cantidad;
-	lista_t **indices;
 	size_t (*funcion_hash)(const char *);
 };
-
-typedef struct parametros_iteracion {
-	bool (*funcion_original)(const char *, void *);
-	void *ctx_original;
-} parametros_iteracion_t;
 
 /**
  * Algoritmo djb2 usado como función de hash por default.
@@ -56,11 +44,6 @@ hash_t *hash_crear_con_funcion(size_t capacidad_inicial,
 	}
 	hash->capacidad = capacidad_inicial;
 	hash->funcion_hash = f;
-	hash->indices = calloc(capacidad_inicial, sizeof(lista_t *));
-	if (!hash->indices) {
-		free(hash);
-		return NULL;
-	}
 
 	return hash;
 }
@@ -82,59 +65,6 @@ size_t obtener_posicion_hash(size_t clave, size_t capacidad)
 }
 
 /**
- * Crea un 'elemento_hash_t' con la clave y valor pasados.
- */
-elemento_hash_t *crear_elemento_hash(const char *clave, void *valor)
-{
-	if (!clave) {
-		return NULL;
-	}
-
-	elemento_hash_t *elemento = calloc(1, sizeof(elemento_hash_t));
-	if (!elemento) {
-		return NULL;
-	}
-
-	char *clave_copia = calloc(strlen(clave) + 1, sizeof(char));
-	if (!clave_copia) {
-		free(elemento);
-		return NULL;
-	}
-	strcpy(clave_copia, clave);
-
-	elemento->clave = clave_copia;
-	elemento->valor = valor;
-
-	return elemento;
-}
-
-/**
- * Crea y devuelve una lista, de la capacidad dada, de punteros a listas simplemente enlazadas.
- * 
- * Devuelve NULL en caso de error.
- */
-lista_t **crear_indices(size_t capacidad)
-{
-	lista_t **indices = calloc(capacidad, sizeof(lista_t *));
-	if (!indices) {
-		return NULL;
-	}
-
-	for (size_t i = 0; i < capacidad; i++) {
-		indices[i] = lista_crear();
-		if (!indices[i]) {
-			for (size_t j = 0; j < i; j++) {
-				lista_destruir(indices[j]);
-			}
-			free(indices);
-			return NULL;
-		}
-	}
-
-	return indices;
-}
-
-/**
  * Duplica la capacidad del hash dado y rehashea los elementos previamente guardados.
  * 
  * Devuelve true si se pudo hacer el rehash, en caso contrario false.
@@ -144,57 +74,6 @@ bool rehash(hash_t *hash)
 	if (!hash) {
 		return false;
 	}
-
-	size_t capacidad_nueva = hash->capacidad * 2;
-	lista_t **nuevos_indices = crear_indices(capacidad_nueva);
-	if (!nuevos_indices) {
-		return false;
-	}
-
-	for (size_t i = 0; i < hash->capacidad; i++) {
-		lista_t *lista_actual = hash->indices[i];
-		for (size_t j = 0; j < lista_tamanio(lista_actual); j++) {
-			elemento_hash_t *elemento =
-				(elemento_hash_t *)lista_obtener_elemento(
-					lista_actual, (int)j);
-			size_t clave_nueva =
-				hash->funcion_hash(elemento->clave);
-			size_t nueva_pos = obtener_posicion_hash(
-				clave_nueva, capacidad_nueva);
-			lista_insertar(nuevos_indices[nueva_pos], elemento);
-		}
-		lista_destruir(lista_actual);
-	}
-
-	free(hash->indices);
-	hash->indices = nuevos_indices;
-	hash->capacidad = capacidad_nueva;
-
-	return true;
-}
-
-/**
- * Devuelve true si la clave del elemento pasado es igual a 'clave_buscada', en caso contrario false.
- */
-bool criterio_buscar_clave(void *elemento, void *clave_buscada)
-{
-	elemento_hash_t *elem = (elemento_hash_t *)elemento;
-	const char *clave = (const char *)clave_buscada;
-	return strcmp(elem->clave, clave) == 0;
-}
-
-/**
- * Función destructora para un dato tipo 'elemento_hash_t'.
- */
-void destruir_elemento_hash(void *dato)
-{
-	if (!dato) {
-		return;
-	}
-	elemento_hash_t *elemento = (elemento_hash_t *)dato;
-	free(elemento->valor);
-	free((void *)elemento->clave);
-	free(elemento);
 }
 
 bool hash_insertar(hash_t *h, const char *clave, void *valor, void **anterior)
@@ -209,37 +88,6 @@ bool hash_insertar(hash_t *h, const char *clave, void *valor, void **anterior)
 			return false;
 		}
 	}
-
-	size_t clave_hash = h->funcion_hash(clave);
-	size_t pos = obtener_posicion_hash(clave_hash, h->capacidad);
-	lista_t *lista = h->indices[pos];
-
-	elemento_hash_t *elem_existente =
-		lista_buscar(lista, criterio_buscar_clave, (void *)clave);
-	if (elem_existente) {
-		if (anterior) {
-			*anterior = elem_existente->valor;
-		}
-		elem_existente->valor = valor;
-		return true;
-	}
-
-	elemento_hash_t *nuevo = crear_elemento_hash(clave, valor);
-	if (!nuevo) {
-		return false;
-	}
-
-	if (!lista_insertar(lista, nuevo)) {
-		destruir_elemento_hash(nuevo);
-		return false;
-	}
-
-	if (anterior) {
-		*anterior = NULL;
-	}
-
-	h->cantidad++;
-	return true;
 }
 
 void *hash_sacar(hash_t *h, const char *clave)
@@ -247,32 +95,6 @@ void *hash_sacar(hash_t *h, const char *clave)
 	if (!h || !clave || hash_tamanio(h) == 0) {
 		return NULL;
 	}
-
-	size_t clave_hash = h->funcion_hash(clave);
-	size_t posicion = obtener_posicion_hash(clave_hash, h->capacidad);
-	lista_t *lista = h->indices[posicion];
-
-	elemento_hash_t *a_eliminar =
-		lista_buscar(lista, criterio_buscar_clave, (void *)clave);
-	if (!a_eliminar) {
-		return NULL;
-	}
-
-	void *valor = a_eliminar->valor;
-	int posicion_eliminar = lista_buscar_posicion(lista, a_eliminar);
-	if (posicion_eliminar == -1) {
-		return NULL;
-	}
-
-	elemento_hash_t *eliminado =
-		lista_sacar_de_posicion(lista, posicion_eliminar);
-	if (eliminado) {
-		free((void *)eliminado->clave);
-		free(eliminado);
-		h->cantidad--;
-	}
-
-	return valor;
 }
 
 void *hash_buscar(hash_t *h, const char *clave)
@@ -280,14 +102,6 @@ void *hash_buscar(hash_t *h, const char *clave)
 	if (!h || !clave || hash_tamanio(h) == 0) {
 		return NULL;
 	}
-
-	size_t clave_hash = h->funcion_hash(clave);
-	size_t posicion = obtener_posicion_hash(clave_hash, h->capacidad);
-	lista_t *lista = h->indices[posicion];
-	elemento_hash_t *buscado =
-		lista_buscar(lista, criterio_buscar_clave, (void *)clave);
-
-	return buscado->valor;
 }
 
 bool hash_existe(hash_t *h, const char *clave)
@@ -303,40 +117,11 @@ size_t hash_tamanio(hash_t *h)
 	return h->cantidad;
 }
 
-/**
- * Función auxiliar para 'hash_iterar_claves' para adaptar un 'elemento_hash_t' y poder usarlo en 'lista_iterar'.
- * Extrae la clave de un 'elemento_hash_t' y la pasa a la función de iteración dada a través de 'contexto'.
- * 
- * Devuelve el resultado de llamar a la función del usuario con la clave extraída.
- */
-bool iterar_clave(void *elemento, void *contexto)
-{
-	elemento_hash_t *elem = (elemento_hash_t *)elemento;
-	parametros_iteracion_t *params = (parametros_iteracion_t *)contexto;
-
-	return params->funcion_original(elem->clave, params->ctx_original);
-}
-
 size_t hash_iterar_claves(hash_t *h, bool (*f)(const char *, void *), void *ctx)
 {
 	if (!h || !f) {
 		return 0;
 	}
-
-	parametros_iteracion_t params = { f, ctx };
-
-	int contador = 0;
-	bool parar = false;
-	for (size_t i = 0; i < hash_tamanio(h) && !parar; i++) {
-		int iteraciones =
-			lista_iterar(h->indices[i], iterar_clave, &params);
-		contador += iteraciones;
-		if (iteraciones != (int)lista_tamanio(h->indices[i])) {
-			parar = true;
-		}
-	}
-
-	return (size_t)contador;
 }
 
 void hash_destruir(hash_t *h)
@@ -344,7 +129,7 @@ void hash_destruir(hash_t *h)
 	if (!h) {
 		return;
 	}
-	hash_destruir_todo(h, destruir_elemento_hash);
+	hash_destruir_todo(h, NULL);
 }
 
 void hash_destruir_todo(hash_t *h, void (*destructor)(void *))
@@ -353,10 +138,6 @@ void hash_destruir_todo(hash_t *h, void (*destructor)(void *))
 		return;
 	}
 	for (size_t i = 0; i < h->capacidad; i++) {
-		if (h->indices[i]) {
-			lista_destruir_todo(h->indices[i], destructor);
-		}
 	}
-	free(h->indices);
 	free(h);
 }
