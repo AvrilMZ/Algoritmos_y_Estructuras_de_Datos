@@ -151,6 +151,13 @@ void hash_destruir_todo(hash_t *h, void (*destructor)(void *))
 		return;
 	}
 	for (size_t i = 0; i < h->capacidad; i++) {
+		if (h->tabla[i].clave && !h->tabla[i].fue_eliminado) {
+			if (destructor) {
+				destructor(h->tabla[i].dato);
+			}
+			free(h->tabla[i].clave);
+		}
 	}
+	free(h->tabla);
 	free(h);
 }
