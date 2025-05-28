@@ -181,6 +181,35 @@ void *hash_sacar(hash_t *h, const char *clave)
 	if (!h || !clave || hash_tamanio(h) == 0) {
 		return NULL;
 	}
+
+	size_t hash_clave = h->funcion_hash(clave);
+	size_t posicion = obtener_posicion_hash(hash_clave, h->capacidad);
+
+	void *valor = NULL;
+	bool encontrado = false;
+	bool no_existe = false;
+	for (size_t i = 0; i < h->capacidad && !encontrado && !no_existe; i++) {
+		size_t pos_actual =
+			obtener_posicion_hash(posicion + i, h->capacidad);
+		elemento_tabla_t *elemento = &h->tabla[pos_actual];
+
+		if (elemento->clave) {
+			if (!elemento->fue_eliminado &&
+			    strcmp(elemento->clave, clave) == 0) {
+				valor = elemento->dato;
+				free(elemento->clave);
+				elemento->clave = NULL;
+				elemento->dato = NULL;
+				elemento->fue_eliminado = true;
+				h->cantidad--;
+				encontrado = true;
+			}
+		} else if (!elemento->fue_eliminado) {
+			no_existe = true;
+		}
+	}
+
+	return valor;
 }
 
 void *hash_buscar(hash_t *h, const char *clave)
