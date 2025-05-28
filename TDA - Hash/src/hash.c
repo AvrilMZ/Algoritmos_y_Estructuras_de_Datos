@@ -130,35 +130,52 @@ char *copiar_clave(const char *clave)
 	return strcpy(copia, clave);
 }
 
-bool hash_insertar(hash_t *h, const char *clave, void *valor, void **anterior)
+/**
+ * Busca una posición en la tabla hash existente o libre, según se pase.
+ * 
+ * Devuelve la capacidad del hash + 1 si no encuentra.
+ */
+size_t buscar_posicion(hash_t *h, const char *clave, bool buscar_existente)
 {
-	if (!h || !clave) {
-		return false;
-	}
+	size_t hash_clave = h->funcion_hash(clave);
+	size_t posicion = obtener_posicion_hash(hash_clave, h->capacidad);
 
-	if (factor_carga(hash_tamanio(h), h->capacidad) >=
-	    MAX_FACTOR_DE_CARGA) {
-		if (!rehash(h)) {
-			return false;
+	size_t posicion_encontrada = h->capacidad + 1;
+	bool encontrado = false;
+	bool no_existe = false;
+
+	for (size_t i = 0; i < h->capacidad && !encontrado && !no_existe; i++) {
+		size_t posicion_actual =
+			obtener_posicion_hash(posicion + i, h->capacidad);
+		elemento_tabla_t *elemento = &h->tabla[posicion_actual];
+
+		if (buscar_existente) {
+			if (elemento->clave && !elemento->fue_eliminado &&
+			    strcmp(elemento->clave, clave) == 0) {
+				posicion_encontrada = posicion_actual;
+				encontrado = true;
+			}
+		} else {
+			if (!elemento->clave) {
+				posicion_encontrada = posicion_actual;
+				encontrado = true;
+			}
+		}
+
+		if (!elemento->clave && !elemento->fue_eliminado) {
+			no_existe = true;
 		}
 	}
 
-	size_t clave_hash = h->funcion_hash(clave);
-	size_t posicion = obtener_posicion_hash(clave_hash, h->capacidad);
+	return posicion_encontrada;
+}
 
-	while (h->tabla[posicion].clave &&
-	       strcmp(h->tabla[posicion].clave, clave) != 0) {
-		posicion = obtener_posicion_hash(posicion + 1, h->capacidad);
-	}
-
-	if (h->tabla[posicion].clave) {
-		if (anterior) {
-			*anterior = h->tabla[posicion].dato;
-		}
-		h->tabla[posicion].dato = valor;
-		return true;
-	}
-
+/**
+ * Devulve true si se pudo insertar la clave dada en la posición especificada, en caso contrario devuelve false.
+ */
+bool insertar_nueva_clave(hash_t *h, size_t posicion, const char *clave,
+			  void *valor, void **anterior)
+{
 	char *clave_copia = copiar_clave(clave);
 	if (!clave_copia) {
 		return false;
@@ -176,38 +193,53 @@ bool hash_insertar(hash_t *h, const char *clave, void *valor, void **anterior)
 	return true;
 }
 
+bool hash_insertar(hash_t *h, const char *clave, void *valor, void **anterior)
+{
+	if (!h || !clave) {
+		return false;
+	}
+
+	if (factor_carga(hash_tamanio(h), h->capacidad) >=
+	    MAX_FACTOR_DE_CARGA) {
+		if (!rehash(h)) {
+			return false;
+		}
+	}
+
+	size_t posicion_clave_existente = buscar_posicion(h, clave, true);
+	if (posicion_clave_existente != h->capacidad + 1) {
+		if (anterior) {
+			*anterior = h->tabla[posicion_clave_existente].dato;
+		}
+		h->tabla[posicion_clave_existente].dato = valor;
+		return true;
+	}
+
+	size_t posicion_libre = buscar_posicion(h, clave, false);
+	if (posicion_libre == h->capacidad + 1) {
+		return false;
+	}
+
+	return insertar_nueva_clave(h, posicion_libre, clave, valor, anterior);
+}
+
 void *hash_sacar(hash_t *h, const char *clave)
 {
 	if (!h || !clave || hash_tamanio(h) == 0) {
 		return NULL;
 	}
 
-	size_t hash_clave = h->funcion_hash(clave);
-	size_t posicion = obtener_posicion_hash(hash_clave, h->capacidad);
-
-	void *valor = NULL;
-	bool encontrado = false;
-	bool no_existe = false;
-	for (size_t i = 0; i < h->capacidad && !encontrado && !no_existe; i++) {
-		size_t pos_actual =
-			obtener_posicion_hash(posicion + i, h->capacidad);
-		elemento_tabla_t *elemento = &h->tabla[pos_actual];
-
-		if (elemento->clave) {
-			if (!elemento->fue_eliminado &&
-			    strcmp(elemento->clave, clave) == 0) {
-				valor = elemento->dato;
-				free(elemento->clave);
-				elemento->clave = NULL;
-				elemento->dato = NULL;
-				elemento->fue_eliminado = true;
-				h->cantidad--;
-				encontrado = true;
-			}
-		} else if (!elemento->fue_eliminado) {
-			no_existe = true;
-		}
+	size_t posicion = buscar_posicion(h, clave, true);
+	if (posicion == h->capacidad + 1) {
+		return NULL;
 	}
+
+	void *valor = h->tabla[posicion].dato;
+	free(h->tabla[posicion].clave);
+	h->tabla[posicion].clave = NULL;
+	h->tabla[posicion].dato = NULL;
+	h->tabla[posicion].fue_eliminado = true;
+	h->cantidad--;
 
 	return valor;
 }
@@ -218,28 +250,20 @@ void *hash_buscar(hash_t *h, const char *clave)
 		return NULL;
 	}
 
-	size_t hash_clave = h->funcion_hash(clave);
-	size_t posicion = obtener_posicion_hash(hash_clave, h->capacidad);
-
-	void *buscado = NULL;
-	bool encontrado = false;
-	for (size_t i = 0; i < h->capacidad && !encontrado; i++) {
-		size_t actual =
-			obtener_posicion_hash(posicion + i, h->capacidad);
-
-		if (h->tabla[actual].clave && !h->tabla[actual].fue_eliminado &&
-		    strcmp(h->tabla[actual].clave, clave) == 0) {
-			buscado = h->tabla[actual].dato;
-			encontrado = true;
-		}
+	size_t posicion = buscar_posicion(h, clave, true);
+	if (posicion == h->capacidad + 1) {
+		return NULL;
 	}
 
-	return buscado;
+	return h->tabla[posicion].dato;
 }
 
 bool hash_existe(hash_t *h, const char *clave)
 {
-	return hash_buscar(h, clave) != NULL;
+	if (!h || !clave || hash_tamanio(h) == 0) {
+		return false;
+	}
+	return buscar_posicion(h, clave, true) != h->capacidad + 1;
 }
 
 size_t hash_tamanio(hash_t *h)
@@ -282,8 +306,8 @@ void hash_destruir_todo(hash_t *h, void (*destructor)(void *))
 		return;
 	}
 	for (size_t i = 0; i < h->capacidad; i++) {
-		if (h->tabla[i].clave && !h->tabla[i].fue_eliminado) {
-			if (destructor) {
+		if (h->tabla[i].clave) {
+			if (!h->tabla[i].fue_eliminado && destructor) {
 				destructor(h->tabla[i].dato);
 			}
 			free(h->tabla[i].clave);
