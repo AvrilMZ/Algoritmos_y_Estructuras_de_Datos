@@ -144,6 +144,24 @@ void *hash_buscar(hash_t *h, const char *clave)
 	if (!h || !clave || hash_tamanio(h) == 0) {
 		return NULL;
 	}
+
+	size_t hash_clave = h->funcion_hash(clave);
+	size_t posicion = obtener_posicion_hash(hash_clave, h->capacidad);
+
+	void *buscado = NULL;
+	bool encontrado = false;
+	for (size_t i = 0; i < h->capacidad && !encontrado; i++) {
+		size_t actual =
+			obtener_posicion_hash(posicion + i, h->capacidad);
+
+		if (h->tabla[actual].clave && !h->tabla[actual].fue_eliminado &&
+		    strcmp(h->tabla[actual].clave, clave) == 0) {
+			buscado = h->tabla[actual].dato;
+			encontrado = true;
+		}
+	}
+
+	return buscado;
 }
 
 bool hash_existe(hash_t *h, const char *clave)
