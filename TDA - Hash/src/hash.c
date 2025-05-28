@@ -4,9 +4,16 @@
 const float MAX_FACTOR_DE_CARGA = 0.75;
 const int CAPACIDAD_MINIMA = 3;
 
+typedef struct elemento_tabla {
+	char *clave;
+	void *dato;
+	bool fue_eliminado;
+} elemento_tabla_t;
+
 struct hash {
 	size_t capacidad;
 	size_t cantidad;
+	elemento_tabla_t *tabla;
 	size_t (*funcion_hash)(const char *);
 };
 
@@ -44,6 +51,12 @@ hash_t *hash_crear_con_funcion(size_t capacidad_inicial,
 	}
 	hash->capacidad = capacidad_inicial;
 	hash->funcion_hash = f;
+
+	hash->tabla = calloc(capacidad_inicial, sizeof(elemento_tabla_t));
+	if (!hash->tabla) {
+		free(hash);
+		return NULL;
+	}
 
 	return hash;
 }
