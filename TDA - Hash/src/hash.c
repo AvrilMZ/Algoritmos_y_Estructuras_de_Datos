@@ -118,6 +118,18 @@ bool rehash(hash_t *hash)
 	return true;
 }
 
+/**
+ * Se crea y devuelve una copia de la clave dada, en caso de error se retorna NULL.
+ */
+char *copiar_clave(const char *clave)
+{
+	char *copia = calloc(strlen(clave) + 1, sizeof(char));
+	if (!copia) {
+		return NULL;
+	}
+	return strcpy(copia, clave);
+}
+
 bool hash_insertar(hash_t *h, const char *clave, void *valor, void **anterior)
 {
 	if (!h || !clave) {
@@ -130,6 +142,38 @@ bool hash_insertar(hash_t *h, const char *clave, void *valor, void **anterior)
 			return false;
 		}
 	}
+
+	size_t clave_hash = h->funcion_hash(clave);
+	size_t posicion = obtener_posicion_hash(clave_hash, h->capacidad);
+
+	while (h->tabla[posicion].clave &&
+	       strcmp(h->tabla[posicion].clave, clave) != 0) {
+		posicion = obtener_posicion_hash(posicion + 1, h->capacidad);
+	}
+
+	if (h->tabla[posicion].clave) {
+		if (anterior) {
+			*anterior = h->tabla[posicion].dato;
+		}
+		h->tabla[posicion].dato = valor;
+		return true;
+	}
+
+	char *clave_copia = copiar_clave(clave);
+	if (!clave_copia) {
+		return false;
+	}
+
+	h->tabla[posicion].clave = clave_copia;
+	h->tabla[posicion].dato = valor;
+	h->tabla[posicion].fue_eliminado = false;
+	h->cantidad++;
+
+	if (anterior) {
+		*anterior = NULL;
+	}
+
+	return true;
 }
 
 void *hash_sacar(hash_t *h, const char *clave)
