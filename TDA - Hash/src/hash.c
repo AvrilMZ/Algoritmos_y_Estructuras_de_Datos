@@ -87,6 +87,35 @@ bool rehash(hash_t *hash)
 	if (!hash) {
 		return false;
 	}
+
+	size_t nueva_capacidad = hash->capacidad * 2;
+	elemento_tabla_t *nueva_tabla =
+		calloc(nueva_capacidad, sizeof(elemento_tabla_t));
+	if (!nueva_tabla) {
+		return false;
+	}
+
+	for (size_t i = 0; i < hash->capacidad; i++) {
+		if (hash->tabla[i].clave && !hash->tabla[i].fue_eliminado) {
+			size_t clave_hash =
+				hash->funcion_hash(hash->tabla[i].clave);
+			size_t posicion_nueva = obtener_posicion_hash(
+				clave_hash, nueva_capacidad);
+
+			while (nueva_tabla[posicion_nueva].clave) {
+				posicion_nueva = obtener_posicion_hash(
+					posicion_nueva + 1, nueva_capacidad);
+			}
+
+			nueva_tabla[posicion_nueva] = hash->tabla[i];
+			nueva_tabla[posicion_nueva].fue_eliminado = false;
+		}
+	}
+	free(hash->tabla);
+
+	hash->tabla = nueva_tabla;
+	hash->capacidad = nueva_capacidad;
+	return true;
 }
 
 bool hash_insertar(hash_t *h, const char *clave, void *valor, void **anterior)
