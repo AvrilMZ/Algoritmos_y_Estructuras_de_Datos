@@ -25,7 +25,7 @@ size_t hash_djb2(const char *clave)
 	size_t hash = 5381;
 	while (*clave != '\0') {
 		unsigned char caracter = (unsigned char)(*clave);
-		hash = hash * 33 + caracter;
+		hash = (hash * 33) + caracter;
 		clave++;
 	}
 	return hash;
