@@ -27,9 +27,9 @@ make valgrind-alumno
 ## Funcionamiento
 <div style="text-align: justify">
 
-El programa implementa una **tabla de hash** que permite almacenar pares clave-valor, donde las claves son strings únicos utilizados para acceder a los valores asociados. La tabla de hash usa una función de hash para mapear estas claves a índices dentro de un arreglo, lo que permite un acceso rápido.
+El programa implementa una **tabla de hash** que permite almacenar pares clave-valor, donde las claves son strings únicos utilizados para acceder a los valores asociados. La tabla de hash usa una función para mapear estas claves a índices dentro de un arreglo, permitiendo un acceso rápido.
 
-Una **función de hash** es una función que toma una clave como entrada y devuelve un número entero, que representa un índice dentro del arreglo. La función de hash debe ser determinística, eficiente, poder distribuir uniformemente las claves posibles y minimizar la cantidad de colisiones.
+Una **función de hash** es una función que toma una clave como entrada y devuelve un número entero, que representa un índice dentro del arreglo. La función de hash debe ser determinística, eficiente, poder distribuir uniformemente las claves y minimizar la cantidad de colisiones.
 
 En caso de colisiones, se pueden usar dos métodos de resolución:
 - [**Encadenamiento (hash abierto)**](#imagen1): se almacenan múltiples elementos en una misma posición de la tabla usando una lista enlazada, árbol binario u otra estructura de datos dinámica. Esto permite manejar colisiones sin necesidad de encontrar una nueva posición en el arreglo o usar una flag para indicar si una posición fue eliminada.  
@@ -48,10 +48,10 @@ Este método depende de tener espacio libre en la tabla. Por eso, cuando se supe
 <div>
 
 En este trabajo se implementó una tabla de hash con direccionamiento abierto, utilizando los siguientes campos:
-- `capacidad`: Cantidad de posiciones que tiene la tabla.
-- `cantidad`: Cantidad de elementos que tiene la tabla.
-- `tabla`: Arreglo de elementos de tipo `par_t`, que contiene la clave, el valor y un booleano que indica si la posición fue eliminada.
-- `funcion_hash`: Función de hash que se utiliza para mapear las claves a índices en la tabla.
+- `capacidad`: cantidad de posiciones que tiene la tabla.
+- `cantidad`: cantidad de elementos que tiene la tabla.
+- `tabla`: arreglo de elementos de tipo `par_t`, que contiene la clave, el valor y un booleano que indica si la posición fue eliminada.
+- `funcion_hash`: función de hash que se utiliza para mapear las claves a índices en la tabla.
 
 </div>
 
@@ -64,28 +64,28 @@ En este trabajo se implementó una tabla de hash con direccionamiento abierto, u
 <div>
 
 Se implementaron las siguientes primitivas:
-- `hash_crear()`: Crea una tabla de hash con una capacidad dada, en caso de ser menor a la capacidad mínima se ajusta a esta. Se utiliza la función de hash [DJB2](#imagen3) para mapear las claves a índices en la tabla.
+- `hash_crear()`: Crea una tabla de hash con una capacidad dada, en caso de ser menor a la capacidad mínima se ajusta a esta. Se utiliza la función de hash [DJB2](#imagen3) cuya complejidad es $O(m)$, siendo $m$ la cantidad de carácteres de la clave.
 	- Complejidad: $O(1)$ en tiempo y $`O(1)`$ en espacio.
-- `hash_crear_con_funcion()`: Crea una tabla de hash con una capacidad dada, en caso de ser menor a la capacidad mínima se ajusta a esta, además permite especificar una función de hash personalizada, en caso de no especificarse se utiliza la función de hash DJB2.
+- `hash_crear_con_funcion()`: Crea una tabla de hash con una capacidad dada, en caso de ser menor a la capacidad mínima se ajusta a esta, además permite especificar una función de hash personalizada, en caso de no especificarse se utiliza DJB2.
 	- Complejidad: $O(1)$ en tiempo y $`O(1)`$ en espacio.
 - [`hash_insertar()`](#imagen4): Devuelve true si se insertó un par clave-valor en la tabla de hash. Si la clave ya existe, se actualiza el valor y en caso de pasarle un puntero al valor anterior se actualiza. Si la tabla supera el factor de carga máximo, se rehasha la tabla.
-	- Complejidad: En promedio, el tiempo es $O(1)$, pero si el factor de carga es muy alto o la función hash es ineficiente y genera muchas colisiones, puede resultar en $O(n)$, siendo $n$ la cantidad de elementos en la tabla. La complejidad en espacio es $O(1)$.
+	- Complejidad: En promedio, el tiempo es $O(1)$, pero si el factor de carga es muy alto o la función de hash es ineficiente y genera muchas colisiones, puede resultar en $O(n)$, siendo $n$ la cantidad de elementos en la tabla. La complejidad en espacio es $O(1)$.
 	- `rehash()`: Redimensiona la tabla de hash al doble de su capacidad actual, reubicando todos los elementos previos en la nueva posición dada por la función de hash.
 		- Complejidad: $O(n)$ en tiempo, siendo $n$ la cantidad de elementos en la tabla anterior, y $O(1)$ en espacio.
 - [`hash_sacar()`](#imagen5): Elimina y devuelve un elemento de la tabla de hash dado su clave. Si la clave no existe, devuelve NULL.
-	- Complejidad: En promedio, el tiempo es $O(1)$, pero si la función hash es ineficiente y genera muchas colisiones, puede resultar en $O(n)$, siendo $n$ la cantidad de elementos en la tabla. Si bien se utiliza una flag para determinar si un elemento fue eliminado o no, evitando así la reubicación de los elementos siguientes, la búsqueda de la clave sigue siendo secuencial debido al probing lineal. La complejidad en espacio es $O(1)$.
+	- Complejidad: En promedio, el tiempo es $O(1)$, pero si la función de hash es ineficiente y genera muchas colisiones, puede resultar en $O(n)$, siendo $n$ la cantidad de elementos en la tabla. Si bien se utiliza una flag para determinar si un elemento fue eliminado o no, evitando así la reubicación de los elementos siguientes, la búsqueda de la clave sigue siendo secuencial debido al probing lineal. La complejidad en espacio es $O(1)$.
 - `hash_buscar()`: Busca y devuelve el valor asociado a una clave en la tabla de hash. Si la clave no existe, devuelve NULL.
-	- Complejidad: En promedio, el tiempo es $O(1)$, pero si el factor de carga es muy alto o la función hash es ineficiente y genera muchas colisiones, puede resultar en $O(n)$, siendo $n$ la cantidad de elementos en la tabla. La complejidad en espacio es $O(1)$.
+	- Complejidad: En promedio, el tiempo es $O(1)$, pero si el factor de carga es muy alto o la función de hash es ineficiente y genera muchas colisiones, puede resultar en $O(n)$, siendo $n$ la cantidad de elementos en la tabla. La complejidad en espacio es $O(1)$.
 - `hash_existe()`: Devuelve true si la clave existe en la tabla de hash, false en caso contrario.
-	- Complejidad: En promedio, el tiempo es $O(1)$, pero si el factor de carga es muy alto o la función hash es ineficiente y genera muchas colisiones, puede resultar en $O(n)$, siendo $n$ la cantidad de elementos en la tabla. La complejidad en espacio es $O(1)$.
+	- Complejidad: En promedio, el tiempo es $O(1)$, pero si el factor de carga es muy alto o la función de hash es ineficiente y genera muchas colisiones, puede resultar en $O(n)$, siendo $n$ la cantidad de elementos en la tabla. La complejidad en espacio es $O(1)$.
 - `hash_tamanio()`: Devuelve la cantidad de elementos en la tabla de hash.
 	- Complejidad: $O(1)$ en tiempo y $`O(1)`$ en espacio.
 - `hash_iterar_claves()`: Itera sobre las claves de la tabla de hash y aplica una función a cada clave. Devuelve la cantidad de claves iteradas.
 	- Complejidad: $O(n)$ en tiempo, siendo $n$ la cantidad de elementos en la tabla, y $O(1)$ en espacio.
-- `hash_destruir()`: Libera la memoria utilizada por la tabla de hash y sus elementos sin tocar los valores.
-	- Complejidad: $O(n)$ en tiempo, siendo $n$ la cantidad de elementos en la tabla, y $O(1)$ en espacio.
+- `hash_destruir()`: Libera la memoria utilizada por la tabla de hash y sus claves, sin liberar los valores asociados.
+	- Complejidad: $O(n)$ en tiempo, siendo $n$ la capacidad de la tabla, y $O(1)$ en espacio.
 - `hash_destruir_todo()`: Libera la memoria utilizada por la tabla de hash y sus elementos. Si se pasa un puntero a una función de destrucción, se aplica a cada valor antes de liberar la memoria.
-	- Complejidad: $O(n)$ en tiempo, siendo $n$ la cantidad de elementos en la tabla, y $O(1)$ en espacio.
+	- Complejidad: $O(n)$ en tiempo, siendo $n$ la capacidad de la tabla, y $O(1)$ en espacio.
 
 </div>
 
@@ -119,10 +119,10 @@ Un **diccionario** es una estructura de datos que permite almacenar pares clave-
 #### Ventajas y desventajas
 - Tabla de hash: 
 	- Ventajas: Acceso rápido a los valores, en promedio $O(1)$.
-	- Desventajas: Puede requerir un mayor tamaño de tabla para evitar demasiadas colisiones, la función de hash debe ser bien diseñada para que la complejidad no resulte en $O(n)$.
+	- Desventajas: Puede requerir un mayor tamaño de tabla para evitar demasiadas colisiones y la función de hash debe ser bien diseñada para que la complejidad no resulte en $O(n)$.
 - Árbol binario de búsqueda:
 	- Ventajas: Permite búsquedas eficientes en tiempo $O(log(n))$.
-	- Desventajas: En promedio es menos eficiente que una tabla de hash en tiempo y requiere estar balanceado para mantener la eficiencia y no resultar en $O(n)$, además de que en caso de estar implementado recursivamente puede generar un stack overflow si el árbol es muy grande.
+	- Desventajas: En promedio es menos eficiente en tiempo que una tabla de hash y requiere estar balanceado para mantener la eficiencia y no resultar en $O(n)$, además de que en caso de estar implementado recursivamente puede generar un stack overflow si el árbol es muy grande.
 - Lista enlazada: 
 	- Ventajas: Implementación simple.
 	- Desventajas: Búsquedas menos eficientes en tiempo, $O(n)$.
