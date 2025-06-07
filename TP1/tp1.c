@@ -119,9 +119,7 @@ void mostrar_pokemon(const struct pokemon *pokemon)
 // Imprime los datos del pokemon pasado por parámetro.
 bool imprimir_pokemon(struct pokemon *pokemon, void *ctx)
 {
-	printf("%-12s (%3d) \t F%-3d D%-3d I%-3d \t %s\n", pokemon->nombre,
-	       pokemon->id, pokemon->fuerza, pokemon->destreza,
-	       pokemon->inteligencia, tipo_a_cadena(pokemon->tipo));
+	mostrar_pokemon(pokemon);
 	return true;
 }
 
@@ -157,10 +155,90 @@ bool mostrar_pokemon_tipo(struct pokemon *pokemon, void *ctx)
 	return true;
 }
 
+// Maneja los comandos de búsqueda
+void manejar_busqueda(pokedex_t *pokedex, int argc, char const *argv[])
+{
+	if (argc < 5) {
+		printf("%sError: Faltan argumentos para buscar%s\n", ROJO,
+		       NORMAL);
+		return;
+	}
+
+	if (son_iguales_en_lowercase(argv[3], "id")) {
+		int id = atoi(argv[4]);
+		printf("%sPokemon buscado:%s\n", AMARILLO, NORMAL);
+		pokedex_iterar_pokemones(pokedex, ITERAR_ID,
+					 mostrar_pokemon_con_id, &id);
+	} else if (son_iguales_en_lowercase(argv[3], "nombre")) {
+		char *nombre = (char *)argv[4];
+		printf("%sPokemon buscado:%s\n", AMARILLO, NORMAL);
+		pokedex_iterar_pokemones(pokedex, ITERAR_NOMBRE,
+					 mostrar_pokemon_con_nombre, nombre);
+	} else if (son_iguales_en_lowercase(argv[3], "tipo")) {
+		tipo_pokemon tipo = obtener_tipo_pokemon(argv[4]);
+		if (tipo == TIPO_INVALIDO) {
+			printf("%sEl tipo '%s' es inválido%s\n", ROJO, argv[4],
+			       NORMAL);
+		} else {
+			printf("%sPokemones de tipo %s:%s\n", AMARILLO, argv[4],
+			       NORMAL);
+			pokedex_iterar_pokemones(pokedex, ITERAR_ID,
+						 mostrar_pokemon_tipo, &tipo);
+		}
+	} else {
+		printf("%sOpción de búsqueda inválida. Use: id, nombre o tipo%s\n",
+		       ROJO, NORMAL);
+	}
+}
+
+// Maneja los comandos de mostrar
+void manejar_mostrar(pokedex_t *pokedex, int argc, char const *argv[])
+{
+	if (argc < 4) {
+		printf("%sError: Faltan argumentos para mostrar%s\n", ROJO,
+		       NORMAL);
+		return;
+	}
+
+	if (son_iguales_en_lowercase(argv[3], "nombre")) {
+		printf("%sPokemones ordenados por nombre:%s\n", AMARILLO,
+		       NORMAL);
+		pokedex_iterar_pokemones(pokedex, ITERAR_NOMBRE,
+					 imprimir_pokemon, NULL);
+	} else if (son_iguales_en_lowercase(argv[3], "id")) {
+		printf("%sPokemones ordenados por ID:%s\n", AMARILLO, NORMAL);
+		pokedex_iterar_pokemones(pokedex, ITERAR_ID, imprimir_pokemon,
+					 NULL);
+	} else {
+		printf("%sOpción de mostrar inválida. Use: nombre o id%s\n",
+		       ROJO, NORMAL);
+	}
+}
+
+// Procesa los argumentos de línea de comandos
+void procesar_comandos(pokedex_t *pokedex, int argc, char const *argv[])
+{
+	if (son_iguales_en_lowercase(argv[2], "buscar")) {
+		manejar_busqueda(pokedex, argc, argv);
+	} else if (son_iguales_en_lowercase(argv[2], "mostrar")) {
+		manejar_mostrar(pokedex, argc, argv);
+	} else {
+		printf("%sComando inválido. Use: buscar o mostrar%s\n", ROJO,
+		       NORMAL);
+	}
+}
+
 int main(int argc, char const *argv[])
 {
 	if (argc < 2) {
-		printf("Uso: %s <archivo_pokedex.csv>\n", argv[0]);
+		printf("Uso: %s <archivo_pokedex.csv> [comando] [opciones]\n",
+		       argv[0]);
+		printf("Comandos disponibles:\n");
+		printf("\tbuscar id <id>\n");
+		printf("\tbuscar nombre <nombre>\n");
+		printf("\tbuscar tipo <tipo>\n");
+		printf("\tmostrar nombre\n");
+		printf("\tmostrar id\n");
 		return 1;
 	}
 
@@ -171,51 +249,7 @@ int main(int argc, char const *argv[])
 	}
 
 	if (argc > 2) {
-		if (son_iguales_en_lowercase(argv[2], "buscar")) {
-			if (son_iguales_en_lowercase(argv[3], "id")) {
-				int id = atoi(argv[4]);
-				printf("%sPokemon buscado:%s\n", AMARILLO,
-				       NORMAL);
-				pokedex_iterar_pokemones(pokedex, ITERAR_ID,
-							 mostrar_pokemon_con_id,
-							 &id);
-			} else if (son_iguales_en_lowercase(argv[3],
-							    "nombre")) {
-				char *nombre = (char *)argv[4];
-				printf("%sPokemon buscado:%s\n", AMARILLO,
-				       NORMAL);
-				pokedex_iterar_pokemones(
-					pokedex, ITERAR_NOMBRE,
-					mostrar_pokemon_con_nombre, nombre);
-			} else if (son_iguales_en_lowercase(argv[3], "tipo")) {
-				tipo_pokemon tipo =
-					obtener_tipo_pokemon(argv[4]);
-				if (tipo == TIPO_INVALIDO) {
-					printf("%sEl tipo '%s' es inválido%s\n",
-					       ROJO, argv[4], NORMAL);
-				} else {
-					printf("%sPokemones de tipo %s:%s\n",
-					       AMARILLO, argv[4], NORMAL);
-					pokedex_iterar_pokemones(
-						pokedex, ITERAR_ID,
-						mostrar_pokemon_tipo, &tipo);
-				}
-			}
-		} else if (son_iguales_en_lowercase(argv[2], "mostrar")) {
-			if (son_iguales_en_lowercase(argv[3], "nombre")) {
-				printf("%sPokemones ordenados por nombre:%s\n",
-				       AMARILLO, NORMAL);
-				pokedex_iterar_pokemones(pokedex, ITERAR_NOMBRE,
-							 imprimir_pokemon,
-							 NULL);
-			} else if (son_iguales_en_lowercase(argv[3], "id")) {
-				printf("%sPokemones ordenados por ID:%s\n",
-				       AMARILLO, NORMAL);
-				pokedex_iterar_pokemones(pokedex, ITERAR_ID,
-							 imprimir_pokemon,
-							 NULL);
-			}
-		}
+		procesar_comandos(pokedex, argc, argv);
 	}
 
 	pokedex_destruir(pokedex);
