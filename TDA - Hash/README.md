@@ -32,9 +32,9 @@ El programa implementa una **tabla de hash** que permite almacenar pares clave-v
 Una **función de hash** es una función que toma una clave como entrada y devuelve un número entero, que representa un índice dentro del arreglo. La función de hash debe ser determinística, eficiente, poder distribuir uniformemente las claves posibles y minimizar la cantidad de colisiones.
 
 En caso de colisiones, se pueden usar dos métodos de resolución:
-- **Encadenamiento (hash abierto)**: se almacenan múltiples elementos en una misma posición de la tabla usando una lista enlazada, árbol binario u otra estructura de datos dinámica. Esto permite manejar colisiones sin necesidad de encontrar una nueva posición en el arreglo o usar una flag para indicar si una posición fue eliminada.  
+- [**Encadenamiento (hash abierto)**](#imagen1): se almacenan múltiples elementos en una misma posición de la tabla usando una lista enlazada, árbol binario u otra estructura de datos dinámica. Esto permite manejar colisiones sin necesidad de encontrar una nueva posición en el arreglo o usar una flag para indicar si una posición fue eliminada.  
 Aun así, cuando hay muchas colisiones y las listas empiezan a crecer mucho, conviene hacer un rehash para mantener la eficiencia.
-- **Direccionamiento abierto (hash cerrado)**: en caso de una colisión, se busca otra posición libre en el arreglo para almacenar el nuevo elemento, según un método de probing, como lineal, cuadrático o hash doble.  
+- [**Direccionamiento abierto (hash cerrado)**](#imagen2): en caso de una colisión, se busca otra posición libre en el arreglo para almacenar el nuevo elemento, según un método de probing, como lineal, cuadrático o hash doble.  
 Este método depende de tener espacio libre en la tabla. Por eso, cuando se supera cierto factor de carga, se hace rehash.
 
 </div>
@@ -74,7 +74,7 @@ Se implementaron las siguientes primitivas:
 		- Complejidad: $O(n)$ en tiempo, siendo $n$ la cantidad de elementos en la tabla anterior, y $O(1)$ en espacio.
 - [`hash_sacar()`](#imagen5): Elimina y devuelve un elemento de la tabla de hash dado su clave. Si la clave no existe, devuelve NULL.
 	- Complejidad: En promedio, el tiempo es $O(1)$, pero si la función hash es ineficiente y genera muchas colisiones, puede resultar en $O(n)$, siendo $n$ la cantidad de elementos en la tabla. Si bien se utiliza una flag para determinar si un elemento fue eliminado o no, evitando así la reubicación de los elementos siguientes, la búsqueda de la clave sigue siendo secuencial debido al probing lineal. La complejidad en espacio es $O(1)$.
-- [`hash_buscar()`](#imagen6): Busca y devuelve el valor asociado a una clave en la tabla de hash. Si la clave no existe, devuelve NULL.
+- `hash_buscar()`: Busca y devuelve el valor asociado a una clave en la tabla de hash. Si la clave no existe, devuelve NULL.
 	- Complejidad: En promedio, el tiempo es $O(1)$, pero si el factor de carga es muy alto o la función hash es ineficiente y genera muchas colisiones, puede resultar en $O(n)$, siendo $n$ la cantidad de elementos en la tabla. La complejidad en espacio es $O(1)$.
 - `hash_existe()`: Devuelve true si la clave existe en la tabla de hash, false en caso contrario.
 	- Complejidad: En promedio, el tiempo es $O(1)$, pero si el factor de carga es muy alto o la función hash es ineficiente y genera muchas colisiones, puede resultar en $O(n)$, siendo $n$ la cantidad de elementos en la tabla. La complejidad en espacio es $O(1)$.
@@ -98,19 +98,13 @@ Se implementaron las siguientes primitivas:
 <div id="imagen4" align="center">
 	<img src="img/Diagrama_hash_insertar().png" alt="Diagrama función hash_insertar()" width="1000"/>
 
-<sup>Figura 4. Ejemplo de implementación de la función hash_insertar().</sup>
+<sup>Figura 4. Ejemplo de implementación de la función hash_insertar(). El color gris representa a las claves y valores previamente mostrados.</sup>
 </div>
 
 <div id="imagen5" align="center">
 	<img src="img/Diagrama_hash_sacar().png" alt="Diagrama función hash_sacar()" width="1000"/>
 
-<sup>Figura 5. Ejemplo de implementación de la función hash_sacar().</sup>
-</div>
-
-<div id="imagen6" align="center">
-	<img src="img/Diagrama_hash_buscar().png" alt="Diagrama función hash_buscar()" width="1000"/>
-
-<sup>Figura 6. Ejemplo de implementación de la función hash_buscar().</sup>
+<sup>Figura 5. Ejemplo de implementación de la función hash_sacar(). El color gris representa lo que se elimina.</sup>
 </div>
 
 ## Conceptos teóricos
@@ -119,8 +113,8 @@ Se implementaron las siguientes primitivas:
 ### Diccionarios
 Un **diccionario** es una estructura de datos que permite almacenar pares clave-valor, donde las claves son únicas y se utilizan para acceder a los valores asociados. Existen varias formas de implementar un diccionario, entre ellas:
 - **Tabla de hash**: Utiliza una función de hash para mapear las claves a índices en un arreglo.
-- **Árbol binario de búsqueda**: Almacena los pares clave-valor en un árbol, donde las claves se organizan de manera que los elementos del subárbol izquierdo son menores que los del subárbol derecho.
-- **Lista enlazada**: Almacena los pares clave-valor en una lista, donde cada nodo contiene una clave y un valor.
+- [**Árbol binario de búsqueda**](#imagen6): Almacena los pares clave-valor en un árbol, donde las claves se organizan de manera que los elementos del subárbol izquierdo son menores que los del subárbol derecho.
+- [**Lista enlazada**](#imagen6): Almacena los pares clave-valor en una lista, donde cada nodo contiene una clave y un valor.
 
 #### Ventajas y desventajas
 - Tabla de hash: 
@@ -135,14 +129,14 @@ Un **diccionario** es una estructura de datos que permite almacenar pares clave-
 
 </div>
 
-<div id="imagen7" align="center">
+<div id="imagen6" align="center">
 	<img src="img/Diccionario_abb.png" alt="Diagrama diccionario implementado con un ABB" width="1000"/>
 
-<sup>Figura 7. Ejemplo de implementación de un diccionario utilizando un árbol binario de búsqueda (ABB).</sup>
+<sup>Figura 6. Ejemplo de implementación de un diccionario utilizando un árbol binario de búsqueda (ABB).</sup>
 </div>
 
-<div id="imagen8" align="center">
+<div id="imagen7" align="center">
 	<img src="img/Diccionario_lista.png" alt="Diagrama diccionario implementado con una lista enlazada" width="1000"/>
 
-<sup>Figura 8. Ejemplo de implementación de un diccionario utilizando una lista enlazada.</sup>
+<sup>Figura 7. Ejemplo de implementación de un diccionario utilizando una lista enlazada.</sup>
 </div>
