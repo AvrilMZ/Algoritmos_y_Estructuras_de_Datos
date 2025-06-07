@@ -4,16 +4,16 @@
 const float MAX_FACTOR_DE_CARGA = 0.75;
 const int CAPACIDAD_MINIMA = 3;
 
-typedef struct elemento_tabla {
+typedef struct par {
 	char *clave;
-	void *dato;
+	void *valor;
 	bool fue_eliminado;
-} elemento_tabla_t;
+} par_t;
 
 struct hash {
 	size_t capacidad;
 	size_t cantidad;
-	elemento_tabla_t *tabla;
+	par_t *tabla;
 	size_t (*funcion_hash)(const char *);
 };
 
@@ -52,7 +52,7 @@ hash_t *hash_crear_con_funcion(size_t capacidad_inicial,
 	hash->capacidad = capacidad_inicial;
 	hash->funcion_hash = f;
 
-	hash->tabla = calloc(capacidad_inicial, sizeof(elemento_tabla_t));
+	hash->tabla = calloc(capacidad_inicial, sizeof(par_t));
 	if (!hash->tabla) {
 		free(hash);
 		return NULL;
@@ -89,8 +89,7 @@ bool rehash(hash_t *hash)
 	}
 
 	size_t nueva_capacidad = hash->capacidad * 2;
-	elemento_tabla_t *nueva_tabla =
-		calloc(nueva_capacidad, sizeof(elemento_tabla_t));
+	par_t *nueva_tabla = calloc(nueva_capacidad, sizeof(par_t));
 	if (!nueva_tabla) {
 		return false;
 	}
@@ -147,7 +146,7 @@ size_t buscar_posicion(hash_t *h, const char *clave, bool buscar_existente)
 	for (size_t i = 0; i < h->capacidad && !encontrado && !no_existe; i++) {
 		size_t posicion_actual =
 			obtener_posicion_hash(posicion + i, h->capacidad);
-		elemento_tabla_t *elemento = &h->tabla[posicion_actual];
+		par_t *elemento = &h->tabla[posicion_actual];
 
 		if (buscar_existente) {
 			if (elemento->clave && !elemento->fue_eliminado &&
@@ -182,7 +181,7 @@ bool insertar_nueva_clave(hash_t *h, size_t posicion, const char *clave,
 	}
 
 	h->tabla[posicion].clave = clave_copia;
-	h->tabla[posicion].dato = valor;
+	h->tabla[posicion].valor = valor;
 	h->tabla[posicion].fue_eliminado = false;
 	h->cantidad++;
 
@@ -209,9 +208,9 @@ bool hash_insertar(hash_t *h, const char *clave, void *valor, void **anterior)
 	size_t posicion_clave_existente = buscar_posicion(h, clave, true);
 	if (posicion_clave_existente != h->capacidad + 1) {
 		if (anterior) {
-			*anterior = h->tabla[posicion_clave_existente].dato;
+			*anterior = h->tabla[posicion_clave_existente].valor;
 		}
-		h->tabla[posicion_clave_existente].dato = valor;
+		h->tabla[posicion_clave_existente].valor = valor;
 		return true;
 	}
 
@@ -234,10 +233,10 @@ void *hash_sacar(hash_t *h, const char *clave)
 		return NULL;
 	}
 
-	void *valor = h->tabla[posicion].dato;
+	void *valor = h->tabla[posicion].valor;
 	free(h->tabla[posicion].clave);
 	h->tabla[posicion].clave = NULL;
-	h->tabla[posicion].dato = NULL;
+	h->tabla[posicion].valor = NULL;
 	h->tabla[posicion].fue_eliminado = true;
 	h->cantidad--;
 
@@ -255,7 +254,7 @@ void *hash_buscar(hash_t *h, const char *clave)
 		return NULL;
 	}
 
-	return h->tabla[posicion].dato;
+	return h->tabla[posicion].valor;
 }
 
 bool hash_existe(hash_t *h, const char *clave)
@@ -308,7 +307,7 @@ void hash_destruir_todo(hash_t *h, void (*destructor)(void *))
 	for (size_t i = 0; i < h->capacidad; i++) {
 		if (h->tabla[i].clave) {
 			if (!h->tabla[i].fue_eliminado && destructor) {
-				destructor(h->tabla[i].dato);
+				destructor(h->tabla[i].valor);
 			}
 			free(h->tabla[i].clave);
 		}
