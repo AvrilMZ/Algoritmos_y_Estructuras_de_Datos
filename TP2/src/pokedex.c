@@ -5,54 +5,28 @@
 
 #define MODO_LECTURA "r"
 const size_t CAPACIDAD_INICIAL = 16;
+const int POKEMON_NO_ENCONTRADO = -1;
+const int TIPO_INVALIDO = -1;
+const char SEPARADOR_CAMPO = ';';
 
 struct pokedex {
 	FILE *archivo;
-	int cantidad_pokemones;
-	const char *ultima_linea;
-	struct pokemon *poke_buscado;
-	struct pokemon *pokes_ordenados_nombre;
-	struct pokemon *pokes_ordenados_id;
+	unsigned cantidad_pokemones;
+	struct pokemon *pokemones;
+	struct pokemon **pokes_ordenados_nombre;
+	struct pokemon **pokes_ordenados_id;
 };
 
-// Reserva memoria para un arreglo de caracteres.
-char *reservar_memoria_linea(size_t capacidad)
+/**
+ * Ordena punteros a pokemones por ID (insertion sort).
+ */
+void ordenar_punteros_por_id(struct pokemon **pokemones, unsigned cantidad)
 {
-	char *linea = calloc(capacidad, sizeof(char));
-	if (!linea) {
-		return NULL;
-	}
-	return linea;
-}
+	for (unsigned i = 1; i < cantidad; i++) {
+		struct pokemon *temp = pokemones[i];
+		int j = (int)i - 1;
 
-// Realoca memoria para un arreglo de caracteres.
-char *realocar_memoria_linea(char *linea, size_t capacidad)
-{
-	char *nueva_linea = realloc(linea, sizeof(char) * capacidad);
-	if (!nueva_linea) {
-		return NULL;
-	}
-	return nueva_linea;
-}
-
-// Reserva memoria para un struct pokemon.
-struct pokemon *reservar_memoria_pokemon(size_t capacidad)
-{
-	struct pokemon *pokemon = calloc(capacidad, sizeof(struct pokemon));
-	if (!pokemon) {
-		return NULL;
-	}
-	return pokemon;
-}
-
-// Ordena los pokemones por ID (insertion sort).
-void ordenar_pokemones_por_id(struct pokemon *pokemones, int cantidad)
-{
-	for (int i = 1; i < cantidad; i++) {
-		struct pokemon temp = pokemones[i];
-		int j = i - 1;
-
-		while (j >= 0 && pokemones[j].id > temp.id) {
+		while (j >= 0 && pokemones[j]->id > temp->id) {
 			pokemones[j + 1] = pokemones[j];
 			j--;
 		}
@@ -61,14 +35,17 @@ void ordenar_pokemones_por_id(struct pokemon *pokemones, int cantidad)
 	}
 }
 
-// Ordena los pokemones por nombre (insertion sort).
-void ordenar_pokemones_por_nombre(struct pokemon *pokemones, int cantidad)
+/**
+ * Ordena punteros a pokemones por nombre (insertion sort).
+ */
+void ordenar_punteros_por_nombre(struct pokemon **pokemones, unsigned cantidad)
 {
-	for (int i = 1; i < cantidad; i++) {
-		struct pokemon temp = pokemones[i];
-		int j = i - 1;
+	for (unsigned i = 1; i < cantidad; i++) {
+		struct pokemon *temp = pokemones[i];
+		int j = (int)i - 1;
 
-		while (j >= 0 && strcmp(pokemones[j].nombre, temp.nombre) > 0) {
+		while (j >= 0 &&
+		       strcmp(pokemones[j]->nombre, temp->nombre) > 0) {
 			pokemones[j + 1] = pokemones[j];
 			j--;
 		}
@@ -77,7 +54,9 @@ void ordenar_pokemones_por_nombre(struct pokemon *pokemones, int cantidad)
 	}
 }
 
-// Duplica un string, reservando memoria para el nuevo.
+/**
+ * Duplica un string, reservando memoria para el nuevo.
+ */
 char *duplicar_string(const char *original)
 {
 	if (!original) {
@@ -85,7 +64,7 @@ char *duplicar_string(const char *original)
 	}
 
 	size_t longitud = strlen(original) + 1;
-	char *nuevo = reservar_memoria_linea(longitud);
+	char *nuevo = calloc(longitud, sizeof(char));
 	if (!nuevo) {
 		return NULL;
 	}
@@ -94,21 +73,19 @@ char *duplicar_string(const char *original)
 	return nuevo;
 }
 
-// Lee una línea del archivo.
-// Devuelve un puntero a la línea leída, o NULL si no hay más líneas.
+/**
+ * Lee una línea del archivo.
+ * 
+ * Devuelve un puntero a la línea leída, o NULL si no hay más líneas.
+ */
 char *archivo_leer_linea(pokedex_t *pokedex)
 {
 	if (!pokedex || !pokedex->archivo) {
 		return NULL;
 	}
 
-	if (pokedex->ultima_linea) {
-		free((char *)pokedex->ultima_linea);
-		pokedex->ultima_linea = NULL;
-	}
-
 	size_t capacidad = CAPACIDAD_INICIAL;
-	char *linea = reservar_memoria_linea(capacidad);
+	char *linea = calloc(capacidad, sizeof(char));
 	if (!linea) {
 		return NULL;
 	}
@@ -119,7 +96,7 @@ char *archivo_leer_linea(pokedex_t *pokedex)
 		if (chars_leidos + 1 >= capacidad) {
 			capacidad *= 2;
 			char *nueva_linea =
-				realocar_memoria_linea(linea, capacidad);
+				realloc(linea, sizeof(char) * capacidad);
 			if (!nueva_linea) {
 				free(linea);
 				linea = NULL;
@@ -138,55 +115,42 @@ char *archivo_leer_linea(pokedex_t *pokedex)
 	}
 
 	linea[chars_leidos] = '\0';
-	pokedex->ultima_linea = linea;
 	return linea;
 }
 
-// Lee un campo hasta encontrar un ';' o fin de línea.
+/**
+ * Lee un campo hasta encontrar un SEPARADOR_CAMPO o fin de línea.
+ */
 char *leer_campo(char **linea)
 {
 	if (!linea || !*linea || **linea == '\0') {
 		return NULL;
 	}
 
-	size_t capacidad = CAPACIDAD_INICIAL;
-	char *campo = reservar_memoria_linea(capacidad);
-	if (!campo) {
-		return NULL;
+	char *inicio_campo = *linea;
+
+	while (**linea != '\0' && **linea != SEPARADOR_CAMPO) {
+		(*linea)++;
 	}
 
-	size_t indice_campo = 0;
-	while (**linea != '\0' && **linea != ';') {
-		if (indice_campo >= capacidad - 1) {
-			capacidad *= 2;
-			char *nuevo_campo =
-				realocar_memoria_linea(campo, capacidad);
-			if (!nuevo_campo) {
-				free(campo);
-				campo = NULL;
-				return NULL;
-			}
-			campo = nuevo_campo;
+	if (*linea == inicio_campo) {
+		if (**linea == SEPARADOR_CAMPO) {
+			(*linea)++;
 		}
-		campo[indice_campo++] = **linea;
-		(*linea)++;
-	}
-	campo[indice_campo] = '\0';
-
-	if (campo[0] == '\0') {
-		free(campo);
-		campo = NULL;
 		return NULL;
 	}
 
-	if (**linea == ';') {
+	if (**linea == SEPARADOR_CAMPO) {
+		**linea = '\0';
 		(*linea)++;
 	}
 
-	return campo;
+	return inicio_campo;
 }
 
-// Devuelve el 'tipo_pokemon' correspondiente a el carácter dado por parámetro, si no es válido devuelve -1.
+/**
+ * Devuelve el 'tipo_pokemon' correspondiente a el carácter dado por parámetro, si no es válido devuelve TIPO_INVALIDO.
+ */
 tipo_pokemon pasar_a_tipo(const char tipo)
 {
 	if (tolower(tipo) == 'a') {
@@ -204,23 +168,12 @@ tipo_pokemon pasar_a_tipo(const char tipo)
 	} else if (tolower(tipo) == 'l') {
 		return TIPO_LUCHA;
 	}
-	return -1;
+	return TIPO_INVALIDO;
 }
 
-// Libera todos los campos de un pokemon.
-void liberar_campos(char *campo_id, char *nombre_poke, char *campo_tipo,
-		    char *campo_fuerza, char *campo_destreza,
-		    char *campo_inteligencia)
-{
-	free(campo_id);
-	free(nombre_poke);
-	free(campo_tipo);
-	free(campo_fuerza);
-	free(campo_destreza);
-	free(campo_inteligencia);
-}
-
-// Parsea un Pokémon desde una línea de texto.
+/**
+ * Parsea un Pokémon desde una línea de texto.
+ */
 struct pokemon parsear_pokemon(char *linea)
 {
 	struct pokemon poke = { 0, NULL, 0, 0, 0, 0 };
@@ -253,60 +206,69 @@ struct pokemon parsear_pokemon(char *linea)
 		poke.inteligencia = (unsigned)atoi(campo_inteligencia);
 	}
 
-	liberar_campos(campo_id, NULL, campo_tipo, campo_fuerza, campo_destreza,
-		       campo_inteligencia);
 	return poke;
 }
 
-// Devuelve true si todos los campos de la linea se encuentran presentes, de lo contrario devuelve false.
+/**
+ * Devuelve true si todos los campos de la linea se encuentran presentes, de lo contrario devuelve false.
+ */
 bool es_linea_valida(struct pokemon poke)
 {
-	return (poke.id != 0 && poke.nombre && poke.tipo != -1 &&
+	return (poke.id != 0 && poke.nombre && poke.tipo != TIPO_INVALIDO &&
 		poke.fuerza != 0 && poke.destreza != 0 &&
 		poke.inteligencia != 0);
 }
 
-// Carga ordenadamente, por ID y nombre, los pokemones en los vectores del struct.
+/**
+ * Carga ordenadamente, por ID y nombre, los pokemones en los vectores del struct.
+ */
 void cargar_pokemones_ordenados(pokedex_t *pokedex)
 {
 	if (!pokedex || !pokedex->archivo || pokedex->cantidad_pokemones <= 0)
 		return;
 
-	pokedex->pokes_ordenados_id =
-		reservar_memoria_pokemon((size_t)pokedex->cantidad_pokemones);
-	if (!pokedex->pokes_ordenados_id) {
+	pokedex->pokemones = calloc((size_t)pokedex->cantidad_pokemones,
+				    sizeof(struct pokemon));
+	if (!pokedex->pokemones) {
 		return;
 	}
 
-	pokedex->pokes_ordenados_nombre =
-		reservar_memoria_pokemon((size_t)pokedex->cantidad_pokemones);
+	pokedex->pokes_ordenados_id = calloc(
+		(size_t)pokedex->cantidad_pokemones, sizeof(struct pokemon *));
+	if (!pokedex->pokes_ordenados_id) {
+		free(pokedex->pokemones);
+		pokedex->pokemones = NULL;
+		return;
+	}
+
+	pokedex->pokes_ordenados_nombre = calloc(
+		(size_t)pokedex->cantidad_pokemones, sizeof(struct pokemon *));
 	if (!pokedex->pokes_ordenados_nombre) {
+		free(pokedex->pokemones);
 		free(pokedex->pokes_ordenados_id);
+		pokedex->pokemones = NULL;
 		pokedex->pokes_ordenados_id = NULL;
 		return;
 	}
 
-	rewind(pokedex->archivo);
-	for (int i = 0; i < pokedex->cantidad_pokemones; i++) {
+	bool linea_vacia = false;
+	for (int i = 0; i < pokedex->cantidad_pokemones && !linea_vacia; i++) {
 		char *linea = archivo_leer_linea(pokedex);
+
 		struct pokemon poke = parsear_pokemon(linea);
+		pokedex->pokemones[i] = poke;
+		pokedex->pokemones[i].nombre = duplicar_string(poke.nombre);
 
-		pokedex->pokes_ordenados_id[i] = poke;
-		pokedex->pokes_ordenados_id[i].nombre =
-			duplicar_string(poke.nombre);
+		pokedex->pokes_ordenados_id[i] = &pokedex->pokemones[i];
+		pokedex->pokes_ordenados_nombre[i] = &pokedex->pokemones[i];
 
-		pokedex->pokes_ordenados_nombre[i] = poke;
-		pokedex->pokes_ordenados_nombre[i].nombre =
-			duplicar_string(poke.nombre);
-
-		free((char *)poke.nombre);
-		poke.nombre = NULL;
+		free(linea);
 	}
 
-	ordenar_pokemones_por_id(pokedex->pokes_ordenados_id,
-				 pokedex->cantidad_pokemones);
-	ordenar_pokemones_por_nombre(pokedex->pokes_ordenados_nombre,
-				     pokedex->cantidad_pokemones);
+	ordenar_punteros_por_id(pokedex->pokes_ordenados_id,
+				pokedex->cantidad_pokemones);
+	ordenar_punteros_por_nombre(pokedex->pokes_ordenados_nombre,
+				    pokedex->cantidad_pokemones);
 }
 
 pokedex_t *pokedex_abrir(const char *archivo)
@@ -327,27 +289,27 @@ pokedex_t *pokedex_abrir(const char *archivo)
 		return NULL;
 	}
 
+	char *linea = NULL;
 	bool linea_invalida = false;
-	char *linea = archivo_leer_linea(pokedex);
-	while (linea != NULL && !linea_invalida) {
+	while (!linea_invalida &&
+	       (linea = archivo_leer_linea(pokedex)) != NULL) {
 		struct pokemon poke = parsear_pokemon(linea);
 		if (es_linea_valida(poke)) {
 			pokedex->cantidad_pokemones++;
-			linea = archivo_leer_linea(pokedex);
+			free(linea);
 		} else {
+			free(linea);
 			linea_invalida = true;
 		}
-		free((char *)poke.nombre);
 	}
 
 	if (pokedex->cantidad_pokemones == 0) {
 		fclose(pokedex->archivo);
-		free((char *)pokedex->ultima_linea);
 		free(pokedex);
-		pokedex = NULL;
 		return NULL;
 	}
 
+	rewind(pokedex->archivo);
 	cargar_pokemones_ordenados(pokedex);
 	return pokedex;
 }
@@ -357,22 +319,24 @@ unsigned pokedex_cantidad_pokemones(pokedex_t *pokedex)
 	if (!pokedex || !pokedex->archivo) {
 		return 0;
 	}
-	return (unsigned)pokedex->cantidad_pokemones;
+	return pokedex->cantidad_pokemones;
 }
 
-// Busqueda binaria del pokemon con 'nombre' en 'pokes_ordenados', si lo encuentra lo devuelve, si no devuelve un pokemon vacio.
-struct pokemon busqueda_binaria_nombre(struct pokemon *pokes_ordenados,
-				       const char *nombre, int cant_pokes)
+/**
+ * Busqueda binaria del pokemon con 'nombre' en 'pokes_ordenados', si lo encuentra devuelve el índice, si no devuelve POKEMON_NO_ENCONTRADO.
+ */
+int busqueda_binaria_nombre(struct pokemon **pokes_ordenados,
+			    const char *nombre, unsigned cant_pokes)
 {
-	int inicio = 0;
-	int fin = cant_pokes - 1;
-	int indice_encontrado = -1;
+	unsigned inicio = 0;
+	unsigned fin = cant_pokes - 1;
+	int indice_encontrado = POKEMON_NO_ENCONTRADO;
 	bool encontrado = false;
 	while (inicio <= fin && !encontrado) {
-		int medio = (inicio + fin) / 2;
-		int cmp = strcmp(nombre, pokes_ordenados[medio].nombre);
+		unsigned medio = (inicio + fin) / 2;
+		int cmp = strcmp(nombre, pokes_ordenados[medio]->nombre);
 		if (cmp == 0) {
-			indice_encontrado = medio;
+			indice_encontrado = (int)medio;
 			encontrado = true;
 		} else if (cmp < 0) {
 			fin = medio - 1;
@@ -381,12 +345,7 @@ struct pokemon busqueda_binaria_nombre(struct pokemon *pokes_ordenados,
 		}
 	}
 
-	if (encontrado) {
-		return pokes_ordenados[indice_encontrado];
-	} else {
-		struct pokemon vacio = { 0, NULL, 0, 0, 0, 0 };
-		return vacio;
-	}
+	return indice_encontrado;
 }
 
 const struct pokemon *pokedex_buscar_pokemon_nombre(pokedex_t *pokedex,
@@ -396,62 +355,38 @@ const struct pokemon *pokedex_buscar_pokemon_nombre(pokedex_t *pokedex,
 		return NULL;
 	}
 
-	if (pokedex->poke_buscado) {
-		free((char *)pokedex->poke_buscado->nombre);
-		free(pokedex->poke_buscado);
-		pokedex->poke_buscado = NULL;
-	}
-
-	struct pokemon *poke = reservar_memoria_pokemon(1);
-	if (!poke) {
+	int indice = busqueda_binaria_nombre(pokedex->pokes_ordenados_nombre,
+					     nombre,
+					     pokedex->cantidad_pokemones);
+	if (indice == POKEMON_NO_ENCONTRADO) {
 		return NULL;
 	}
-
-	*poke = busqueda_binaria_nombre(pokedex->pokes_ordenados_nombre, nombre,
-					pokedex->cantidad_pokemones);
-	if (!poke->nombre) {
-		free(poke);
-		poke = NULL;
-		return NULL;
-	} else {
-		char *nombre_duplicado = duplicar_string(poke->nombre);
-		if (!nombre_duplicado) {
-			free(poke);
-			poke = NULL;
-			return NULL;
-		}
-		poke->nombre = nombre_duplicado;
-		pokedex->poke_buscado = poke;
-		return poke;
-	}
+	return pokedex->pokes_ordenados_nombre[indice];
 }
 
-// Busqueda binaria del pokemon con 'id' en 'pokes_ordenados', si lo encuentra lo devuelve, si no devuelve un pokemon vacio.
-struct pokemon busqueda_binaria_id(struct pokemon *pokes_ordenados, int id,
-				   int cant_pokes)
+/**
+ * Busqueda binaria del pokemon con 'id' en 'pokes_ordenados', si lo encuentra devuelve el índice, si no devuelve POKEMON_NO_ENCONTRADO.
+ */
+int busqueda_binaria_id(struct pokemon **pokes_ordenados, int id,
+			unsigned cant_pokes)
 {
-	int inicio = 0;
-	int fin = cant_pokes - 1;
-	int indice_encontrado = -1;
+	unsigned inicio = 0;
+	unsigned fin = cant_pokes - 1;
+	int indice_encontrado = POKEMON_NO_ENCONTRADO;
 	bool encontrado = false;
 	while (inicio <= fin && !encontrado) {
-		int medio = (inicio + fin) / 2;
-		if (id == pokes_ordenados[medio].id) {
-			indice_encontrado = medio;
+		unsigned medio = (inicio + fin) / 2;
+		if (id == pokes_ordenados[medio]->id) {
+			indice_encontrado = (int)medio;
 			encontrado = true;
-		} else if (id < pokes_ordenados[medio].id) {
+		} else if (id < pokes_ordenados[medio]->id) {
 			fin = medio - 1;
 		} else {
 			inicio = medio + 1;
 		}
 	}
 
-	if (encontrado) {
-		return pokes_ordenados[indice_encontrado];
-	} else {
-		struct pokemon vacio = { 0, NULL, 0, 0, 0, 0 };
-		return vacio;
-	}
+	return indice_encontrado;
 }
 
 const struct pokemon *pokedex_buscar_pokemon_id(pokedex_t *pokedex, unsigned id)
@@ -460,34 +395,12 @@ const struct pokemon *pokedex_buscar_pokemon_id(pokedex_t *pokedex, unsigned id)
 		return NULL;
 	}
 
-	if (pokedex->poke_buscado) {
-		free((char *)pokedex->poke_buscado->nombre);
-		free(pokedex->poke_buscado);
-		pokedex->poke_buscado = NULL;
-	}
-
-	struct pokemon *poke = reservar_memoria_pokemon(1);
-	if (!poke) {
+	int indice = busqueda_binaria_id(pokedex->pokes_ordenados_id, (int)id,
+					 pokedex->cantidad_pokemones);
+	if (indice == POKEMON_NO_ENCONTRADO) {
 		return NULL;
 	}
-
-	*poke = busqueda_binaria_id(pokedex->pokes_ordenados_id, (int)id,
-				    pokedex->cantidad_pokemones);
-	if (!poke->nombre) {
-		free(poke);
-		poke = NULL;
-		return NULL;
-	} else {
-		char *nombre_duplicado = duplicar_string(poke->nombre);
-		if (!nombre_duplicado) {
-			free(poke);
-			poke = NULL;
-			return NULL;
-		}
-		poke->nombre = nombre_duplicado;
-		pokedex->poke_buscado = poke;
-		return poke;
-	}
+	return pokedex->pokes_ordenados_id[indice];
 }
 
 unsigned pokedex_iterar_pokemones(pokedex_t *pokedex, enum modo_iteracion modo,
@@ -498,7 +411,7 @@ unsigned pokedex_iterar_pokemones(pokedex_t *pokedex, enum modo_iteracion modo,
 		return 0;
 	}
 
-	struct pokemon *arreglo = NULL;
+	struct pokemon **arreglo = NULL;
 	if (modo == ITERAR_ID && pokedex->pokes_ordenados_id) {
 		arreglo = pokedex->pokes_ordenados_id;
 	} else if (modo == ITERAR_NOMBRE && pokedex->pokes_ordenados_nombre) {
@@ -513,14 +426,9 @@ unsigned pokedex_iterar_pokemones(pokedex_t *pokedex, enum modo_iteracion modo,
 	bool continuar_iterando = true;
 	for (int i = 0; i < pokedex->cantidad_pokemones && continuar_iterando;
 	     i++) {
-		struct pokemon poke_temp = arreglo[i];
-		poke_temp.nombre = duplicar_string(arreglo[i].nombre);
-		if (poke_temp.nombre) {
-			continuar_iterando = funcion(&poke_temp, ctx);
-			pokemones_iterados++;
-
-			free((char *)poke_temp.nombre);
-			poke_temp.nombre = NULL;
+		pokemones_iterados++;
+		if (!funcion(arreglo[i], ctx)) {
+			continuar_iterando = false;
 		}
 	}
 
@@ -529,32 +437,22 @@ unsigned pokedex_iterar_pokemones(pokedex_t *pokedex, enum modo_iteracion modo,
 
 void pokedex_destruir(pokedex_t *pokedex)
 {
-	if (pokedex) {
-		if (pokedex->archivo) {
-			fclose(pokedex->archivo);
-		}
-		if (pokedex->ultima_linea) {
-			free((char *)pokedex->ultima_linea);
-		}
-		if (pokedex->poke_buscado) {
-			free((char *)pokedex->poke_buscado->nombre);
-			free(pokedex->poke_buscado);
-		}
-		if (pokedex->pokes_ordenados_nombre) {
-			for (int i = 0; i < pokedex->cantidad_pokemones; i++) {
-				free((char *)pokedex->pokes_ordenados_nombre[i]
-					     .nombre);
-			}
-			free(pokedex->pokes_ordenados_nombre);
-		}
-		if (pokedex->pokes_ordenados_id) {
-			for (int i = 0; i < pokedex->cantidad_pokemones; i++) {
-				free((char *)pokedex->pokes_ordenados_id[i]
-					     .nombre);
-			}
-			free(pokedex->pokes_ordenados_id);
-		}
-		free(pokedex);
-		pokedex = NULL;
+	if (!pokedex) {
+		return;
 	}
+
+	if (pokedex->archivo) {
+		fclose(pokedex->archivo);
+	}
+
+	if (pokedex->pokemones) {
+		for (int i = 0; i < pokedex->cantidad_pokemones; i++) {
+			free((char *)pokedex->pokemones[i].nombre);
+		}
+		free(pokedex->pokemones);
+	}
+
+	free(pokedex->pokes_ordenados_nombre);
+	free(pokedex->pokes_ordenados_id);
+	free(pokedex);
 }
