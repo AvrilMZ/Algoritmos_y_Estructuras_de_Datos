@@ -250,11 +250,9 @@ void prueba_destruccion_con_funcion()
 
 	menu_t *menu = crear_menu();
 
-	// Crear datos dinámicos para probar la función destructora
 	int *dato1 = malloc(sizeof(int));
 	int *dato2 = malloc(sizeof(int));
 	int *dato3 = malloc(sizeof(int));
-
 	*dato1 = 1;
 	*dato2 = 2;
 	*dato3 = 3;
@@ -266,9 +264,7 @@ void prueba_destruccion_con_funcion()
 	pa2m_afirmar(cantidad_opciones_seccion(menu) == 3,
 		     "Se insertaron 3 datos dinámicos");
 
-	// La destrucción con free debería liberar la memoria sin problemas
 	destruir_menu(menu, free);
-
 	pa2m_afirmar(true,
 		     "La destrucción con función destructora no causó errores");
 }
