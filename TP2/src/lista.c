@@ -268,34 +268,20 @@ int lista_iterar(lista_t *lista, bool (*f)(void *, void *), void *contexto)
 	return elementos_recorridos;
 }
 
-// Destruye los nodos aplicandole la función destructura a cada elemento en caso de ser pasada.
-void destruir_nodos(nodo_t *nodo, void (*destructor)(void *))
-{
-	while (nodo) {
-		nodo_t *siguiente = nodo->nodo_siguiente;
-		if (destructor) {
-			destructor(nodo->dato);
-		}
-		free(nodo);
-		nodo = siguiente;
-	}
-}
-
 void lista_destruir(lista_t *lista)
 {
 	if (!lista) {
 		return;
 	}
-	lista_destruir_todo(lista, NULL);
-}
 
-void lista_destruir_todo(lista_t *lista, void (*destructor)(void *))
-{
-	if (!lista) {
-		return;
+	nodo_t *actual = lista->primero;
+	while (actual) {
+		nodo_t *siguiente = actual->nodo_siguiente;
+		free(actual);
+		actual = siguiente;
 	}
-	destruir_nodos(lista->primero, destructor);
 	free(lista);
+	lista = NULL;
 }
 
 // Reserva memoria para un 'lista_iterador_t' y devuelve su puntero.
