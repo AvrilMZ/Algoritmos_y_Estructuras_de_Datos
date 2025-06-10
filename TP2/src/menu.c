@@ -1,20 +1,23 @@
 #include "menu.h"
 
 typedef struct opcion {
-	void *dato;
-	struct opcion *siguiente;
 	menu_t *sub_seccion;
+	struct opcion *siguiente;
+	void *dato;
 } opcion_t;
 
 struct menu {
+	menu_t *menu_padre;
 	opcion_t *primer_opcion;
 };
 
 struct iterador_menu {
+	menu_t *menu;
 	opcion_t *actual;
 	opcion_t *anterior;
 };
 
+// -------------------------------- MENÚ --------------------------------
 menu_t *crear_menu()
 {
 	menu_t *menu = calloc(1, sizeof(menu_t));
@@ -22,6 +25,14 @@ menu_t *crear_menu()
 		return NULL;
 	}
 	return menu;
+}
+
+menu_t *obtener_menu_padre(menu_t *menu)
+{
+	if (!menu) {
+		return NULL;
+	}
+	return menu->menu_padre;
 }
 
 bool insertar_opcion_en_seccion(menu_t *seccion, void *opcion)
@@ -36,10 +47,19 @@ bool insertar_opcion_en_seccion(menu_t *seccion, void *opcion)
 	}
 
 	nueva_opcion->dato = opcion;
-	nueva_opcion->siguiente = seccion->primer_opcion;
+	nueva_opcion->siguiente = NULL;
 	nueva_opcion->sub_seccion = NULL;
 
-	seccion->primer_opcion = nueva_opcion;
+	if (!seccion->primer_opcion) {
+		seccion->primer_opcion = nueva_opcion;
+	} else {
+		opcion_t *actual = seccion->primer_opcion;
+		while (actual->siguiente) {
+			actual = actual->siguiente;
+		}
+		actual->siguiente = nueva_opcion;
+	}
+
 	return true;
 }
 
@@ -101,21 +121,6 @@ bool existe_opcion_en_seccion(menu_t *seccion, void *opcion,
 	return encontrado;
 }
 
-size_t cantidad_opciones_seccion(menu_t *seccion)
-{
-	if (menu_vacio(seccion)) {
-		return 0;
-	}
-
-	size_t contador = 0;
-	opcion_t *opcion = seccion->primer_opcion;
-	while (opcion) {
-		contador++;
-		opcion = opcion->siguiente;
-	}
-	return contador;
-}
-
 menu_t *obtener_subseccion_de_opcion(menu_t *menu, void *opcion,
 				     bool (*cmp)(void *a, void *b))
 {
@@ -142,6 +147,21 @@ menu_t *obtener_subseccion_de_opcion(menu_t *menu, void *opcion,
 		actual = actual->siguiente;
 	}
 	return subseccion;
+}
+
+size_t cantidad_opciones_seccion(menu_t *seccion)
+{
+	if (menu_vacio(seccion)) {
+		return 0;
+	}
+
+	size_t contador = 0;
+	opcion_t *opcion = seccion->primer_opcion;
+	while (opcion) {
+		contador++;
+		opcion = opcion->siguiente;
+	}
+	return contador;
 }
 
 bool agregar_subseccion_a_opcion(menu_t *menu, void *opcion_dato,
@@ -171,6 +191,7 @@ bool agregar_subseccion_a_opcion(menu_t *menu, void *opcion_dato,
 				destruir_menu(actual->sub_seccion, NULL);
 			}
 			actual->sub_seccion = subseccion;
+			subseccion->menu_padre = menu;
 			agregado = true;
 		}
 
@@ -209,6 +230,7 @@ void destruir_menu(menu_t *menu, void (*destructor)(void *))
 	free(menu);
 }
 
+// -------------------------------- ITERADOR EXTERNO --------------------------------
 iterador_menu_t *crear_iterador_menu(menu_t *menu)
 {
 	if (!menu) {
@@ -220,6 +242,7 @@ iterador_menu_t *crear_iterador_menu(menu_t *menu)
 		return NULL;
 	}
 
+	iterador->menu = menu;
 	iterador->actual = menu->primer_opcion;
 	return iterador;
 }
@@ -236,8 +259,10 @@ void *iterador_siguiente(iterador_menu_t *iterador)
 	}
 
 	void *dato = iterador->actual->dato;
-	iterador->anterior = iterador->actual;
-	iterador->actual = iterador->actual->siguiente;
+	if (dato) {
+		iterador->anterior = iterador->actual;
+		iterador->actual = iterador->actual->siguiente;
+	}
 	return dato;
 }
 
@@ -249,11 +274,20 @@ menu_t *iterador_obtener_subseccion_actual(iterador_menu_t *iterador)
 	return iterador->anterior->sub_seccion;
 }
 
+menu_t *iterador_obtener_menu_padre(iterador_menu_t *iterador)
+{
+	if (!iterador || !iterador->anterior) {
+		return NULL;
+	}
+	return iterador->menu->menu_padre;
+}
+
 void iterador_reiniciar(iterador_menu_t *iterador, menu_t *menu)
 {
 	if (!iterador || menu_vacio(menu)) {
 		return;
 	}
+	iterador->menu = menu;
 	iterador->actual = menu->primer_opcion;
 	iterador->anterior = NULL;
 }

@@ -14,6 +14,7 @@
 typedef struct menu menu_t;
 typedef struct iterador_menu iterador_menu_t;
 
+// -------------------------------- MENÚ --------------------------------
 /**
  * Crea un menú vacío.
  * 
@@ -22,9 +23,16 @@ typedef struct iterador_menu iterador_menu_t;
 menu_t *crear_menu();
 
 /**
- * Inserta una opción en la sección dada.
+ * Devuelve el menu padre.
  * 
+ * En caso de error devuelve NULL.
+ */
+menu_t *obtener_menu_padre(menu_t *menu);
+
+/**
+ * Inserta una opción en la sección dada.
  * Permite elementos repetidos.
+ * 
  * Devuelve true si se pudo insertar, false en caso contrario.
  */
 bool insertar_opcion_en_seccion(menu_t *seccion, void *opcion);
@@ -48,11 +56,6 @@ bool existe_opcion_en_seccion(menu_t *seccion, void *opcion,
 			      bool (*cmp)(void *a, void *b));
 
 /**
- * Devuelve la cantidad de opciones en la sección dada.
- */
-size_t cantidad_opciones_seccion(menu_t *seccion);
-
-/**
  * Devuelve la subsección asociada a una opción específica.
  * En caso de no pasar ningún comparador se comparan direcciones de memoria.
  * 
@@ -60,6 +63,11 @@ size_t cantidad_opciones_seccion(menu_t *seccion);
  */
 menu_t *obtener_subseccion_de_opcion(menu_t *menu, void *opcion,
 				     bool (*cmp)(void *a, void *b));
+
+/**
+ * Devuelve la cantidad de opciones en la sección dada.
+ */
+size_t cantidad_opciones_seccion(menu_t *seccion);
 
 /**
  * Agrega una nueva sub-sección a la opción dada, si ya existia se sobreescribe.
@@ -83,6 +91,7 @@ bool menu_vacio(menu_t *menu);
  */
 void destruir_menu(menu_t *menu, void (*destructor)(void *));
 
+// -------------------------------- ITERADOR EXTERNO --------------------------------
 /**
  * Crea un iterador externo para el menu dado.
  * 
@@ -108,6 +117,13 @@ void *iterador_siguiente(iterador_menu_t *iterador);
  * En caso de error devuelve NULL.
  */
 menu_t *iterador_obtener_subseccion_actual(iterador_menu_t *iterador);
+
+/**
+ * Devuelve el menú anterior del iterador.
+ * 
+ * En caso de error devuelve NULL.
+ */
+menu_t *iterador_obtener_menu_padre(iterador_menu_t *iterador);
 
 /**
  * Reinicia el iterador al principio del menú.
