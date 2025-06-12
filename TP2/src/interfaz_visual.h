@@ -10,17 +10,6 @@
 /**
  * Imprime por pantalla el menú principal.
  */
-void mostrar_menu_principal();
-
-// -------------------------------- JUEGO --------------------------------
-/**
- * Imprime por pantalla el juego dado.
- */
-void mostrar_juego(juego_t *juego);
-
-/**
- * Imprime por pantalla la información relevante del juego.
- */
-void mostrar_info_util(juego_t *juego);
+void mostrar_menu_principal(pokedex_t *pokedex);
 
 #endif // INTERFAZ_VISUAL_H
