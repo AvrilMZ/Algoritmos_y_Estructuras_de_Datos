@@ -303,7 +303,9 @@ menu_t *crear_menu_completo()
 
 // -------------------------------- POKEDEX --------------------------------
 
-// Devuelve true si ambos strings son iguales en minúscula, de lo contrario devuelve false.
+/**
+ * Devuelve true si ambos strings son iguales en minúscula, de lo contrario devuelve false.
+ */
 bool son_iguales_en_lowercase(const char *string1, const char *string2)
 {
 	bool son_iguales = true;
@@ -322,7 +324,9 @@ bool son_iguales_en_lowercase(const char *string1, const char *string2)
 	return son_iguales;
 }
 
-// Devuelve un string con específico según el tipo_pokemon pasado por parámetro.
+/**
+ * Devuelve un string con específico según el tipo_pokemon pasado por parámetro.
+ */
 const char *tipo_a_cadena(tipo_pokemon tipo)
 {
 	static char resultado[50];
@@ -361,7 +365,23 @@ const char *tipo_a_cadena(tipo_pokemon tipo)
 }
 
 /**
- * Muestra una línea de encabezado con la misma estética del menú
+ * Imprime los datos del pokemon pasado por parámetro.
+ */
+void mostrar_pokemon_con_formato(const struct pokemon *pokemon)
+{
+	const int espacios_centrado = 15;
+
+	for (int i = 0; i < espacios_centrado; i++) {
+		printf(" ");
+	}
+	printf("%s[%3d]%s %-15s F%-3d D%-3d I%-3d %s\n", ANSI_COLOR_BOLD,
+	       pokemon->id, ANSI_COLOR_RESET, pokemon->nombre, pokemon->fuerza,
+	       pokemon->destreza, pokemon->inteligencia,
+	       tipo_a_cadena(pokemon->tipo));
+}
+
+/**
+ * Muestra una línea de encabezado con la misma estética del menú.
  */
 void mostrar_encabezado_resultado(const char *titulo)
 {
@@ -384,28 +404,18 @@ void mostrar_encabezado_resultado(const char *titulo)
 	printf("%s\n", ANSI_COLOR_RESET);
 }
 
-// Imprime los datos del pokemon pasado por parámetro.
-void mostrar_pokemon_con_formato(const struct pokemon *pokemon)
-{
-	const int espacios_centrado = 15;
-
-	for (int i = 0; i < espacios_centrado; i++) {
-		printf(" ");
-	}
-	printf("%s[%3d]%s %-15s F%-3d D%-3d I%-3d %s\n", ANSI_COLOR_BOLD,
-	       pokemon->id, ANSI_COLOR_RESET, pokemon->nombre, pokemon->fuerza,
-	       pokemon->destreza, pokemon->inteligencia,
-	       tipo_a_cadena(pokemon->tipo));
-}
-
-// Imprime los datos del pokemon con formato estético
+/**
+ * Imprime los datos del pokemon con formato estético.
+ */
 bool imprimir_pokemon_con_formato(struct pokemon *pokemon, void *ctx)
 {
 	mostrar_pokemon_con_formato(pokemon);
 	return true;
 }
 
-// Devuelve true si el pokemon no coincide con el ID, de lo contrario lo imprime con formato y devuelve false
+/**
+ * Devuelve true si el pokemon no coincide con el ID, de lo contrario lo imprime con formato y devuelve false.
+ */
 bool mostrar_pokemon_con_id_formato(struct pokemon *pokemon, void *ctx)
 {
 	int *id = ctx;
@@ -416,7 +426,9 @@ bool mostrar_pokemon_con_id_formato(struct pokemon *pokemon, void *ctx)
 	return true;
 }
 
-// Devuelve true si el pokemon no coincide con el nombre, de lo contrario lo imprime con formato y devuelve false
+/**
+ * Devuelve true si el pokemon no coincide con el nombre, de lo contrario lo imprime con formato y devuelve false.
+ */
 bool mostrar_pokemon_con_nombre_formato(struct pokemon *pokemon, void *ctx)
 {
 	char *nombre = ctx;
@@ -514,7 +526,9 @@ void manejar_mostrar(pokedex_t *pokedex, char opcion)
 // -------------------------------- JUEGO --------------------------------
 
 /**
+ * Le pide una semilla al usuario.
  * 
+ * En caso de ser pasada devuelve la misma, en caso contrario cero.
  */
 unsigned int preguntar_semilla()
 {
@@ -527,7 +541,9 @@ unsigned int preguntar_semilla()
 	return semilla;
 }
 
-// Función auxiliar para obtener color por tipo de pokémon
+/**
+ * Devuelve el color ANSI correspondiente según el tipo de pokemon.
+ */
 const char *obtener_color_por_tipo(tipo_pokemon tipo)
 {
 	switch (tipo) {
@@ -550,6 +566,11 @@ const char *obtener_color_por_tipo(tipo_pokemon tipo)
 	}
 }
 
+/**
+ * Devuelve el color ANSI correspondiente al tipo de pokemon de la posición.
+ * 
+ * En caso de ser el jugador tambien.
+ */
 const char *obtener_color_tipo_pokemon(char contenido, juego_t *juego, int fila,
 				       int columna)
 {
@@ -752,6 +773,9 @@ void mostrar_estadisticas_jugadores(conexion_juegos_t *conexion)
 	mostrar_seccion_puntos(conexion);
 }
 
+/**
+ * Muestra ambos juegos con sus estadisticas por pantalla.
+ */
 void mostrar_juegos(conexion_juegos_t *conexion)
 {
 	if (!conexion) {
@@ -796,7 +820,9 @@ void cierre_juego(int estado)
 	dibujo_charizard(texto);
 }
 
-// Función callback para el game_loop
+/**
+ * Función callback para 'game_loop'.
+ */
 int callback_juego(int tecla, void *datos)
 {
 	conexion_juegos_t *conexion = (conexion_juegos_t *)datos;
@@ -844,7 +870,7 @@ void manejar_juego(pokedex_t *pokedex, char opcion)
 	destruir_juego(conexion);
 }
 
-// -------------------------------- VISUALIZACION E INTERACCION --------------------------------
+// -------------------------------- INTERACCION --------------------------------
 
 /**
  * Imprime por pantalla las opciones del menú dado.
@@ -865,19 +891,16 @@ void mostrar_menu(menu_t *menu)
 	const int espacios_centrado = 25;
 
 	printf("\n");
-	// Imprimir espacios para centrar + borde superior
 	for (int i = 0; i < espacios_centrado; i++) {
 		printf(" ");
 	}
 	printf("%s----------------------------%s\n", ANSI_COLOR_BOLD,
 	       ANSI_COLOR_RESET);
 
-	// Mostrar opciones centradas
 	while (iterador_tiene_siguiente(iterador)) {
 		opcion_menu_t *opcion =
 			(opcion_menu_t *)iterador_siguiente(iterador);
 		if (opcion) {
-			// Imprimir espacios para centrar + línea de opción
 			for (int i = 0; i < espacios_centrado; i++) {
 				printf(" ");
 			}
@@ -889,12 +912,12 @@ void mostrar_menu(menu_t *menu)
 		}
 	}
 
-	// Imprimir espacios para centrar + borde inferior
 	for (int i = 0; i < espacios_centrado; i++) {
 		printf(" ");
 	}
 	printf("%s----------------------------%s\n", ANSI_COLOR_BOLD,
 	       ANSI_COLOR_RESET);
+
 	destruir_iterador_menu(iterador);
 }
 
@@ -939,7 +962,7 @@ char menu_obtener_opcion_usuario(menu_t *menu)
 }
 
 /**
- * Obtiene la opción del menú basándose en el carácter seleccionado
+ * Obtiene la opción del menú basándose en el carácter seleccionado.
  */
 opcion_menu_t *obtener_opcion_por_caracter(menu_t *menu, char caracter)
 {
