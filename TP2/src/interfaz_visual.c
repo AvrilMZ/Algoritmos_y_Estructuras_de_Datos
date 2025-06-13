@@ -31,6 +31,9 @@ const char *EMOJI_ROCA = "\U0001FAA8";
 const char *EMOJI_ELECTRICO = "\U000026A1";
 const char *EMOJI_NORMAL = "\U0001F464";
 const char *EMOJI_LUCHA = "\U0001F94A";
+const char *EMOJI_ESTRELLA = "\U00002B50";
+const char *EMOJI_TARGET = "\U0001F3AF";
+const char *EMOJI_BRUJULA = "\U0001F9ED";
 
 typedef enum {
 	ACCION_JUGAR,
@@ -49,6 +52,68 @@ typedef struct opcion_menu {
 	char *texto;
 	tipo_accion_t tipo_accion;
 } opcion_menu_t;
+
+void dibujo_logo_pokemon()
+{
+	printf("\n");
+	printf(ANSI_COLOR_YELLOW "\t                                  ,'\\\n");
+	printf("\t    _.----.        ____         ,'  _\\   ___    ___     ____\n");
+	printf("\t_,-'       `.     |    |  /`.   \\,-'    |   \\  /   |   |    \\  |`.\n");
+	printf("\t\\      __    \\    '-.  | /   `.  ___    |    \\/    |   '-.   \\ |  |\n");
+	printf("\t \\.    \\ \\   |  __  |  |/    ,','_  `.  |          | __  |    \\|  |\n");
+	printf("\t   \\    \\/   /,' _`.|      ,' / / / /   |          ,' _`.|     |  |\n");
+	printf("\t    \\     ,-'/  /   \\    ,'   | \\/ / ,`.|         /  /   \\  |     |\n");
+	printf("\t     \\    \\ |   \\_/  |   `-.  \\    `'  /|  |    ||   \\_/  | |\\    |\n");
+	printf("\t      \\    \\ \\      /       `-.`.___,-' |  |\\  /| \\      /  | |   |\n");
+	printf("\t       \\    \\ `.__,'|  |`-._    `|      |__| \\/ |  `.__,'|  | |   |\n");
+	printf("\t        \\_.-'       |__|    `-._ |              '-.|     '-.| |   |\n");
+	printf("\t                                `'                            '-._|\n" ANSI_COLOR_RESET);
+}
+
+void dibujo_charizard(char *texto)
+{
+	printf("\n");
+	printf(ANSI_COLOR_RED "\t                 .\"-,.__\n");
+	printf("\t                 `.     `.  ,\n");
+	printf("\t              .--'  .._,'\"-' `.\n");
+	printf("\t             .    .'         `' \n");
+	printf("\t             `.   %s%s%s'\n", ANSI_COLOR_BOLD, texto,
+	       ANSI_COLOR_RED);
+	printf("\t               `  '--.   ,-\"'\n");
+	printf("\t                `\"`   |  \\\n");
+	printf("\t                   -. \\, |\n");
+	printf("\t                    `--Y.'      ___.\n");
+	printf("\t                         \\     L._, \\\n");
+	printf("\t               _.,        `.   <  <\\                _\n");
+	printf("\t             ,' '           `, `.   | \\            ( `\n");
+	printf("\t          ../, `.            `  |    .\\`.           \\ \\_\n");
+	printf("\t         ,' ,..  .           _.,'    ||\\l            )  '\".\n");
+	printf("\t        , ,'   \\           ,'.-.`-._,'  |           .  _._`.\n");
+	printf("\t      ,' /      \\ \\        `' ' `--/   | \\          / /   ..\\\n");
+	printf("\t    .'  /        \\ .         |\\__ - _ ,'` `        / /     `.`.\n");
+	printf("\t    |  '          ..         `-...-\"  |  `-'      / /        . `.\n");
+	printf("\t    | /           |L__           |    |          / /          `. `.\n");
+	printf("\t   , /            .   .          |    |         / /             ` `\n");
+	printf("\t  / /          ,. ,`._ `-_       |    |  _   ,-' /               ` \\\n");
+	printf("\t / .           \\\"`_/. `-_ \\_,.  ,'    +-' `-'  _,        ..,-.    `.\\\n");
+	printf("\t.  '         .-f    ,'   `    '.       \\__.---'     _   .'   '     \\ \\\n");
+	printf("\t' /          `.'    l     .' /          \\..      ,_|/   `.  ,'`     L`\n");
+	printf("\t|'      _.-\"\"` `.    \\ _,'  `            \\ `.___`.'\"`-.  , |   |    | \\\n");
+	printf("\t||    ,'      `. `.   '       _,...._        `  |    `/ '  |   '     .|\n");
+	printf("\t||  ,'          `. ;.,.---' ,'       `.   `.. `-'  .-' /_ .'    ;_   ||\n");
+	printf("\t|| '              V      / /           `   | `   ,'   ,' '.    !  `. ||\n");
+	printf("\t||/            _,-------7 '              . |  `-'    l         /    `||\n");
+	printf("\t. |          ,' .-   ,' ||               | .-.        `.      .'     ||\n");
+	printf("\t `'        ,'    `\".'    |               |    `.        '. -.'       `'\n");
+	printf("\t          /      ,'      |               |,'    \\-.._,.'/'\n");
+	printf("\t          .     /        .               .       \\    .''\n");
+	printf("\t        .`.    |         `.             /         :_,' .'\n");
+	printf("\t          \\ `...\\   _     ,'-.        .'         /_.-'\n");
+	printf("\t           `-.__ `,  `'   .  _.>----''.  _  __  /\n");
+	printf("\t                .'        /\"'          |  \"'   '_\n");
+	printf("\t               /_|.-'\\ ,\".             '.'`__'-( \\\n");
+	printf("\t                 / ,\"'\"\\,'               `/  `-.|\"\n" ANSI_COLOR_RESET);
+}
 
 // -------------------------------- MENÚ PRINCIPAL--------------------------------
 /**
@@ -295,41 +360,90 @@ const char *tipo_a_cadena(tipo_pokemon tipo)
 	return "";
 }
 
-// Imprime los datos del pokemon pasado por parámetro.
-void mostrar_pokemon(const struct pokemon *pokemon)
+/**
+ * Muestra una línea de encabezado con la misma estética del menú
+ */
+void mostrar_encabezado_resultado(const char *titulo)
 {
-	printf("%-12s (%3d) \t F%-3d D%-3d I%-3d \t %s\n", pokemon->nombre,
-	       pokemon->id, pokemon->fuerza, pokemon->destreza,
-	       pokemon->inteligencia, tipo_a_cadena(pokemon->tipo));
+	const int espacios_centrado = 25;
+
+	printf("\n");
+	for (int i = 0; i < espacios_centrado; i++) {
+		printf(" ");
+	}
+	printf("%s%s%s\n", ANSI_COLOR_YELLOW ANSI_COLOR_BOLD, titulo,
+	       ANSI_COLOR_RESET);
+
+	for (int i = 0; i < espacios_centrado; i++) {
+		printf(" ");
+	}
+	printf("%s", ANSI_COLOR_BOLD);
+	for (int i = 0; i < (int)strlen(titulo); i++) {
+		printf("=");
+	}
+	printf("%s\n", ANSI_COLOR_RESET);
 }
 
 // Imprime los datos del pokemon pasado por parámetro.
-bool imprimir_pokemon(struct pokemon *pokemon, void *ctx)
+void mostrar_pokemon_con_formato(const struct pokemon *pokemon)
 {
-	mostrar_pokemon(pokemon);
+	const int espacios_centrado = 15;
+
+	for (int i = 0; i < espacios_centrado; i++) {
+		printf(" ");
+	}
+	printf("%s[%3d]%s %-15s F%-3d D%-3d I%-3d %s\n", ANSI_COLOR_BOLD,
+	       pokemon->id, ANSI_COLOR_RESET, pokemon->nombre, pokemon->fuerza,
+	       pokemon->destreza, pokemon->inteligencia,
+	       tipo_a_cadena(pokemon->tipo));
+}
+
+// Imprime los datos del pokemon con formato estético
+bool imprimir_pokemon_con_formato(struct pokemon *pokemon, void *ctx)
+{
+	mostrar_pokemon_con_formato(pokemon);
 	return true;
 }
 
-// Devuelve true si el pokemon pasado por parámetro no coincide con el ID buscado, de lo contrario lo imprime y devuelve false.
-bool mostrar_pokemon_con_id(struct pokemon *pokemon, void *ctx)
+// Devuelve true si el pokemon no coincide con el ID, de lo contrario lo imprime con formato y devuelve false
+bool mostrar_pokemon_con_id_formato(struct pokemon *pokemon, void *ctx)
 {
 	int *id = ctx;
 	if (pokemon->id == *id) {
-		mostrar_pokemon(pokemon);
+		mostrar_pokemon_con_formato(pokemon);
 		return false;
 	}
 	return true;
 }
 
-// Devuelve true si el pokemon pasado por parámetro no coincide con el nombre buscado, de lo contrario lo imprime y devuelve false.
-bool mostrar_pokemon_con_nombre(struct pokemon *pokemon, void *ctx)
+// Devuelve true si el pokemon no coincide con el nombre, de lo contrario lo imprime con formato y devuelve false
+bool mostrar_pokemon_con_nombre_formato(struct pokemon *pokemon, void *ctx)
 {
 	char *nombre = ctx;
 	if (son_iguales_en_lowercase(pokemon->nombre, nombre)) {
-		mostrar_pokemon(pokemon);
+		mostrar_pokemon_con_formato(pokemon);
 		return false;
 	}
 	return true;
+}
+
+/**
+ * Muestra una indicación con el mensaje dado.
+ */
+void mostrar_indicacion(const char *mensaje)
+{
+	const int espacios_centrado = 25;
+
+	printf("\n");
+	for (int i = 0; i < espacios_centrado; i++) {
+		printf(" ");
+	}
+	printf("     %s%-25s%s\n", ANSI_COLOR_RED, mensaje, ANSI_COLOR_RESET);
+
+	for (int i = 0; i < espacios_centrado; i++) {
+		printf(" ");
+	}
+	printf("%s> %s", ANSI_COLOR_RED, ANSI_COLOR_RESET);
 }
 
 /**
@@ -343,33 +457,34 @@ void manejar_busqueda(pokedex_t *pokedex, char opcion)
 
 	if (opcion == BUSCAR_POR_NOMBRE) {
 		char nombre[100];
-		printf("Ingrese el nombre del pokémon: ");
+		dibujo_logo_pokemon();
+		mostrar_indicacion("Ingrese el nombre");
 		if (scanf("%99s", nombre) != 1) {
 			return;
 		}
-		printf("%sPokemon buscado:%s\n", ANSI_COLOR_YELLOW,
-		       ANSI_COLOR_RESET);
-		unsigned encontrados = pokedex_iterar_pokemones(
-			pokedex, ITERAR_NOMBRE, mostrar_pokemon_con_nombre,
-			nombre);
-		if (encontrados == 0) {
-			printf("No se encontró ningún pokémon con el nombre '%s'\n",
-			       nombre);
-		}
+
+		borrar_pantalla();
+		dibujo_logo_pokemon();
+		mostrar_encabezado_resultado(
+			"RESULTADO DE BÚSQUEDA POR NOMBRE");
+
+		pokedex_iterar_pokemones(pokedex, ITERAR_NOMBRE,
+					 mostrar_pokemon_con_nombre_formato,
+					 nombre);
 	} else if (opcion == BUSCAR_POR_ID) {
 		int id;
-		printf("Ingrese el ID del pokémon: ");
+		dibujo_logo_pokemon();
+		mostrar_indicacion("Ingrese el ID:");
 		if (scanf("%d", &id) != 1) {
 			return;
 		}
-		printf("%sPokemon buscado:%s\n", ANSI_COLOR_YELLOW,
-		       ANSI_COLOR_RESET);
-		unsigned encontrados = pokedex_iterar_pokemones(
-			pokedex, ITERAR_ID, mostrar_pokemon_con_id, &id);
-		if (encontrados == 0) {
-			printf("No se encontró ningún pokémon con el ID %d\n",
-			       id);
-		}
+
+		borrar_pantalla();
+		dibujo_logo_pokemon();
+		mostrar_encabezado_resultado("RESULTADO DE BÚSQUEDA POR ID");
+
+		pokedex_iterar_pokemones(pokedex, ITERAR_ID,
+					 mostrar_pokemon_con_id_formato, &id);
 	}
 }
 
@@ -382,27 +497,30 @@ void manejar_mostrar(pokedex_t *pokedex, char opcion)
 		return;
 	}
 
+	borrar_pantalla();
+	dibujo_logo_pokemon();
+
 	if (opcion == MOSTRAR_POR_NOMBRE) {
-		printf("%sPokemones ordenados por nombre:%s\n",
-		       ANSI_COLOR_YELLOW, ANSI_COLOR_RESET);
+		mostrar_encabezado_resultado("POKÉMONES ORDENADOS POR NOMBRE");
 		pokedex_iterar_pokemones(pokedex, ITERAR_NOMBRE,
-					 imprimir_pokemon, NULL);
+					 imprimir_pokemon_con_formato, NULL);
 	} else if (opcion == MOSTRAR_POR_ID) {
-		printf("%sPokemones ordenados por ID:%s\n", ANSI_COLOR_YELLOW,
-		       ANSI_COLOR_RESET);
-		pokedex_iterar_pokemones(pokedex, ITERAR_ID, imprimir_pokemon,
-					 NULL);
+		mostrar_encabezado_resultado("POKÉMONES ORDENADOS POR ID");
+		pokedex_iterar_pokemones(pokedex, ITERAR_ID,
+					 imprimir_pokemon_con_formato, NULL);
 	}
 }
 
 // -------------------------------- JUEGO --------------------------------
+
 /**
  * 
  */
 unsigned int preguntar_semilla()
 {
-	unsigned int semilla = (unsigned int)rand();
-	printf("Ingrese la semilla: ");
+	unsigned int semilla = 0;
+	dibujo_logo_pokemon();
+	mostrar_indicacion("Ingrese la semilla");
 	if (scanf("%u", &semilla) != 1) {
 		return 0;
 	}
@@ -424,66 +542,12 @@ const char *obtener_color_por_tipo(tipo_pokemon tipo)
 	case TIPO_ELECTRICO:
 		return ANSI_COLOR_YELLOW;
 	case TIPO_NORMAL:
-		return ANSI_COLOR_BLACK;
+		return ANSI_COLOR_WHITE;
 	case TIPO_LUCHA:
 		return ANSI_COLOR_MAGENTA;
 	default:
 		return ANSI_COLOR_RESET;
 	}
-}
-
-/**
- * Muestra información detallada de un jugador específico
- */
-void mostrar_info_detallada_jugador(juego_t *juego, int num_jugador)
-{
-	if (!juego) {
-		return;
-	}
-
-	printf("\nJugador %i:\n", num_jugador);
-
-	printf("Últimos capturados: ");
-	size_t total_capturados = obtener_cantidad_pokes_capturados(juego);
-	if (total_capturados == 0) {
-		printf("Ninguno");
-	} else {
-		int inicio = (int)total_capturados - 3;
-		if (inicio < 0) {
-			inicio = 0;
-		}
-
-		for (int i = inicio; i < (int)total_capturados; i++) {
-			struct pokemon *pokemon =
-				obtener_pokemon_capturado(juego, i);
-			if (pokemon) {
-				printf("%s", pokemon->nombre);
-				if (i < (int)total_capturados - 1) {
-					printf(", ");
-				}
-			}
-		}
-	}
-	printf("\n");
-
-	printf("Próximo a capturar: ");
-	if (obtener_cantidad_pokes_pendientes(juego) > 0) {
-		struct pokemon *proximo = obtener_pokemon_pendiente_tope(juego);
-		if (proximo) {
-			const char *color =
-				obtener_color_por_tipo(proximo->tipo);
-			printf("%s%s%s", color, tipo_a_cadena(proximo->tipo),
-			       ANSI_COLOR_RESET);
-		} else {
-			printf("Desconocido");
-		}
-	} else {
-		printf("Ninguno");
-	}
-	printf("\n");
-
-	printf("Puntos: %u\n", obtener_puntos_jugador(juego));
-	printf("\n");
 }
 
 const char *obtener_color_tipo_pokemon(char contenido, juego_t *juego, int fila,
@@ -498,22 +562,27 @@ const char *obtener_color_tipo_pokemon(char contenido, juego_t *juego, int fila,
 	return obtener_color_por_tipo(pokemon->tipo);
 }
 
-void mostrar_juegos(conexion_juegos_t *conexion)
+/**
+ * Muestra el encabezado con el tiempo restante.
+ */
+void mostrar_encabezado_juego(conexion_juegos_t *conexion)
+{
+	int tiempo_restante = obtener_tiempo_restante(conexion);
+	printf("\t\t\t\t\t\t   %sTiempo restante: %d segundos%s\n\n",
+	       ANSI_COLOR_YELLOW, tiempo_restante, ANSI_COLOR_RESET);
+}
+
+/**
+ * Muestra el terreno de juego con el jugador y pokemones.
+ */
+void mostrar_terreno(conexion_juegos_t *conexion)
 {
 	if (!conexion) {
 		return;
 	}
 
-	borrar_pantalla();
-
-	int tiempo_restante = obtener_tiempo_restante(conexion);
-	printf("%sTiempo restante: %d segundos%s\n\n", ANSI_COLOR_YELLOW,
-	       tiempo_restante, ANSI_COLOR_RESET);
-
-	mostrar_info_detallada_jugador(obtener_juego(conexion, 0), 0);
-	mostrar_info_detallada_jugador(obtener_juego(conexion, 1), 1);
-
 	for (int i = 0; i < MAX_FILAS; i++) {
+		printf("\t");
 		for (int k = 0; k < MAX_JUGADORES; k++) {
 			juego_t *juego = obtener_juego(conexion, k);
 
@@ -539,6 +608,169 @@ void mostrar_juegos(conexion_juegos_t *conexion)
 }
 
 /**
+ * Muestra los títulos de los jugadores.
+ */
+void mostrar_titulos_jugadores()
+{
+	printf("\t%s%-50s%s\t\t%s%-50s%s\n", ANSI_COLOR_BOLD,
+	       "Jugador 1:", ANSI_COLOR_RESET, ANSI_COLOR_BOLD,
+	       "Jugador 2:", ANSI_COLOR_RESET);
+}
+
+/**
+ * Obtiene información de los últimos pokémon capturados por un jugador.
+ */
+void obtener_info_capturados(juego_t *juego, char *info_capturados,
+			     size_t max_len)
+{
+	size_t total_capturados = obtener_cantidad_pokes_capturados(juego);
+
+	if (total_capturados == 0) {
+		strcpy(info_capturados, "Ninguno");
+		return;
+	}
+
+	int inicio = (int)total_capturados - 3;
+	if (inicio < 0) {
+		inicio = 0;
+	}
+
+	info_capturados[0] = '\0';
+	bool salir = false;
+	for (int i = inicio; i < (int)total_capturados && !salir; i++) {
+		struct pokemon *pokemon = obtener_pokemon_capturado(juego, i);
+		if (pokemon) {
+			size_t len_actual = strlen(info_capturados);
+
+			if (len_actual > 0) {
+				if (len_actual + 2 < max_len) {
+					strcat(info_capturados, ", ");
+				} else {
+					salir = true;
+				}
+			}
+
+			size_t len_nombre = strlen(pokemon->nombre);
+			size_t len_nueva = strlen(info_capturados);
+
+			if (len_nueva + len_nombre < max_len) {
+				strcat(info_capturados, pokemon->nombre);
+			} else {
+				salir = true;
+			}
+		}
+	}
+}
+
+/**
+ * Muestra la sección de últimos pokémon capturados.
+ */
+void mostrar_seccion_capturados(conexion_juegos_t *conexion)
+{
+	printf("\t%s %-50s\t\t%s %-50s\n", EMOJI_TARGET,
+	       "Últimos capturados:", EMOJI_TARGET, "Últimos capturados:");
+
+	for (int jugador = 0; jugador < MAX_JUGADORES; jugador++) {
+		juego_t *juego = obtener_juego(conexion, jugador);
+		char info_capturados[100];
+
+		obtener_info_capturados(juego, info_capturados,
+					sizeof(info_capturados));
+
+		if (jugador == 0) {
+			printf("\t   %-50s\t\t", info_capturados);
+		} else {
+			printf("   %-50s\n", info_capturados);
+		}
+	}
+}
+
+/**
+ * Muestra la sección de próximos pokémon a capturar.
+ */
+void mostrar_seccion_proximos(conexion_juegos_t *conexion)
+{
+	printf("\t%s %-50s\t\t%s %-50s\n", EMOJI_BRUJULA,
+	       "Próximo a capturar:", EMOJI_BRUJULA, "Próximo a capturar:");
+
+	printf("\t");
+	for (int jugador = 0; jugador < MAX_JUGADORES; jugador++) {
+		juego_t *juego = obtener_juego(conexion, jugador);
+
+		printf("   ");
+
+		if (obtener_cantidad_pokes_pendientes(juego) == 0) {
+			printf("%-50s", "Ninguno");
+		} else {
+			struct pokemon *proximo =
+				obtener_pokemon_pendiente_tope(juego);
+			if (proximo) {
+				const char *color =
+					obtener_color_por_tipo(proximo->tipo);
+				printf("%s%-50s%s", color,
+				       tipo_a_cadena(proximo->tipo),
+				       ANSI_COLOR_RESET);
+			}
+		}
+
+		if (jugador == 0) {
+			printf("\t\t");
+		} else {
+			printf("\n");
+		}
+	}
+}
+
+/**
+ * Muestra la sección de puntos.
+ */
+void mostrar_seccion_puntos(conexion_juegos_t *conexion)
+{
+	printf("\t%s %-50s\t\t%s %-50s\n", EMOJI_ESTRELLA,
+	       "Puntos:", EMOJI_ESTRELLA, "Puntos:");
+
+	for (int jugador = 0; jugador < MAX_JUGADORES; jugador++) {
+		juego_t *juego = obtener_juego(conexion, jugador);
+		unsigned puntos = obtener_puntos_jugador(juego);
+
+		if (jugador == 0) {
+			printf("\t   %-50u\t\t", puntos);
+		} else {
+			printf("   %-50u\n", puntos);
+		}
+	}
+}
+
+/**
+ * Muestra las estadísticas de ambos jugadores.
+ */
+void mostrar_estadisticas_jugadores(conexion_juegos_t *conexion)
+{
+	mostrar_titulos_jugadores();
+	mostrar_seccion_capturados(conexion);
+	mostrar_seccion_proximos(conexion);
+	mostrar_seccion_puntos(conexion);
+}
+
+void mostrar_juegos(conexion_juegos_t *conexion)
+{
+	if (!conexion) {
+		return;
+	}
+
+	borrar_pantalla();
+	printf("\n");
+
+	mostrar_encabezado_juego(conexion);
+	printf("\n");
+
+	mostrar_terreno(conexion);
+	printf("\n");
+
+	mostrar_estadisticas_jugadores(conexion);
+}
+
+/**
  * Devuelve true si la acción dada es válida, de lo contrario false.
  */
 bool es_movimiento_valido(int accion)
@@ -555,12 +787,13 @@ bool es_movimiento_valido(int accion)
 void cierre_juego(int estado)
 {
 	borrar_pantalla();
+	char texto[20] = "";
 	if (estado == GANO_JUGADOR_1) {
-		printf("GANA JUGADOR 1\n");
+		strcpy(texto, "WINS PLAYER 1");
 	} else if (estado == GANO_JUGADOR_2) {
-		printf("GANA JUGADOR 2\n");
+		strcpy(texto, "WINS PLAYER 2");
 	}
-	printf("¡Se acabó el tiempo!\n");
+	dibujo_charizard(texto);
 }
 
 // Función callback para el game_loop
@@ -627,13 +860,41 @@ void mostrar_menu(menu_t *menu)
 		return;
 	}
 
+	dibujo_logo_pokemon();
+
+	const int espacios_centrado = 25;
+
+	printf("\n");
+	// Imprimir espacios para centrar + borde superior
+	for (int i = 0; i < espacios_centrado; i++) {
+		printf(" ");
+	}
+	printf("%s----------------------------%s\n", ANSI_COLOR_BOLD,
+	       ANSI_COLOR_RESET);
+
+	// Mostrar opciones centradas
 	while (iterador_tiene_siguiente(iterador)) {
 		opcion_menu_t *opcion =
 			(opcion_menu_t *)iterador_siguiente(iterador);
 		if (opcion) {
-			printf("[%c] %s\n", opcion->caracter, opcion->texto);
+			// Imprimir espacios para centrar + línea de opción
+			for (int i = 0; i < espacios_centrado; i++) {
+				printf(" ");
+			}
+			printf("%s|%s [%s%c%s] %-20s %s|%s\n", ANSI_COLOR_BOLD,
+			       ANSI_COLOR_RESET, ANSI_COLOR_BOLD,
+			       opcion->caracter, ANSI_COLOR_RESET,
+			       opcion->texto, ANSI_COLOR_BOLD,
+			       ANSI_COLOR_RESET);
 		}
 	}
+
+	// Imprimir espacios para centrar + borde inferior
+	for (int i = 0; i < espacios_centrado; i++) {
+		printf(" ");
+	}
+	printf("%s----------------------------%s\n", ANSI_COLOR_BOLD,
+	       ANSI_COLOR_RESET);
 	destruir_iterador_menu(iterador);
 }
 
@@ -658,7 +919,7 @@ char menu_obtener_opcion_usuario(menu_t *menu)
 {
 	char opcion;
 	mostrar_menu(menu);
-	printf("\nSeleccione una opción: ");
+	mostrar_indicacion("Ingrese una opción");
 	if (scanf(" %c", &opcion) != 1) {
 		return SALIR_DEL_JUEGO;
 	}
@@ -666,7 +927,9 @@ char menu_obtener_opcion_usuario(menu_t *menu)
 	while (!es_opcion_valida(menu, opcion)) {
 		borrar_pantalla();
 		mostrar_menu(menu);
-		printf("Opción inválida. Intente nuevamente.\n\n");
+		printf("\n\t\t\t      %sOpción inválida%s", ANSI_COLOR_RED,
+		       ANSI_COLOR_RESET);
+		mostrar_indicacion("Ingrese una opción");
 		if (scanf(" %c", &opcion) != 1) {
 			return SALIR_DEL_JUEGO;
 		}
@@ -722,34 +985,32 @@ menu_t *procesar_opcion(menu_t *menu_actual, char opcion, pokedex_t *pokedex)
 	case ACCION_MENU_ANTERIOR: {
 		menu_t *menu_padre = obtener_menu_padre(menu_actual);
 		if (menu_padre) {
-			printf("\n====== MENÚ ======\n");
 			return menu_padre;
 		}
 		break;
 	}
 	case ACCION_JUGAR:
 		manejar_juego(pokedex, JUGAR);
-		break;
+		return NULL;
 	case ACCION_JUGAR_SEMILLA:
 		manejar_juego(pokedex, JUGAR_CON_SEMILLA);
-		break;
+		return NULL;
 	case ACCION_BUSCAR_NOMBRE:
 		manejar_busqueda(pokedex, BUSCAR_POR_NOMBRE);
-		break;
+		return NULL;
 	case ACCION_BUSCAR_ID:
 		manejar_busqueda(pokedex, BUSCAR_POR_ID);
-		break;
+		return NULL;
 	case ACCION_MOSTRAR_NOMBRE:
 		manejar_mostrar(pokedex, MOSTRAR_POR_NOMBRE);
-		break;
+		return NULL;
 	case ACCION_MOSTRAR_ID:
 		manejar_mostrar(pokedex, MOSTRAR_POR_ID);
-		break;
+		return NULL;
 	case ACCION_SUBSECCION: {
 		menu_t *subseccion = obtener_subseccion_de_opcion(
 			menu_actual, &opcion, comparar_opciones_por_caracter);
 		if (subseccion) {
-			printf("\n====== MENÚ ======\n");
 			return subseccion;
 		}
 		break;
@@ -763,17 +1024,20 @@ menu_t *procesar_opcion(menu_t *menu_actual, char opcion, pokedex_t *pokedex)
 
 void mostrar_menu_principal(pokedex_t *pokedex)
 {
-	printf("\n====== MENÚ ======\n");
 	menu_t *menu_actual = crear_menu_completo();
 	if (!menu_actual) {
 		return;
 	}
 
 	char opcion = menu_obtener_opcion_usuario(menu_actual);
-	while (opcion != SALIR_DEL_JUEGO) {
+	while (opcion != SALIR_DEL_JUEGO && menu_actual) {
 		menu_actual = procesar_opcion(menu_actual, opcion, pokedex);
-		opcion = menu_obtener_opcion_usuario(menu_actual);
+		if (menu_actual) {
+			opcion = menu_obtener_opcion_usuario(menu_actual);
+		}
 	}
 
-	destruir_menu(menu_actual, destruir_opcion_menu);
+	if (menu_actual) {
+		destruir_menu(menu_actual, destruir_opcion_menu);
+	}
 }
