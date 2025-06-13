@@ -1,5 +1,5 @@
 #include "pa2m.h"
-#include "src/menu.h"
+#include "../src/menu.h"
 #include <string.h>
 
 bool comparar_strings(void *a, void *b)

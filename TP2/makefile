@@ -5,11 +5,15 @@ CC = gcc
 
 all: clean valgrind-tp2
 
-valgrind-alumno: pruebas_alumno
-	valgrind $(VALGRIND_FLAGS) ./pruebas_alumno
+valgrind-alumno: pruebas_menu pruebas_juego
+	valgrind $(VALGRIND_FLAGS) ./pruebas_menu
+	valgrind $(VALGRIND_FLAGS) ./pruebas_juego
 
-pruebas_alumno: src/*.c pruebas_alumno.c engine
-	$(CC) $(CFLAGS) src/*.c pruebas_alumno.c engine.o -o pruebas_alumno
+pruebas_menu: src/*.c testing/pruebas_menu.c engine
+	$(CC) $(CFLAGS) src/*.c testing/pruebas_menu.c engine.o -o pruebas_menu
+
+pruebas_juego: src/*.c testing/pruebas_juego.c engine
+	$(CC) $(CFLAGS) src/*.c testing/pruebas_juego.c engine.o -o pruebas_juego
 
 valgrind-tp2: tp2
 	valgrind $(VALGRIND_FLAGS) ./tp2 datos/pokedex.csv
@@ -21,4 +25,4 @@ tp2: engine
 	$(CC) $(CFLAGS) src/*.c tp2.c engine.o -o tp2
 
 clean:
-	rm -f pruebas_alumno tp2 engine.o
+	rm -f pruebas_menu pruebas_juego tp2 engine.o
