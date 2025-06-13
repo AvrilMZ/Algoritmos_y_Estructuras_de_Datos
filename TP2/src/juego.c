@@ -292,14 +292,16 @@ conexion_juegos_t *inicializar_juego(pokedex_t *pokedex, unsigned int semilla)
 					}
 					if (conexion->juegos[j]
 						    ->pokes_pendientes) {
-						pila_destruir(
+						pila_destruir_todo(
 							conexion->juegos[j]
-								->pokes_pendientes);
+								->pokes_pendientes,
+							destruir_pokemon_juego);
 					}
 					if (conexion->juegos[j]->pokes_en_juego) {
-						lista_destruir(
+						lista_destruir_todo(
 							conexion->juegos[j]
-								->pokes_en_juego);
+								->pokes_en_juego,
+							destruir_pokemon_juego);
 					}
 					free(conexion->juegos[j]);
 				}
@@ -392,10 +394,21 @@ pokemon_juego_t *jugador_capturar_pokemon(conexion_juegos_t *conexion,
 		juego_contrario = 0;
 	}
 
-	pokemon_juego_t *copia = copia_pokemon(poke_capturado);
+	pokemon_juego_t *copia_capturados = copia_pokemon(poke_capturado);
+	pokemon_juego_t *copia_pendientes = copia_pokemon(poke_capturado);
+
+	if (!copia_capturados || !copia_pendientes) {
+		if (copia_capturados)
+			destruir_pokemon_juego(copia_capturados);
+		if (copia_pendientes)
+			destruir_pokemon_juego(copia_pendientes);
+		return eliminado;
+	}
+
 	lista_insertar(conexion->juegos[num_juego]->jugador.pokes_capturados,
-		       copia);
-	pila_apilar(conexion->juegos[juego_contrario]->pokes_pendientes, copia);
+		       copia_capturados);
+	pila_apilar(conexion->juegos[juego_contrario]->pokes_pendientes,
+		    copia_pendientes);
 
 	pokemon_juego_t *tope_pila =
 		pila_tope(conexion->juegos[num_juego]->pokes_pendientes);
@@ -403,7 +416,9 @@ pokemon_juego_t *jugador_capturar_pokemon(conexion_juegos_t *conexion,
 	    eliminado->poke->tipo == tope_pila->poke->tipo) {
 		conexion->juegos[num_juego]->jugador.puntos++;
 		conexion->juegos[juego_contrario]->jugador.puntos--;
-		pila_desapilar(conexion->juegos[num_juego]->pokes_pendientes);
+		pokemon_juego_t *desapilado = pila_desapilar(
+			conexion->juegos[num_juego]->pokes_pendientes);
+		destruir_pokemon_juego(desapilado);
 	}
 
 	return eliminado;
@@ -565,6 +580,7 @@ void destruir_juego(conexion_juegos_t *conexion)
 	if (!conexion) {
 		return;
 	}
+
 	for (int i = 0; i < MAX_JUGADORES; i++) {
 		if (conexion->juegos[i]) {
 			if (conexion->juegos[i]->jugador.pokes_capturados) {
@@ -575,13 +591,15 @@ void destruir_juego(conexion_juegos_t *conexion)
 			}
 
 			if (conexion->juegos[i]->pokes_pendientes) {
-				pila_destruir(
-					conexion->juegos[i]->pokes_pendientes);
+				pila_destruir_todo(
+					conexion->juegos[i]->pokes_pendientes,
+					destruir_pokemon_juego);
 			}
 
 			if (conexion->juegos[i]->pokes_en_juego) {
-				lista_destruir(
-					conexion->juegos[i]->pokes_en_juego);
+				lista_destruir_todo(
+					conexion->juegos[i]->pokes_en_juego,
+					destruir_pokemon_juego);
 			}
 
 			free(conexion->juegos[i]);

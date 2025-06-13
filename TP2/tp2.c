@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
 
 	borrar_pantalla();
 	mostrar_menu_principal(pokedex);
+	pokedex_destruir(pokedex);
 
 	return 0;
 }

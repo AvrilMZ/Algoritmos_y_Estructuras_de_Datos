@@ -1047,20 +1047,27 @@ menu_t *procesar_opcion(menu_t *menu_actual, char opcion, pokedex_t *pokedex)
 
 void mostrar_menu_principal(pokedex_t *pokedex)
 {
-	menu_t *menu_actual = crear_menu_completo();
-	if (!menu_actual) {
+	menu_t *menu_raiz = crear_menu_completo();
+	if (!menu_raiz) {
 		return;
 	}
 
+	menu_t *menu_actual = menu_raiz;
 	char opcion = menu_obtener_opcion_usuario(menu_actual);
-	while (opcion != SALIR_DEL_JUEGO && menu_actual) {
-		menu_actual = procesar_opcion(menu_actual, opcion, pokedex);
-		if (menu_actual) {
-			opcion = menu_obtener_opcion_usuario(menu_actual);
+	bool salir = false;
+	while (!salir && menu_actual && opcion != SALIR_DEL_JUEGO) {
+		menu_t *nuevo_menu =
+			procesar_opcion(menu_actual, opcion, pokedex);
+		if (nuevo_menu == NULL) {
+			salir = true;
+		} else {
+			menu_actual = nuevo_menu;
+			if (menu_actual) {
+				opcion = menu_obtener_opcion_usuario(
+					menu_actual);
+			}
 		}
 	}
 
-	if (menu_actual) {
-		destruir_menu(menu_actual, destruir_opcion_menu);
-	}
+	destruir_menu(menu_raiz, destruir_opcion_menu);
 }
