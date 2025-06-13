@@ -25,7 +25,6 @@ pila_t *pila_crear()
 	lista_t *lista_interna = lista_crear();
 	if (!lista_interna) {
 		free(pila);
-		pila = NULL;
 		return NULL;
 	}
 	pila->lista = lista_interna;
@@ -78,7 +77,19 @@ void pila_destruir(pila_t *pila)
 	if (!pila) {
 		return;
 	}
-	lista_destruir(pila->lista);
+	pila_destruir_todo(pila, NULL);
+}
+
+void pila_destruir_todo(pila_t *pila, void (*destructor)(void *))
+{
+	if (!pila) {
+		return;
+	}
+
+	if (destructor) {
+		lista_destruir_todo(pila->lista, destructor);
+	} else {
+		lista_destruir(pila->lista);
+	}
 	free(pila);
-	pila = NULL;
 }
