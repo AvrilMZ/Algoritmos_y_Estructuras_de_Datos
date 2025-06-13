@@ -93,10 +93,10 @@ bool eliminar_opcion_en_seccion(menu_t *seccion, void *opcion,
 			}
 			free(actual);
 			eliminado = true;
+		} else {
+			anterior = actual;
+			actual = actual->siguiente;
 		}
-
-		anterior = actual;
-		actual = actual->siguiente;
 	}
 	return eliminado;
 }
