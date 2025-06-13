@@ -338,7 +338,7 @@ conexion_juegos_t *inicializar_juego(pokedex_t *pokedex, unsigned int semilla)
 
 juego_t *obtener_juego(conexion_juegos_t *conexion, int numero)
 {
-	if (!conexion || numero > MAX_JUGADORES) {
+	if (!conexion || numero < 0 || numero >= MAX_JUGADORES) {
 		return NULL;
 	}
 	return conexion->juegos[numero];
@@ -663,6 +663,9 @@ struct pokemon *obtener_pokemon_capturado(juego_t *juego, int posicion)
 
 	pokemon_juego_t *poke_juego = lista_obtener_elemento(
 		juego->jugador.pokes_capturados, posicion);
+	if (!poke_juego) {
+		return NULL;
+	}
 	return poke_juego->poke;
 }
 
