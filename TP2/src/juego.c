@@ -4,10 +4,10 @@
 #include <time.h>
 
 #define MIN_POKEMONES 4
-#define TECLA_W 'w'
-#define TECLA_S 's'
-#define TECLA_D 'd'
-#define TECLA_A 'a'
+#define TECLA_W 'W'
+#define TECLA_S 'S'
+#define TECLA_D 'D'
+#define TECLA_A 'A'
 #define GANO_JUGADOR_1 1
 #define GANO_JUGADOR_2 -1
 #define EMPATE 2
