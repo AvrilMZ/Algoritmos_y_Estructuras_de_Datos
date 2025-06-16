@@ -9,6 +9,7 @@ typedef struct opcion {
 struct menu {
 	menu_t *menu_padre;
 	opcion_t *primer_opcion;
+	int cantidad_opciones;
 };
 
 struct iterador_menu {
@@ -59,6 +60,7 @@ bool insertar_opcion_en_seccion(menu_t *seccion, void *opcion)
 		}
 		actual->siguiente = nueva_opcion;
 	}
+	seccion->cantidad_opciones++;
 
 	return true;
 }
@@ -92,6 +94,7 @@ bool eliminar_opcion_en_seccion(menu_t *seccion, void *opcion,
 				destruir_menu(actual->sub_seccion, NULL);
 			}
 			free(actual);
+			seccion->cantidad_opciones--;
 			eliminado = true;
 		} else {
 			anterior = actual;
@@ -151,17 +154,11 @@ menu_t *obtener_subseccion_de_opcion(menu_t *menu, void *opcion,
 
 size_t cantidad_opciones_seccion(menu_t *seccion)
 {
-	if (menu_vacio(seccion)) {
+	if (!seccion) {
 		return 0;
 	}
 
-	size_t contador = 0;
-	opcion_t *opcion = seccion->primer_opcion;
-	while (opcion) {
-		contador++;
-		opcion = opcion->siguiente;
-	}
-	return contador;
+	return seccion->cantidad_opciones;
 }
 
 bool agregar_subseccion_a_opcion(menu_t *menu, void *opcion_dato,
