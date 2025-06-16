@@ -6,13 +6,14 @@
 #include <string.h>
 #include <ctype.h>
 
-#define TECLA_W 'w'
-#define TECLA_S 's'
-#define TECLA_D 'd'
-#define TECLA_A 'a'
+#define TECLA_W 'W'
+#define TECLA_S 'S'
+#define TECLA_D 'D'
+#define TECLA_A 'A'
 #define JUGADOR '@'
 #define GANO_JUGADOR_1 1
 #define GANO_JUGADOR_2 -1
+#define EMPATE 2
 #define SIGUEN_JUGANDO 0
 
 const char JUGAR = 'J';
@@ -25,6 +26,10 @@ const char MOSTRAR_POR_NOMBRE = 'N';
 const char MOSTRAR_POR_ID = 'I';
 const char MENU_ANTERIOR = 'A';
 const char SALIR_DEL_JUEGO = 'Q';
+const char *STR_VACIO = "";
+const char *MENSAJE_GANA_JUGADOR_1 = "WINS PLAYER 1";
+const char *MENSAJE_GANA_JUGADOR_2 = "WINS PLAYER 2";
+const char *MENSAJE_EMPATE = "EMPATE";
 
 const char *EMOJI_AGUA = "\U0001F30A";
 const char *EMOJI_FUEGO = "\U0001F525";
@@ -79,7 +84,7 @@ void dibujo_charizard(char *texto)
 	printf("\t                 `.     `.  ,\n");
 	printf("\t              .--'  .._,'\"-' `.\n");
 	printf("\t             .    .'         `' \n");
-	printf("\t             `.   %s%s%s'\n", ANSI_COLOR_BOLD, texto,
+	printf("\t             `.   %s%s%s\n", ANSI_COLOR_BOLD, texto,
 	       ANSI_COLOR_RED);
 	printf("\t               `  '--.   ,-\"'\n");
 	printf("\t                `\"`   |  \\\n");
@@ -126,7 +131,7 @@ bool comparar_opciones_por_caracter(void *opcion, void *caracter)
 	opcion_menu_t *option = (opcion_menu_t *)opcion;
 	char *character = (char *)caracter;
 
-	return tolower(option->caracter) == tolower(*character);
+	return toupper(option->caracter) == toupper(*character);
 }
 
 /** 
@@ -155,7 +160,7 @@ opcion_menu_t *crear_opcion_menu(char caracter, const char *texto,
 }
 
 /**
- * Funcion destructora para un dato opcion_menu_t.
+ * Función destructora para el tipo de dato 'opcion_menu_t'.
  */
 void destruir_opcion_menu(void *opcion)
 {
@@ -170,6 +175,8 @@ void destruir_opcion_menu(void *opcion)
 
 /**
  * Crea y devuelve la seccion principal del menu.
+ * 
+ * En caso de error devuelve NULL.
  */
 menu_t *crear_seccion_principal()
 {
@@ -282,6 +289,8 @@ bool agregar_subseccion_mostrar(menu_t *menu_principal)
 
 /**
  * Devulve y crea el menu con todas las subsecciones agregadas.
+ * 
+ * En caso de erorr devuelve NULL.
  */
 menu_t *crear_menu_completo()
 {
@@ -303,8 +312,6 @@ menu_t *crear_menu_completo()
 	return menu;
 }
 
-// -------------------------------- POKEDEX --------------------------------
-
 /**
  * Devuelve true si ambos strings son iguales en minúscula, de lo contrario devuelve false.
  */
@@ -312,8 +319,8 @@ bool son_iguales_en_lowercase(const char *string1, const char *string2)
 {
 	bool son_iguales = true;
 	while (*string1 && *string2 && son_iguales) {
-		int char1 = tolower((unsigned char)*string1);
-		int char2 = tolower((unsigned char)*string2);
+		int char1 = toupper((unsigned char)*string1);
+		int char2 = toupper((unsigned char)*string2);
 		if (char1 != char2) {
 			son_iguales = false;
 		}
@@ -327,7 +334,7 @@ bool son_iguales_en_lowercase(const char *string1, const char *string2)
 }
 
 /**
- * Devuelve un string con específico según el tipo_pokemon pasado por parámetro.
+ * Devuelve un string específico según el 'tipo_pokemon' dado.
  */
 const char *tipo_a_cadena(tipo_pokemon tipo)
 {
@@ -363,7 +370,7 @@ const char *tipo_a_cadena(tipo_pokemon tipo)
 		strcat(resultado, " Lucha");
 		return resultado;
 	}
-	return "";
+	return STR_VACIO;
 }
 
 /**
@@ -383,7 +390,7 @@ void mostrar_pokemon_con_formato(const struct pokemon *pokemon)
 }
 
 /**
- * Muestra una línea de encabezado con la misma estética del menú.
+ * Muestra una línea de encabezado.
  */
 void mostrar_encabezado_resultado(const char *titulo)
 {
@@ -407,7 +414,9 @@ void mostrar_encabezado_resultado(const char *titulo)
 }
 
 /**
- * Imprime los datos del pokemon con formato estético.
+ * Imprime los datos del pokemon dado.
+ * 
+ * Devuelve true siempre.
  */
 bool imprimir_pokemon_con_formato(struct pokemon *pokemon, void *ctx)
 {
@@ -525,8 +534,6 @@ void manejar_mostrar(pokedex_t *pokedex, char opcion)
 	}
 }
 
-// -------------------------------- JUEGO --------------------------------
-
 /**
  * Le pide una semilla al usuario.
  * 
@@ -586,7 +593,7 @@ const char *obtener_color_tipo_pokemon(char contenido, juego_t *juego, int fila,
 }
 
 /**
- * Muestra el encabezado con el tiempo restante.
+ * Muestra el encabezado del juego con el tiempo restante.
  */
 void mostrar_encabezado_juego(conexion_juegos_t *conexion)
 {
@@ -641,7 +648,7 @@ void mostrar_titulos_jugadores()
 }
 
 /**
- * Obtiene información de los últimos pokémon capturados por un jugador.
+ * Obtiene información de los últimos pokemones capturados por un jugador.
  */
 void obtener_info_capturados(juego_t *juego, char *info_capturados,
 			     size_t max_len)
@@ -686,7 +693,7 @@ void obtener_info_capturados(juego_t *juego, char *info_capturados,
 }
 
 /**
- * Muestra la sección de últimos pokémon capturados.
+ * Muestra la sección de los últimos pokemones capturados.
  */
 void mostrar_seccion_capturados(conexion_juegos_t *conexion)
 {
@@ -709,7 +716,7 @@ void mostrar_seccion_capturados(conexion_juegos_t *conexion)
 }
 
 /**
- * Muestra la sección de próximos pokémon a capturar.
+ * Muestra la sección del próximo pokémon a capturar.
  */
 void mostrar_seccion_proximos(conexion_juegos_t *conexion)
 {
@@ -815,9 +822,11 @@ void cierre_juego(int estado)
 	borrar_pantalla();
 	char texto[20] = "";
 	if (estado == GANO_JUGADOR_1) {
-		strcpy(texto, "WINS PLAYER 1");
+		strcpy(texto, MENSAJE_GANA_JUGADOR_1);
 	} else if (estado == GANO_JUGADOR_2) {
-		strcpy(texto, "WINS PLAYER 2");
+		strcpy(texto, MENSAJE_GANA_JUGADOR_2);
+	} else if (estado == EMPATE) {
+		strcpy(texto, MENSAJE_EMPATE);
 	}
 	dibujo_charizard(texto);
 }
@@ -872,8 +881,6 @@ void manejar_juego(pokedex_t *pokedex, char opcion)
 	destruir_juego(conexion);
 }
 
-// -------------------------------- INTERACCION --------------------------------
-
 /**
  * Imprime por pantalla las opciones del menú dado.
  */
@@ -924,13 +931,14 @@ void mostrar_menu(menu_t *menu)
 }
 
 /**
- * Devuelve true si el carácter dado esta en la sección del menú, en caso contrario false.
+ * Devuelve true si el carácter dado está en la sección del menú, en caso contrario false.
  */
 bool es_opcion_valida(menu_t *menu, char caracter)
 {
 	if (!menu) {
 		return false;
 	}
+
 	return existe_opcion_en_seccion(menu, &caracter,
 					comparar_opciones_por_caracter);
 }
@@ -965,6 +973,8 @@ char menu_obtener_opcion_usuario(menu_t *menu)
 
 /**
  * Obtiene la opción del menú basándose en el carácter seleccionado.
+ * 
+ * En caso de no existir o error devuelve NULL.
  */
 opcion_menu_t *obtener_opcion_por_caracter(menu_t *menu, char caracter)
 {
@@ -982,8 +992,8 @@ opcion_menu_t *obtener_opcion_por_caracter(menu_t *menu, char caracter)
 	while (!encontrado && iterador_tiene_siguiente(iterador)) {
 		opcion_menu_t *opcion =
 			(opcion_menu_t *)iterador_siguiente(iterador);
-		if (opcion &&
-		    (tolower(opcion->caracter) == tolower(caracter))) {
+		if (opcion && comparar_opciones_por_caracter(&opcion->caracter,
+							     &caracter)) {
 			opcion_encontrada = opcion;
 			encontrado = true;
 		}
@@ -995,6 +1005,8 @@ opcion_menu_t *obtener_opcion_por_caracter(menu_t *menu, char caracter)
 
 /**
  * Procesa la opción seleccionada por el usuario.
+ * 
+ * En caso de que la opción no tenga una subseccion devuelve NULL.
  */
 menu_t *procesar_opcion(menu_t *menu_actual, char opcion, pokedex_t *pokedex)
 {
