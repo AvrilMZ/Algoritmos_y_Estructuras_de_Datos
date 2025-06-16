@@ -22,7 +22,9 @@ typedef struct conexion_juegos conexion_juegos_t;
 conexion_juegos_t *inicializar_juego(pokedex_t *pokedex, unsigned int semilla);
 
 /**
+ * Devuelve un puntero al número de juego dado de la conexion.
  * 
+ * En caso de error devuelve NULL.
  */
 juego_t *obtener_juego(conexion_juegos_t *conexion, int numero);
 
@@ -32,22 +34,25 @@ juego_t *obtener_juego(conexion_juegos_t *conexion, int numero);
 void realizar_jugada(conexion_juegos_t *conexion, int accion);
 
 /**
- * Devuelve: 1 si gano el jugador uno, -1 si gano el jugador dos y 0 si se siguen jugando.
- * 
- * Un jugador pierde cuando se queda sin puntos.
- */
-int estado_juego(conexion_juegos_t *conexion);
-
-/**
  * Obtiene el contenido de una posición específica del tablero.
  */
 char obtener_contenido_posicion(juego_t *juego, int fila, int columna);
 
 /**
- * Obtiene el struct pokemon en una posición específica del tablero
+ * Obtiene el struct pokemon de una posición específica del tablero.
+ * 
+ * En caso de no existir o de error devuelve NULL.
  */
 struct pokemon *obtener_pokemon_en_posicion(juego_t *juego, int fila,
 					    int columna);
+
+/**
+ * Devuelve: 1 si gano el jugador uno, -1 si gano el jugador dos, 0 si se siguen jugando 
+ * o 2 si se termino el tiempo y hubo un empate.
+ * 
+ * Un jugador pierde cuando se queda sin puntos.
+ */
+int estado_juego(conexion_juegos_t *conexion);
 
 /**
  * Obtiene los puntos del jugador.
@@ -60,26 +65,34 @@ unsigned obtener_puntos_jugador(juego_t *juego);
 size_t obtener_cantidad_pokes_capturados(juego_t *juego);
 
 /**
+ * Obtiene el pokémon en el indice dado de la lista de pokémones capturados.
  * 
+ * En caso de error devuelve NULL.
+ */
+struct pokemon *obtener_pokemon_capturado(juego_t *juego, int posicion);
+
+/**
+ * Recorre la lista de pokemones capturados del juego dado. La función recibe como 
+ * primer parámetro el elemento de la lista y como segundo parámetro el contexto.
+ * Si la función devuelve true, el elemento cumple el criterio.
+ * 
+ * Devuelve la cantidad de iteraciones realizadas.
  */
 unsigned recorrer_pokemones_capturados(juego_t *juego,
 				       bool (*criterio)(void *, void *),
 				       void *ctx);
 
 /**
- * Obtiene el pokémon en la posición específica de la lista de pokémones capturados
- */
-struct pokemon *obtener_pokemon_capturado(juego_t *juego, int posicion);
-
-/**
- * Obtiene el pokémon en el tope de la pila de pokémones pendientes
- */
-struct pokemon *obtener_pokemon_pendiente_tope(juego_t *juego);
-
-/**
- * Obtiene el tamaño de la pila de pokémones pendientes
+ * Obtiene el tamaño de la pila de pokémones pendientes.
  */
 size_t obtener_cantidad_pokes_pendientes(juego_t *juego);
+
+/**
+ * Obtiene el pokémon en el tope de la pila de pokémones pendientes.
+ * 
+ * Devuelve NULL si no hay elementos en la pila.
+ */
+struct pokemon *obtener_pokemon_pendiente_tope(juego_t *juego);
 
 /**
  * Obtiene el tiempo restante en segundos para el juego.
@@ -89,7 +102,7 @@ size_t obtener_cantidad_pokes_pendientes(juego_t *juego);
 int obtener_tiempo_restante(conexion_juegos_t *conexion);
 
 /**
- * Libera la memoria dinámica reservada para el juego.
+ * Libera la memoria reservada para el juego.
  */
 void destruir_juego(conexion_juegos_t *juego);
 
