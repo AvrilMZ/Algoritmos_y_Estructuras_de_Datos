@@ -30,6 +30,10 @@ juego_t *obtener_juego(conexion_juegos_t *conexion, int numero);
 
 /**
  * Realizará la acción recibida por parámetro.
+ * 
+ * Acciones válidas:
+ * 	- 'W', 'S', 'A' y 'D';
+ * 	- '↑', '↓', '←' y '→'.
  */
 void realizar_jugada(conexion_juegos_t *conexion, int accion);
 
