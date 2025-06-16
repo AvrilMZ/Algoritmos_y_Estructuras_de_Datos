@@ -15,7 +15,7 @@ typedef struct conexion_juegos conexion_juegos_t;
 /**
  * Inicializa y devuelve un puntero al juego cargando toda la información inicial.
  * Si no se quiere usar una semilla se pasa -1.
- * Se deben pasar los pokemones iniciales del juego.
+ * Se deben pasar los pokémones iniciales del juego.
  * 
  * En caso de error devuelve NULL.
  */
@@ -39,7 +39,7 @@ void realizar_jugada(conexion_juegos_t *conexion, int accion);
 char obtener_contenido_posicion(juego_t *juego, int fila, int columna);
 
 /**
- * Obtiene el struct pokemon de una posición específica del tablero.
+ * Obtiene el struct pokémon de una posición específica del tablero.
  * 
  * En caso de no existir o de error devuelve NULL.
  */
@@ -60,7 +60,7 @@ int estado_juego(conexion_juegos_t *conexion);
 unsigned obtener_puntos_jugador(juego_t *juego);
 
 /**
- * Obtiene la cantidad de pokemones capturados.
+ * Obtiene la cantidad de pokémones capturados.
  */
 size_t obtener_cantidad_pokes_capturados(juego_t *juego);
 
@@ -72,7 +72,7 @@ size_t obtener_cantidad_pokes_capturados(juego_t *juego);
 struct pokemon *obtener_pokemon_capturado(juego_t *juego, int posicion);
 
 /**
- * Recorre la lista de pokemones capturados del juego dado. La función recibe como 
+ * Recorre la lista de pokémones capturados del juego dado. La función recibe como 
  * primer parámetro el elemento de la lista y como segundo parámetro el contexto.
  * Si la función devuelve true, el elemento cumple el criterio.
  * 

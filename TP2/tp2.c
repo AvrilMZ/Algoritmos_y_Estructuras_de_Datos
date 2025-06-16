@@ -374,7 +374,7 @@ const char *tipo_a_cadena(tipo_pokemon tipo)
 }
 
 /**
- * Imprime los datos del pokemon pasado por parámetro.
+ * Imprime los datos del pokémon pasado por parámetro.
  */
 void mostrar_pokemon_con_formato(const struct pokemon *pokemon)
 {
@@ -414,7 +414,7 @@ void mostrar_encabezado_resultado(const char *titulo)
 }
 
 /**
- * Imprime los datos del pokemon dado.
+ * Imprime los datos del pokémon dado.
  * 
  * Devuelve true siempre.
  */
@@ -425,7 +425,7 @@ bool imprimir_pokemon_con_formato(struct pokemon *pokemon, void *ctx)
 }
 
 /**
- * Devuelve true si el pokemon no coincide con el ID, de lo contrario lo imprime con formato y devuelve false.
+ * Devuelve true si el pokémon no coincide con el ID, de lo contrario lo imprime con formato y devuelve false.
  */
 bool mostrar_pokemon_con_id_formato(struct pokemon *pokemon, void *ctx)
 {
@@ -438,7 +438,7 @@ bool mostrar_pokemon_con_id_formato(struct pokemon *pokemon, void *ctx)
 }
 
 /**
- * Devuelve true si el pokemon no coincide con el nombre, de lo contrario lo imprime con formato y devuelve false.
+ * Devuelve true si el pokémon no coincide con el nombre, de lo contrario lo imprime con formato y devuelve false.
  */
 bool mostrar_pokemon_con_nombre_formato(struct pokemon *pokemon, void *ctx)
 {
@@ -551,7 +551,7 @@ unsigned int preguntar_semilla()
 }
 
 /**
- * Devuelve el color ANSI correspondiente según el tipo de pokemon.
+ * Devuelve el color ANSI correspondiente según el tipo de pokémon.
  */
 const char *obtener_color_por_tipo(tipo_pokemon tipo)
 {
@@ -576,7 +576,7 @@ const char *obtener_color_por_tipo(tipo_pokemon tipo)
 }
 
 /**
- * Devuelve el color ANSI correspondiente al tipo de pokemon de la posición.
+ * Devuelve el color ANSI correspondiente al tipo de pokémon de la posición.
  * 
  * En caso de ser el jugador tambien.
  */
@@ -603,7 +603,7 @@ void mostrar_encabezado_juego(conexion_juegos_t *conexion)
 }
 
 /**
- * Muestra el terreno de juego con el jugador y pokemones.
+ * Muestra el terreno de juego con el jugador y pokémones.
  */
 void mostrar_terreno(conexion_juegos_t *conexion)
 {
@@ -648,7 +648,7 @@ void mostrar_titulos_jugadores()
 }
 
 /**
- * Obtiene información de los últimos pokemones capturados por un jugador.
+ * Obtiene información de los últimos pokémones capturados por un jugador.
  */
 void obtener_info_capturados(juego_t *juego, char *info_capturados,
 			     size_t max_len)
@@ -693,7 +693,7 @@ void obtener_info_capturados(juego_t *juego, char *info_capturados,
 }
 
 /**
- * Muestra la sección de los últimos pokemones capturados.
+ * Muestra la sección de los últimos pokémones capturados.
  */
 void mostrar_seccion_capturados(conexion_juegos_t *conexion)
 {

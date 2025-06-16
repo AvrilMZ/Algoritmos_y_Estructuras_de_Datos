@@ -17,7 +17,7 @@
 const size_t CANT_CARGA_POKEMONES = 10;
 const int PUNTOS_INICIALES = 10;
 const int PERDIDA_DE_PUNTOS = 1;
-const char VACIO = ' ';
+const char CHAR_VACIO = ' ';
 
 typedef struct coordenada {
 	int fil;
@@ -164,7 +164,7 @@ pokemon_juego_t *crear_pokemon_juego(struct pokemon *pokemon)
 }
 
 /**
- * Función auxiliar para recolectar pokemones en una lista hasta llegar al tamaño buscado.
+ * Función auxiliar para recolectar pokémones en una lista hasta llegar al tamaño buscado.
  * 
  * En caso de error devuelve false.
  */
@@ -193,7 +193,7 @@ bool recolectar_cant_pokes(struct pokemon *pokemon, void *ctx)
 }
 
 /**
- * Devuelve una lista de la cantidad dada de pokemones de la pokedex.
+ * Devuelve una lista de la cantidad dada de pokémones de la pokedex.
  * 
  * En caso de pasar una cantidad menor a MIN_POKEMONES se adopta esa cantidad.
  * En caso de error devuelve NULL.
@@ -221,7 +221,7 @@ lista_t *conseguir_pokes(pokedex_t *pokedex, size_t cantidad)
 }
 
 /**
- * Agrega a la lista un total de CANT_CARGA_POKEMONES de pokemones de la pokedex.
+ * Agrega a la lista un total de CANT_CARGA_POKEMONES de pokémones de la pokedex.
  * 
  * La lista ya debe estar inicializada.
  * Devuelve la lista actualizada o en caso de error NULL.
@@ -243,7 +243,7 @@ lista_t *agregar_pokes(conexion_juegos_t *conexion)
 }
 
 /**
- * Agrega el pokemon siguiente de la lista de pokemones compartida entre juegos al juego dado.
+ * Agrega el pokémon siguiente de la lista de pokémones compartida entre juegos al juego dado.
  * En caso de que a la lista compartida le queden menos de MIN_POKEMONES elementos se le agregan CANT_CARGA_POKEMONES.
  */
 void agregar_pokemon_en_juego(conexion_juegos_t *conexion, int num_juego)
@@ -385,7 +385,7 @@ juego_t *obtener_juego(conexion_juegos_t *conexion, int numero)
 }
 
 /**
- * Devuelve true si la posición del jugador es la misma que la del pokemon, en caso contrario false.
+ * Devuelve true si la posición del jugador es la misma que la del pokémon, en caso contrario false.
  */
 bool misma_posicion_que_poke(void *pokemon, void *jugador)
 {
@@ -433,8 +433,8 @@ int obtener_jugador_contrario(int num_juego)
 }
 
 /**
- * Procesa las copias del pokemon capturado:
- * 	- una para la pila de pokemones pendientes del oponente;
+ * Procesa las copias del pokémon capturado:
+ * 	- una para la pila de pokémones pendientes del oponente;
  * 	- y otra para su lista de capturados.
  * 
  * Devuelve false si hubo algún error.
@@ -467,7 +467,7 @@ bool procesar_pokemon_capturado(conexion_juegos_t *conexion, int num_juego,
 
 /**
  * Manjea los puntos luego de una captura:
- * 	- agrega un punto al jugador que captura el pokemon del tope de su lista de pendientes;
+ * 	- agrega un punto al jugador que captura el pokémon del tope de su lista de pendientes;
  * 	- le resta un punto a su contrincante.
  */
 void manejar_puntos_captura(conexion_juegos_t *conexion, int num_juego,
@@ -490,7 +490,7 @@ void manejar_puntos_captura(conexion_juegos_t *conexion, int num_juego,
 }
 
 /**
- * En caso de que la posición del jugador coincida con la de algún pokemon en el juego, este se elimina y se devuelve.
+ * En caso de que la posición del jugador coincida con la de algún pokémon en el juego, este se elimina y se devuelve.
  * 
  * De no coincidir de devuelve NULL.
  */
@@ -522,9 +522,9 @@ pokemon_juego_t *jugador_capturar_pokemon(conexion_juegos_t *conexion,
 }
 
 /**
- * Captura todos los pokemones que coincidan con la posición del jugador.
+ * Captura todos los pokémones que coincidan con la posición del jugador.
  * 
- * Devuelve la cantidad de pokemones capturados.
+ * Devuelve la cantidad de pokémones capturados.
  */
 int jugador_capturar_todos_pokemon(conexion_juegos_t *conexion, int num_juego)
 {
@@ -598,9 +598,9 @@ void realizar_jugada(conexion_juegos_t *conexion, int accion)
 }
 
 /**
- * Función auxiliar para buscar pokemon en posición específica.
+ * Función auxiliar para buscar pokémon en posición específica.
  * 
- * Devuelve true si la posición del pokemon coincide con la dada, 
+ * Devuelve true si la posición del pokémon coincide con la dada, 
  * en caso contrario devuelve false.
  */
 bool pokemon_en_posicion(void *pokemon_ptr, void *contexto)
@@ -619,7 +619,7 @@ bool pokemon_en_posicion(void *pokemon_ptr, void *contexto)
 char obtener_contenido_posicion(juego_t *juego, int fila, int columna)
 {
 	if (!juego) {
-		return VACIO;
+		return CHAR_VACIO;
 	}
 
 	if (juego->jugador.posicion.fil == fila &&
@@ -633,7 +633,7 @@ char obtener_contenido_posicion(juego_t *juego, int fila, int columna)
 		return pokemon->nombre[0];
 	}
 
-	return VACIO;
+	return CHAR_VACIO;
 }
 
 struct pokemon *obtener_pokemon_en_posicion(juego_t *juego, int fila,
