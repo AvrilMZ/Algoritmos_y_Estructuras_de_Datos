@@ -770,6 +770,50 @@ int obtener_tiempo_restante(conexion_juegos_t *conexion)
 	return tiempo_restante;
 }
 
+/**
+ * Función auxiliar para destruir todos los elementos de una pila.
+ */
+void pila_destruir_todo(pila_t *pila, void (*destructor)(void *))
+{
+	if (!pila) {
+		return;
+	}
+
+	if (destructor) {
+		size_t tamanio = pila_tamanio(pila);
+		for (int i = 0; i < tamanio; i++) {
+			void *elemento = pila_desapilar(pila);
+			if (elemento) {
+				destructor(elemento);
+			}
+		}
+	}
+
+	pila_destruir(pila);
+}
+
+/**
+ * Función auxiliar para destruir todos los elementos de una lista.
+ */
+void lista_destruir_todo(lista_t *lista, void (*destructor)(void *))
+{
+	if (!lista) {
+		return;
+	}
+
+	if (destructor) {
+		size_t tamanio = lista_tamanio(lista);
+		for (int i = 0; i < tamanio; i++) {
+			void *elemento = lista_obtener_elemento(lista, i);
+			if (elemento) {
+				destructor(elemento);
+			}
+		}
+	}
+
+	lista_destruir(lista);
+}
+
 void destruir_juego(conexion_juegos_t *conexion)
 {
 	if (!conexion) {
