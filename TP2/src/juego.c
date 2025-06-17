@@ -30,15 +30,15 @@ typedef struct pokemon_juego {
 } pokemon_juego_t;
 
 typedef struct jugador {
-	coordenada_t posicion;
 	lista_t *pokes_capturados;
+	pila_t *pokes_pendientes;
+	coordenada_t posicion;
 	unsigned puntos;
 } jugador_t;
 
 struct juego {
 	jugador_t jugador;
 	lista_t *pokes_en_juego;
-	pila_t *pokes_pendientes;
 	unsigned indice_aparicion_actual;
 };
 
@@ -293,11 +293,11 @@ bool inicializar_jugador(juego_t *juego)
 	juego->jugador.puntos = PUNTOS_INICIALES;
 
 	juego->jugador.pokes_capturados = lista_crear();
-	juego->pokes_pendientes = pila_crear();
+	juego->jugador.pokes_pendientes = pila_crear();
 	juego->pokes_en_juego = lista_crear();
 
-	return (juego->jugador.pokes_capturados && juego->pokes_pendientes &&
-		juego->pokes_en_juego);
+	return (juego->jugador.pokes_capturados &&
+		juego->jugador.pokes_pendientes && juego->pokes_en_juego);
 }
 
 /**
@@ -459,7 +459,7 @@ bool procesar_pokemon_capturado(conexion_juegos_t *conexion, int num_juego,
 
 	lista_insertar(conexion->juegos[num_juego]->jugador.pokes_capturados,
 		       copia_capturados);
-	pila_apilar(conexion->juegos[juego_contrario]->pokes_pendientes,
+	pila_apilar(conexion->juegos[juego_contrario]->jugador.pokes_pendientes,
 		    copia_pendientes);
 
 	return true;
@@ -475,16 +475,18 @@ void manejar_puntos_captura(conexion_juegos_t *conexion, int num_juego,
 {
 	int juego_contrario = obtener_jugador_contrario(num_juego);
 
-	pokemon_juego_t *tope_pila =
-		pila_tope(conexion->juegos[num_juego]->pokes_pendientes);
+	pokemon_juego_t *tope_pila = pila_tope(
+		conexion->juegos[num_juego]->jugador.pokes_pendientes);
 
-	if (pila_tamanio(conexion->juegos[num_juego]->pokes_pendientes) > 0 &&
+	if (pila_tamanio(
+		    conexion->juegos[num_juego]->jugador.pokes_pendientes) >
+		    0 &&
 	    pokemon_capturado->poke->tipo == tope_pila->poke->tipo) {
 		conexion->juegos[num_juego]->jugador.puntos++;
 		conexion->juegos[juego_contrario]->jugador.puntos--;
 
 		pokemon_juego_t *desapilado = pila_desapilar(
-			conexion->juegos[num_juego]->pokes_pendientes);
+			conexion->juegos[num_juego]->jugador.pokes_pendientes);
 		destruir_pokemon_juego(desapilado);
 	}
 }
@@ -737,16 +739,17 @@ size_t obtener_cantidad_pokes_pendientes(juego_t *juego)
 		return 0;
 	}
 
-	return pila_tamanio(juego->pokes_pendientes);
+	return pila_tamanio(juego->jugador.pokes_pendientes);
 }
 
 struct pokemon *obtener_pokemon_pendiente_tope(juego_t *juego)
 {
-	if (!juego || pila_tamanio(juego->pokes_pendientes) == 0) {
+	if (!juego || pila_tamanio(juego->jugador.pokes_pendientes) == 0) {
 		return NULL;
 	}
 
-	pokemon_juego_t *poke_juego = pila_tope(juego->pokes_pendientes);
+	pokemon_juego_t *poke_juego =
+		pila_tope(juego->jugador.pokes_pendientes);
 	return poke_juego->poke;
 }
 
@@ -782,9 +785,10 @@ void destruir_juego(conexion_juegos_t *conexion)
 					destruir_pokemon_juego);
 			}
 
-			if (conexion->juegos[i]->pokes_pendientes) {
+			if (conexion->juegos[i]->jugador.pokes_pendientes) {
 				pila_destruir_todo(
-					conexion->juegos[i]->pokes_pendientes,
+					conexion->juegos[i]
+						->jugador.pokes_pendientes,
 					destruir_pokemon_juego);
 			}
 
