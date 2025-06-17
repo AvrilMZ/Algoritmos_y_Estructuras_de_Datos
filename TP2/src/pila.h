@@ -50,11 +50,4 @@ void *pila_tope(pila_t *);
  */
 void pila_destruir(pila_t *);
 
-/**
- * Destruye la pila y libera toda la memoria asignada, aplicando la función destructor a cada elemento.
- * 
- * Si el destructor es NULL, no se aplica ninguna función a los elementos.
- */
-void pila_destruir_todo(pila_t *pila, void (*destructor)(void *));
-
 #endif // PILA_H_
