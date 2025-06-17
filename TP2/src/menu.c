@@ -9,7 +9,7 @@ typedef struct opcion {
 struct menu {
 	menu_t *menu_padre;
 	opcion_t *primer_opcion;
-	int cantidad_opciones;
+	size_t cantidad_opciones;
 };
 
 struct iterador_menu {
