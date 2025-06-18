@@ -57,7 +57,6 @@ void prueba_insertar_opciones()
 	pa2m_afirmar(cantidad_opciones_seccion(menu) == 3,
 		     "El menú tiene 3 opciones");
 
-	// Prueba elementos repetidos
 	pa2m_afirmar(insertar_opcion_en_seccion(menu, opcion1),
 		     "Se pueden insertar elementos repetidos");
 	pa2m_afirmar(cantidad_opciones_seccion(menu) == 4,
@@ -79,13 +78,12 @@ void prueba_existe_opcion()
 	insertar_opcion_en_seccion(menu, opcion2);
 
 	pa2m_afirmar(existe_opcion_en_seccion(menu, opcion1, NULL),
-		     "Existe la opción 1 (comparación por dirección)");
+		     "Existe la opción 1");
 	pa2m_afirmar(existe_opcion_en_seccion(menu, opcion2, NULL),
-		     "Existe la opción 2 (comparación por dirección)");
+		     "Existe la opción 2");
 	pa2m_afirmar(!existe_opcion_en_seccion(menu, opcion_inexistente, NULL),
 		     "No existe una opción no insertada");
 
-	// Prueba con comparador personalizado
 	pa2m_afirmar(existe_opcion_en_seccion(menu, opcion2, comparar_strings),
 		     "Existe opción con comparador personalizado");
 
@@ -121,7 +119,6 @@ void prueba_eliminar_opcion()
 	pa2m_afirmar(cantidad_opciones_seccion(menu) == 3,
 		     "La cantidad no cambia al intentar eliminar inexistente");
 
-	// Eliminar con comparador personalizado
 	char *opcion_copia = "Opción 2";
 	pa2m_afirmar(eliminar_opcion_en_seccion(menu, opcion_copia,
 						comparar_strings),
@@ -167,7 +164,6 @@ void prueba_subsecciones()
 						  NULL) == NULL,
 		     "Opción sin subsección devuelve NULL");
 
-	// Sobreescribir subsección
 	pa2m_afirmar(agregar_subseccion_a_opcion(menu_principal, opcion1,
 						 submenu2, NULL),
 		     "Se puede sobreescribir una subsección");
@@ -209,7 +205,6 @@ void prueba_iterador()
 	}
 	pa2m_afirmar(contador == 3, "El iterador recorre todas las opciones");
 
-	// Reiniciar y probar de nuevo
 	iterador_reiniciar(it, menu);
 	pa2m_afirmar(iterador_tiene_siguiente(it),
 		     "Después de reiniciar, el iterador tiene siguiente");
@@ -222,7 +217,6 @@ void prueba_casos_borde()
 {
 	pa2m_nuevo_grupo("Pruebas de casos borde y manejo de errores");
 
-	// Pruebas con NULL
 	pa2m_afirmar(!insertar_opcion_en_seccion(NULL, "dato"),
 		     "No se puede insertar en menú NULL");
 	pa2m_afirmar(!existe_opcion_en_seccion(NULL, "dato", NULL),
@@ -235,7 +229,6 @@ void prueba_casos_borde()
 	pa2m_afirmar(!insertar_opcion_en_seccion(menu, NULL),
 		     "No se puede insertar NULL como opción");
 
-	// Iterador con NULL
 	iterador_menu_t *it = crear_iterador_menu(NULL);
 	pa2m_afirmar(it == NULL, "No se puede crear iterador de menú NULL");
 
@@ -250,9 +243,9 @@ void prueba_destruccion_con_funcion()
 
 	menu_t *menu = crear_menu();
 
-	int *dato1 = malloc(sizeof(int));
-	int *dato2 = malloc(sizeof(int));
-	int *dato3 = malloc(sizeof(int));
+	int *dato1 = calloc(1, sizeof(int));
+	int *dato2 = calloc(1, sizeof(int));
+	int *dato3 = calloc(1, sizeof(int));
 	*dato1 = 1;
 	*dato2 = 2;
 	*dato3 = 3;
@@ -265,8 +258,7 @@ void prueba_destruccion_con_funcion()
 		     "Se insertaron 3 datos dinámicos");
 
 	destruir_menu(menu, free);
-	pa2m_afirmar(true,
-		     "La destrucción con función destructora no causó errores");
+	pa2m_afirmar(true, "La destrucción con función destructora anda");
 }
 
 int main()
