@@ -39,7 +39,7 @@ typedef struct jugador {
 struct juego {
 	jugador_t jugador;
 	lista_t *pokes_en_juego;
-	unsigned indice_aparicion_actual;
+	lista_iterador_t *iterador_aparicion;
 };
 
 struct conexion_juegos {
@@ -164,6 +164,25 @@ pokemon_juego_t *crear_pokemon_juego(struct pokemon *pokemon)
 }
 
 /**
+ * Función destructora para un struct de tipo 'pokemon_juego_t'.
+ */
+void destruir_pokemon_juego(void *pokemon_ptr)
+{
+	if (!pokemon_ptr) {
+		return;
+	}
+
+	pokemon_juego_t *pokemon = (pokemon_juego_t *)pokemon_ptr;
+	if (pokemon->poke) {
+		if (pokemon->poke->nombre) {
+			free((char *)pokemon->poke->nombre);
+		}
+		free(pokemon->poke);
+	}
+	free(pokemon);
+}
+
+/**
  * Función auxiliar para recolectar pokémones en una lista hasta llegar al tamaño buscado.
  * 
  * En caso de error devuelve false.
@@ -174,7 +193,7 @@ bool recolectar_cant_pokes(struct pokemon *pokemon, void *ctx)
 	lista_t *pokes = aux->lista_pokes;
 	size_t cant = aux->cant_deseada;
 
-	if (cant == lista_tamanio(pokes)) {
+	if (lista_tamanio(pokes) >= cant) {
 		return false;
 	}
 
@@ -184,9 +203,7 @@ bool recolectar_cant_pokes(struct pokemon *pokemon, void *ctx)
 	}
 
 	if (!lista_insertar(pokes, nuevo)) {
-		free((char *)nuevo->poke->nombre);
-		free(nuevo->poke);
-		free(nuevo);
+		destruir_pokemon_juego(nuevo);
 		return false;
 	}
 	return true;
@@ -252,27 +269,36 @@ void agregar_pokemon_en_juego(conexion_juegos_t *conexion, int num_juego)
 		return;
 	}
 
-	if ((conexion->juegos[num_juego]->indice_aparicion_actual +
-	     MIN_POKEMONES) >=
-	    lista_tamanio(conexion->orden_aparicion_compartido)) {
+	juego_t *juego = conexion->juegos[num_juego];
+	if (!lista_iterador_quedan_elementos_por_recorrer(
+		    juego->iterador_aparicion)) {
+		size_t tamanio_anterior =
+			lista_tamanio(conexion->orden_aparicion_compartido);
+
 		agregar_pokes(conexion);
+
+		lista_iterador_destruir(juego->iterador_aparicion);
+		juego->iterador_aparicion = lista_iterador_crear(
+			conexion->orden_aparicion_compartido);
+		for (size_t i = 0; i < tamanio_anterior; i++) {
+			lista_iterador_proxima_iteracion(
+				juego->iterador_aparicion);
+		}
 	}
 
-	if (conexion->juegos[num_juego]->indice_aparicion_actual <
-	    lista_tamanio(conexion->orden_aparicion_compartido)) {
-		pokemon_juego_t *siguiente = lista_obtener_elemento(
-			conexion->orden_aparicion_compartido,
-			(int)conexion->juegos[num_juego]
-				->indice_aparicion_actual);
+	if (lista_iterador_quedan_elementos_por_recorrer(
+		    juego->iterador_aparicion)) {
+		pokemon_juego_t *siguiente = lista_iterador_obtener_elemento(
+			juego->iterador_aparicion);
 
 		if (siguiente) {
 			pokemon_juego_t *copia = copia_pokemon_juego(siguiente);
 			if (copia) {
-				lista_insertar(conexion->juegos[num_juego]
-						       ->pokes_en_juego,
-					       copia);
+				lista_insertar(juego->pokes_en_juego, copia);
 			}
-			conexion->juegos[num_juego]->indice_aparicion_actual++;
+
+			lista_iterador_proxima_iteracion(
+				juego->iterador_aparicion);
 		}
 	}
 }
@@ -282,7 +308,7 @@ void agregar_pokemon_en_juego(conexion_juegos_t *conexion, int num_juego)
  * 
  * En caso de error devuelve false.
  */
-bool inicializar_jugador(juego_t *juego)
+bool inicializar_jugador(juego_t *juego, lista_t *orden_compartido)
 {
 	if (!juego) {
 		return false;
@@ -295,9 +321,11 @@ bool inicializar_jugador(juego_t *juego)
 	juego->jugador.pokes_capturados = lista_crear();
 	juego->jugador.pokes_pendientes = pila_crear();
 	juego->pokes_en_juego = lista_crear();
+	juego->iterador_aparicion = lista_iterador_crear(orden_compartido);
 
 	return (juego->jugador.pokes_capturados &&
-		juego->jugador.pokes_pendientes && juego->pokes_en_juego);
+		juego->jugador.pokes_pendientes && juego->pokes_en_juego &&
+		juego->iterador_aparicion);
 }
 
 /**
@@ -317,7 +345,8 @@ bool inicializar_juegos(conexion_juegos_t *conexion)
 			return false;
 		}
 
-		if (!inicializar_jugador(conexion->juegos[i])) {
+		if (!inicializar_jugador(conexion->juegos[i],
+					 conexion->orden_aparicion_compartido)) {
 			return false;
 		}
 
@@ -400,25 +429,6 @@ bool misma_posicion_que_poke(void *pokemon, void *jugador)
 	bool misma_col = (player->posicion.col == poke->posicion.col);
 
 	return (misma_fil && misma_col);
-}
-
-/**
- * Función destructora para un struct de tipo 'pokemon_juego_t'.
- */
-void destruir_pokemon_juego(void *pokemon_ptr)
-{
-	if (!pokemon_ptr) {
-		return;
-	}
-
-	pokemon_juego_t *pokemon = (pokemon_juego_t *)pokemon_ptr;
-	if (pokemon->poke) {
-		if (pokemon->poke->nombre) {
-			free((char *)pokemon->poke->nombre);
-		}
-		free(pokemon->poke);
-	}
-	free(pokemon);
 }
 
 /**
@@ -840,6 +850,11 @@ void destruir_juego(conexion_juegos_t *conexion)
 				lista_destruir_todo(
 					conexion->juegos[i]->pokes_en_juego,
 					destruir_pokemon_juego);
+			}
+
+			if (conexion->juegos[i]->iterador_aparicion) {
+				lista_iterador_destruir(
+					conexion->juegos[i]->iterador_aparicion);
 			}
 
 			free(conexion->juegos[i]);
