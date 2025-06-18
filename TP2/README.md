@@ -34,7 +34,7 @@ Se planteó el [TDA Menú](#imagen2) como un árbol, donde cada nodo es una opci
 <div id="imagen1" align="center">
 	<img src="img/Diagrama_general_arbol.png" alt="Diagrama general árbol" width="1000"/>
 
-<sup>Figura 1. Ejemplo de implementación TDA árbol</sup>
+<sup>Figura 1. Ejemplo de implementación TDA árbol.</sup>
 </div>
 
 <div style="text-align: justify">
@@ -54,7 +54,7 @@ El campo `menu_padre` es de tipo `menu_t`, y el campo `primer_opcion` es de tipo
 <div id="imagen2" align="center">
 	<img src="img/Diagrama_general_menu.png" alt="Diagrama general menú" width="1000"/>
 
-<sup>Figura 2. Ejemplo de implementación TDA menú</sup>
+<sup>Figura 2. Ejemplo de implementación TDA menú.</sup>
 </div>
 
 <div style="text-align: justify">
@@ -114,7 +114,7 @@ Este TDA implementa toda la lógica del juego solicitado, para lo cual se utiliz
 <div id="imagen3" align="center">
 	<img src="img/Diagrama_lista_simplemente_enlazada.png" alt="Diagrama general lista simplemente enlazada" width="800"/>
 
-<sup>Figura 3. Ejemplo de implementación TDA lista simplemente enlazada</sup>
+<sup>Figura 3. Ejemplo de implementación TDA lista simplemente enlazada.</sup>
 </div>
 
 <div style="text-align: justify">
@@ -144,7 +144,7 @@ Después tenemos la estructura `jugador_t` que representa a un jugador en el jue
 Seguimos con la estructura `juego_t` que representa un tablero de juego:
 - `jugador`: jugador actual (`jugador_t`).
 - `pokes_en_juego`: lista de pokémones en juego (`lista_t`).
-- `indice_aparicion_actual`: índice actual en la lista compartida de pokémones a aparecer.
+- `iterador_aparicion`: iterador para recorrer los pokémones que van a aparecer en el juego de la lista `orden_aparicion_compartido`.
 
 Por último, tenemos la estructura `conexion_juegos_t` que representa la conexión entre los juegos:
 - `pokedex`: puntero a la pokedex con los pokémones disponibles.
@@ -155,9 +155,9 @@ Por último, tenemos la estructura `conexion_juegos_t` que representa la conexi�
 </div>
 
 <div id="imagen4" align="center">
-	<img src="img/Diagrama_general_juego.png" alt="Diagrama general juego" width="800"/>
+	<img src="img/Diagrama_general_juego.png" alt="Diagrama general juego" width="1000"/>
 
-<sup>Figura 4. Ejemplo de implementación TDA juego</sup>
+<sup>Figura 4. Ejemplo de implementación TDA juego.</sup>
 </div>
 
 <div style="text-align: justify">
@@ -170,7 +170,7 @@ Primitivas implementadas:
 	- Complejidad: $O(1)$ en tiempo y $O(1)$ en espacio.
 - `realizar_jugada()`: realiza el movimiento dado realizando las interacciones necesarias con el juego.
 	- Complejidad: En el peor caso $O(n)$ en tiempo, siendo $n$ la cantidad de pokémones en juego, ya que se debe recorrer la lista de pokémones en juego para verificar si el jugador está en la misma posición que alguno de ellos, y $O(1)$ en espacio.
-	- En esta función, al igual que `inicializar_juego()`, también se utiliza la estructura `aux_recolectar_pokes_t` para el caso en el que la lista `orden_aparicion_compartido` tenga una cantidad menor a la deseada y así poder redimensionarla agregando una cantidad constante de pokémones adicionales.
+	- En esta función, al igual que `inicializar_juego()`, también se utiliza la estructura `aux_recolectar_pokes_t` para el caso en el que la lista `orden_aparicion_compartido` tenga una cantidad menor a la deseada y así poder redimensionarla agregando una cantidad constante de pokémones adicionales. Para [agregar el pokémon siguiente](#imagen5) se utiliza el `iterador_aparicion` dentro de cada juego, que proporciona una complejidad de búsqueda de $O(1)$ en la lista, ya que apunta directamente a la posición siguiente al último pokémon agregado. Sin embargo, cuando es necesario redimensionar la lista, se crea un nuevo iterador que reemplaza al anterior y debe recorrer hasta la posición previa al último pokémon agregado, lo que resulta en una complejidad de $O(n)$, donde $n$ es la cantidad de pokémones en la lista `orden_aparicion_compartido` anterior.
 - `obtener_contenido_posicion()`: obtiene el contenido de la posición dada en el juego, en caso de que haya un pokémon devuelve la inicial del nombre o sino el carácter correspondiente al jugador.
 	- Complejidad: $O(n)$ en tiempo, siendo $n$ la cantidad de pokémones en juego, ya que se debe recorrer la lista de pokémones en juego para verificar si hay alguno en la posición dada, y $O(1)$ en espacio.
 - `obtener_pokemon_en_posicion()`: obtiene el pokémon en la posición dada en el juego, en caso de existir.
@@ -194,6 +194,12 @@ Primitivas implementadas:
 - `destruir_juego()`: destruye el juego y libera la memoria asociada.
 	- Complejidad: $O(n)$ en tiempo, siendo $n$ la cantidad de pokémones en juego, capturados y pendientes, y $O(1)$ en espacio.
 
+</div>
+
+<div id="imagen5" align="center">
+	<img src="img/Diagrama_agregar_pokemon_en_juego().png" alt="Diagrama de flujo para agregar pokémones a la lista de aparición compartida" width="500"/>
+
+<sup>Figura 5. Diagrama de flujo para agregar pokémones a la lista de aparición compartida.</sup>
 </div>
 
 ## Unión de TDA Menú y TDA Juego
