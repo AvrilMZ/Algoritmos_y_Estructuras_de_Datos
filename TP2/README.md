@@ -32,7 +32,7 @@ Se planteó el [TDA Menú](#imagen2) como un árbol, donde cada nodo es una opci
 </div>
 
 <div id="imagen1" align="center">
-	<img src="img/Diagrama_general_arbol.png" alt="Diagrama general árbol" width="1000"/>
+	<img src="img/Diagrama_general_arbol.png" alt="Diagrama general árbol." width="1000"/>
 
 <sup>Figura 1. Ejemplo de implementación TDA árbol.</sup>
 </div>
@@ -52,7 +52,7 @@ El campo `menu_padre` es de tipo `menu_t`, y el campo `primer_opcion` es de tipo
 </div>
 
 <div id="imagen2" align="center">
-	<img src="img/Diagrama_general_menu.png" alt="Diagrama general menú" width="1000"/>
+	<img src="img/Diagrama_general_menu.png" alt="Diagrama general menú." width="1000"/>
 
 <sup>Figura 2. Ejemplo de implementación TDA menú.</sup>
 </div>
@@ -112,7 +112,7 @@ Este TDA implementa toda la lógica del juego solicitado, para lo cual se utiliz
 </div>
 
 <div id="imagen3" align="center">
-	<img src="img/Diagrama_lista_simplemente_enlazada.png" alt="Diagrama general lista simplemente enlazada" width="800"/>
+	<img src="img/Diagrama_lista_simplemente_enlazada.png" alt="Diagrama general lista simplemente enlazada." width="800"/>
 
 <sup>Figura 3. Ejemplo de implementación TDA lista simplemente enlazada.</sup>
 </div>
@@ -155,7 +155,7 @@ Por último, tenemos la estructura `conexion_juegos_t` que representa la conexi�
 </div>
 
 <div id="imagen4" align="center">
-	<img src="img/Diagrama_general_juego.png" alt="Diagrama general juego" width="1000"/>
+	<img src="img/Diagrama_general_juego.png" alt="Diagrama general juego." width="1000"/>
 
 <sup>Figura 4. Ejemplo de implementación TDA juego.</sup>
 </div>
@@ -197,7 +197,7 @@ Primitivas implementadas:
 </div>
 
 <div id="imagen5" align="center">
-	<img src="img/Diagrama_agregar_pokemon_en_juego().png" alt="Diagrama de flujo para agregar pokémones a la lista de aparición compartida" width="500"/>
+	<img src="img/Diagrama_agregar_pokemon_en_juego().png" alt="Diagrama de flujo para agregar pokémones a la lista de aparición compartida." width="500"/>
 
 <sup>Figura 5. Diagrama de flujo para agregar pokémones a la lista de aparición compartida.</sup>
 </div>
@@ -221,6 +221,12 @@ Las funciones implementadas definen la interfaz gráfica del menú y juego, sin 
 	- `ACCION_SALIR`: salir del programa.
 	- `ACCION_SUBSECCION`: indica que la opción deriva a una subsección del menú.
 
-No es menos importante remarcar que para el loop y parte de la visualización del juego se utiliza el **TDA engine** proporcionado por la cátedra, que permite manejar la entrada de datos de manera inmediata así como también la muestra o no de ciertos aspectos de la consola.
+No es menos importante remarcar que para el loop y parte de la [visualización del juego](#imagen6) se utiliza el **TDA engine** proporcionado por la cátedra, que permite manejar la entrada de datos de manera inmediata así como también la muestra o no de ciertos aspectos de la consola.
 
+</div>
+
+<div id="imagen6" align="center">
+	<img src="img/Diagrama_manejar_juego().png" alt="Diagrama de flujo para mostrar el juego." width="500"/>
+
+<sup>Figura 6. Diagrama de flujo para mostrar el juego.</sup>
 </div>
