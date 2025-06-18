@@ -44,7 +44,7 @@ En este caso, siguiendo la idea del árbol, se implementó la estructura `menu_t
 - `primer_opcion`: permite acceder a las opciones de la sección actual.
 - `cantidad_opciones`: permite conocer la cantidad de opciones en la sección actual.
 
-El campo `menu_padre` es de tipo `menu_t`, y el campo `primer_opcion` es de tipo `opcion_t`. La estructura `opcion_t` contiene:
+El campo `menu_padre` es de tipo `menu_t` y el campo `primer_opcion` es de tipo `opcion_t`. La estructura `opcion_t` contiene:
 - `sub_seccion`: permite acceder a las subsecciones de la opción actual.
 - `siguiente`: permite acceder a la siguiente opción en la misma sección.
 - `dato`: un puntero a un dato genérico que representa la opción.
@@ -119,11 +119,11 @@ Este TDA implementa toda la lógica del juego solicitado, para lo cual se utiliz
 
 <div style="text-align: justify">
 
-Inicialmente se pensó utilizar un TDA cola para los pokémones pendientes ya que en el momento de agregar un pokémon al juego se sacaría el primero y me permitiría anticiparme a que se vacíe, agregando una cantidad constante al final. Esto se descartó en el momento en que quise que ambos jugadores compartieran esta cola, ya que en el momento de agregar el pokémon al juego de uno se perdería la aparición para el otro jugador, a causa de que solo puedo interactuar con el inicio y fin de la misma. Por lo tanto, se eligió un TDA lista, donde cada jugador contiene su propio índice para así llevar un control independiente de qué pokémones les siguen apareciendo, asimismo la idea de ampliar el contenido a una cantidad constante se mantiene para mejorar la eficiencia del juego.
+Inicialmente se pensó utilizar un TDA cola para los pokémones pendientes ya que en el momento de agregar un pokémon al juego se sacaría el primero y me permitiría anticiparme a que se vacíe, agregando una cantidad constante al final. Esto se descartó en el instante en que quise que ambos jugadores compartieran esta cola, ya que en el momento de agregar el pokémon al juego de uno se perdería la aparición para el otro jugador, a causa de que solo puedo interactuar con el inicio y fin de la misma. Por lo tanto, se eligió un TDA lista, donde cada jugador contiene su propio iterador, permitiendo así un seguimiento independiente de los pokémones restantes. Asimismo la idea de ampliar el contenido a una cantidad constante se mantiene para mejorar la eficiencia del juego.
 
 Luego para los pokémones capturados también se optó por usar una lista, ya que siempre se agregarían al final y sirve para recorrer buscando alguno en particular o simplemente mostrarlos.
 
-Finalmente, para los pokémones pendientes a atrapar de cada jugador se usó un TDA pila, ya que siempre que el oponente atrapa un pokémon se le agrega al tope de la misma, y en el momento en que el jugador atrape un pokémon se elimina desde el tope, permitiendo que el jugador siempre tenga acceso al último pokémon pendiente a atrapar.
+Finalmente, para representar los pokémones pendientes por atrapar de cada jugador se utilizó un TDA pila, ya que cada vez que el oponente obtiene un pokémon, este se agrega al tope de la pila del jugador. Cuando el jugador logra atrapar el pokémon del tope, gana un punto y continúa con los siguientes.
 
 En cuanto a estructuras, se implementaron varias, con el objetivo de que quedaran lo más modularizado posible y así poder, en caso de desear, agregar más jugadores.
 
@@ -144,7 +144,7 @@ Después tenemos la estructura `jugador_t` que representa a un jugador en el jue
 Seguimos con la estructura `juego_t` que representa un tablero de juego:
 - `jugador`: jugador actual (`jugador_t`).
 - `pokes_en_juego`: lista de pokémones en juego (`lista_t`).
-- `iterador_aparicion`: iterador para recorrer los pokémones que van a aparecer en el juego de la lista `orden_aparicion_compartido`.
+- `iterador_aparicion`: iterador para recorrer los pokémones que van a aparecer en el juego, de la lista `orden_aparicion_compartido`.
 
 Por último, tenemos la estructura `conexion_juegos_t` que representa la conexión entre los juegos:
 - `pokedex`: puntero a la pokedex con los pokémones disponibles.
@@ -169,8 +169,8 @@ Primitivas implementadas:
 - `obtener_juego()`: obtiene el juego del índice dado de la conexión.
 	- Complejidad: $O(1)$ en tiempo y $O(1)$ en espacio.
 - `realizar_jugada()`: realiza el movimiento dado realizando las interacciones necesarias con el juego.
-	- Complejidad: En el peor caso $O(n)$ en tiempo, siendo $n$ la cantidad de pokémones en juego, ya que se debe recorrer la lista de pokémones en juego para verificar si el jugador está en la misma posición que alguno de ellos, y $O(1)$ en espacio.
-	- En esta función, al igual que `inicializar_juego()`, también se utiliza la estructura `aux_recolectar_pokes_t` para el caso en el que la lista `orden_aparicion_compartido` tenga una cantidad menor a la deseada y así poder redimensionarla agregando una cantidad constante de pokémones adicionales. Para [agregar el pokémon siguiente](#imagen5) se utiliza el `iterador_aparicion` dentro de cada juego, que proporciona una complejidad de búsqueda de $O(1)$ en la lista, ya que apunta directamente a la posición siguiente al último pokémon agregado. Sin embargo, cuando es necesario redimensionar la lista, se crea un nuevo iterador que reemplaza al anterior y debe recorrer hasta la posición previa al último pokémon agregado, lo que resulta en una complejidad de $O(n)$, donde $n$ es la cantidad de pokémones en la lista `orden_aparicion_compartido` anterior.
+	- Complejidad: $O(n)$ en tiempo, siendo $n$ la cantidad de pokémones en juego, ya que se debe recorrer la lista de pokémones en juego para verificar si el jugador está en la misma posición que alguno de ellos, y $O(1)$ en espacio.
+	- En esta función, al igual que `inicializar_juego()`, también se utiliza la estructura `aux_recolectar_pokes_t` para el caso en el que la lista `orden_aparicion_compartido` tenga una cantidad menor a la deseada y así poder redimensionarla agregando una cantidad constante de pokémones adicionales. Para [agregar el pokémon siguiente](#imagen5) se utiliza el `iterador_aparicion` dentro de cada juego, que proporciona una complejidad de búsqueda $O(1)$ en la lista, ya que apunta directamente a la posición siguiente del último pokémon agregado. Sin embargo, cuando es necesario redimensionar la lista, se crea un nuevo iterador que reemplaza al anterior y debe recorrer hasta la posición previa al último pokémon agregado, lo que resulta en una complejidad de $O(n)$, donde $n$ es la cantidad de pokémones en la lista `orden_aparicion_compartido` anterior. En ese único momento la complejidad resultaría $O(n^2)$.
 - `obtener_contenido_posicion()`: obtiene el contenido de la posición dada en el juego, en caso de que haya un pokémon devuelve la inicial del nombre o sino el carácter correspondiente al jugador.
 	- Complejidad: $O(n)$ en tiempo, siendo $n$ la cantidad de pokémones en juego, ya que se debe recorrer la lista de pokémones en juego para verificar si hay alguno en la posición dada, y $O(1)$ en espacio.
 - `obtener_pokemon_en_posicion()`: obtiene el pokémon en la posición dada en el juego, en caso de existir.
@@ -207,7 +207,7 @@ Primitivas implementadas:
 
 Para poder darle un uso funcional a los TDA implementados, en el archivo `tp2.c` se unifican ambos propósitos, creando un menú que permite interactuar con el juego y también incluyendo las funcionalidades de búsqueda y orden de la pokedex implementadas previamente en el TP1.
 
-Las funciones implementadas definen la interfaz gráfica del menú y juego, sin utilizar ninguna lógica por fuera de las explicadas en los TDA. Únicamente se define la estructura `opcion_menu_t` que es pasada como dato a las opciones del menú, y contiene:
+Las funciones implementadas definen la interfaz gráfica del menú y juego, sin utilizar ninguna lógica por fuera de las explicadas en los TDA. Únicamente se define la estructura `opcion_menu_t` que es pasada como dato a las opciones del menú conteniendo:
 - `caracter`: carácter que representa la opción en el menú.
 - `texto`: texto que se muestra en la opción del menú.
 - `tipo_accion`: tipo de acción que se realiza al seleccionar la opción del menú, esta utiliza un enum `tipo_accion_t`, ya que algunas opciones comparten carácter, que define las acciones posibles:
