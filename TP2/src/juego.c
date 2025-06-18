@@ -286,21 +286,15 @@ void agregar_pokemon_en_juego(conexion_juegos_t *conexion, int num_juego)
 		}
 	}
 
-	if (lista_iterador_quedan_elementos_por_recorrer(
-		    juego->iterador_aparicion)) {
-		pokemon_juego_t *siguiente = lista_iterador_obtener_elemento(
-			juego->iterador_aparicion);
+	pokemon_juego_t *siguiente =
+		lista_iterador_obtener_elemento(juego->iterador_aparicion);
 
-		if (siguiente) {
-			pokemon_juego_t *copia = copia_pokemon_juego(siguiente);
-			if (copia) {
-				lista_insertar(juego->pokes_en_juego, copia);
-			}
-
-			lista_iterador_proxima_iteracion(
-				juego->iterador_aparicion);
-		}
+	pokemon_juego_t *copia = copia_pokemon_juego(siguiente);
+	if (copia) {
+		lista_insertar(juego->pokes_en_juego, copia);
 	}
+
+	lista_iterador_proxima_iteracion(juego->iterador_aparicion);
 }
 
 /**
