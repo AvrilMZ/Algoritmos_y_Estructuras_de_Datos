@@ -30,6 +30,9 @@ const char *STR_VACIO = "";
 const char *MENSAJE_GANA_JUGADOR_1 = "WINS PLAYER 1";
 const char *MENSAJE_GANA_JUGADOR_2 = "WINS PLAYER 2";
 const char *MENSAJE_EMPATE = "EMPATE";
+const int BUFFER_NOMBRE_POKE_TERMINAL = 100;
+const int CANT_MOSTRAR_ULTIMOS_CAPTURADOS = 3;
+const size_t RESIZE_INFO_CAPTURADOS = 30;
 
 const char *EMOJI_AGUA = "\U0001F30A";
 const char *EMOJI_FUEGO = "\U0001F525";
@@ -479,7 +482,7 @@ void manejar_busqueda(pokedex_t *pokedex, char opcion)
 	}
 
 	if (opcion == BUSCAR_POR_NOMBRE) {
-		char nombre[100];
+		char nombre[BUFFER_NOMBRE_POKE_TERMINAL];
 		dibujo_logo_pokemon();
 		mostrar_indicacion("Ingrese el nombre");
 		if (scanf("%99s", nombre) != 1) {
@@ -498,7 +501,7 @@ void manejar_busqueda(pokedex_t *pokedex, char opcion)
 		int id;
 		dibujo_logo_pokemon();
 		mostrar_indicacion("Ingrese el ID:");
-		if (scanf("%d", &id) != 1) {
+		if (scanf("%i", &id) != 1) {
 			return;
 		}
 
@@ -598,7 +601,7 @@ const char *obtener_color_tipo_pokemon(char contenido, juego_t *juego, int fila,
 void mostrar_encabezado_juego(conexion_juegos_t *conexion)
 {
 	int tiempo_restante = obtener_tiempo_restante(conexion);
-	printf("\t\t\t\t\t\t   %sTiempo restante: %d segundos%s\n\n",
+	printf("\t\t\t\t\t\t   %sTiempo restante: %i segundos%s\n\n",
 	       ANSI_COLOR_YELLOW, tiempo_restante, ANSI_COLOR_RESET);
 }
 
@@ -650,46 +653,60 @@ void mostrar_titulos_jugadores()
 /**
  * Obtiene información de los últimos pokémones capturados por un jugador.
  */
-void obtener_info_capturados(juego_t *juego, char *info_capturados,
-			     size_t max_len)
+char *obtener_info_capturados(juego_t *juego)
 {
 	size_t total_capturados = obtener_cantidad_pokes_capturados(juego);
 
 	if (total_capturados == 0) {
-		strcpy(info_capturados, "Ninguno");
-		return;
+		char *resultado = calloc(8, sizeof(char));
+		if (resultado) {
+			strcpy(resultado, "Ninguno");
+		}
+		return resultado;
 	}
 
-	int inicio = (int)total_capturados - 3;
+	size_t buffer_size = RESIZE_INFO_CAPTURADOS;
+	char *info_capturados = calloc(buffer_size, sizeof(char));
+	if (!info_capturados) {
+		return NULL;
+	}
+
+	info_capturados[0] = '\0';
+
+	int inicio = (int)total_capturados - CANT_MOSTRAR_ULTIMOS_CAPTURADOS;
 	if (inicio < 0) {
 		inicio = 0;
 	}
 
-	info_capturados[0] = '\0';
-	bool salir = false;
-	for (int i = inicio; i < (int)total_capturados && !salir; i++) {
+	for (int i = inicio; i < (int)total_capturados; i++) {
 		struct pokemon *pokemon = obtener_pokemon_capturado(juego, i);
 		if (pokemon) {
 			size_t len_actual = strlen(info_capturados);
+			size_t len_nombre = strlen(pokemon->nombre);
+			size_t len_necesaria =
+				len_actual + len_nombre + 3; // ", \0" = 3
+
+			if (len_necesaria >= buffer_size) {
+				buffer_size =
+					len_necesaria + RESIZE_INFO_CAPTURADOS;
+				char *nuevo_buffer =
+					realloc(info_capturados, buffer_size);
+				if (!nuevo_buffer) {
+					free(info_capturados);
+					return NULL;
+				}
+				info_capturados = nuevo_buffer;
+			}
 
 			if (len_actual > 0) {
-				if (len_actual + 2 < max_len) {
-					strcat(info_capturados, ", ");
-				} else {
-					salir = true;
-				}
+				strcat(info_capturados, ", ");
 			}
 
-			size_t len_nombre = strlen(pokemon->nombre);
-			size_t len_nueva = strlen(info_capturados);
-
-			if (len_nueva + len_nombre < max_len) {
-				strcat(info_capturados, pokemon->nombre);
-			} else {
-				salir = true;
-			}
+			strcat(info_capturados, pokemon->nombre);
 		}
 	}
+
+	return info_capturados;
 }
 
 /**
@@ -700,19 +717,15 @@ void mostrar_seccion_capturados(conexion_juegos_t *conexion)
 	printf("\t%s %-50s\t\t%s %-50s\n", EMOJI_TARGET,
 	       "Últimos capturados:", EMOJI_TARGET, "Últimos capturados:");
 
-	for (int jugador = 0; jugador < MAX_JUGADORES; jugador++) {
-		juego_t *juego = obtener_juego(conexion, jugador);
-		char info_capturados[100];
+	char *info_jugador1 =
+		obtener_info_capturados(obtener_juego(conexion, 0));
+	char *info_jugador2 =
+		obtener_info_capturados(obtener_juego(conexion, 1));
 
-		obtener_info_capturados(juego, info_capturados,
-					sizeof(info_capturados));
+	printf("\t   %-50s\t\t   %-50s\n", info_jugador1, info_jugador2);
 
-		if (jugador == 0) {
-			printf("\t   %-50s\t\t", info_capturados);
-		} else {
-			printf("   %-50s\n", info_capturados);
-		}
-	}
+	free(info_jugador1);
+	free(info_jugador2);
 }
 
 /**

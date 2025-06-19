@@ -17,6 +17,7 @@
 const size_t CANT_CARGA_POKEMONES = 10;
 const int PUNTOS_INICIALES = 10;
 const int PERDIDA_DE_PUNTOS = 1;
+const int TIEMPO_JUEGO_SEGUNDOS = 60;
 const char CHAR_VACIO = ' ';
 
 typedef struct coordenada {
@@ -766,7 +767,7 @@ int obtener_tiempo_restante(conexion_juegos_t *conexion)
 	time_t tiempo_actual = time(NULL);
 	int tiempo_transcurrido =
 		(int)(tiempo_actual - conexion->tiempo_inicio);
-	int tiempo_restante = 60 - (int)tiempo_transcurrido;
+	int tiempo_restante = TIEMPO_JUEGO_SEGUNDOS - (int)tiempo_transcurrido;
 
 	if (tiempo_restante < 0) {
 		return 0;
