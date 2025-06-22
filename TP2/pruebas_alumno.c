@@ -33,7 +33,10 @@ void prueba_crear_menu()
 	pa2m_afirmar(cantidad_opciones_seccion(menu) == 0,
 		     "El menú recién creado tiene 0 opciones");
 
+	pa2m_afirmar(menu_vacio(NULL), "Menú NULL se considera vacío");
+
 	destruir_menu(menu, NULL);
+	destruir_menu(NULL, NULL); // No debería fallar
 }
 
 void prueba_insertar_opciones()
@@ -67,6 +70,13 @@ void prueba_insertar_opciones()
 	pa2m_afirmar(cantidad_opciones_seccion(menu) == 4,
 		     "El menú tiene 4 opciones con repetidos");
 
+	pa2m_afirmar(!insertar_opcion_en_seccion(NULL, "dato"),
+		     "No se puede insertar en menú NULL");
+	pa2m_afirmar(!insertar_opcion_en_seccion(menu, NULL),
+		     "No se puede insertar NULL como opción");
+	pa2m_afirmar(cantidad_opciones_seccion(NULL) == 0,
+		     "Menú NULL tiene 0 opciones");
+
 	destruir_menu(menu, NULL);
 }
 
@@ -91,6 +101,9 @@ void prueba_existe_opcion()
 
 	pa2m_afirmar(existe_opcion_en_seccion(menu, opcion2, comparar_strings),
 		     "Existe opción con comparador personalizado");
+
+	pa2m_afirmar(!existe_opcion_en_seccion(NULL, "dato", NULL),
+		     "No existe opción en menú NULL");
 
 	destruir_menu(menu, NULL);
 }
@@ -142,17 +155,20 @@ void prueba_subsecciones()
 	menu_t *menu_principal = crear_menu();
 	menu_t *submenu1 = crear_menu();
 	menu_t *submenu2 = crear_menu();
+	menu_t *sub_submenu = crear_menu();
 
 	char *opcion1 = "Archivo";
 	char *opcion2 = "Editar";
 	char *subopc1 = "Nuevo";
 	char *subopc2 = "Abrir";
+	char *sub_subopc1 = "Documento";
 
 	insertar_opcion_en_seccion(menu_principal, opcion1);
 	insertar_opcion_en_seccion(menu_principal, opcion2);
 
 	insertar_opcion_en_seccion(submenu1, subopc1);
 	insertar_opcion_en_seccion(submenu1, subopc2);
+	insertar_opcion_en_seccion(sub_submenu, sub_subopc1);
 
 	pa2m_afirmar(agregar_subseccion_a_opcion(menu_principal, opcion1,
 						 submenu1, NULL),
@@ -177,6 +193,24 @@ void prueba_subsecciones()
 	pa2m_afirmar(subseccion_obtenida == submenu2,
 		     "La subsección sobreescrita es la correcta");
 
+	menu_t *nuevo_submenu1 = crear_menu();
+	insertar_opcion_en_seccion(nuevo_submenu1, subopc1);
+	insertar_opcion_en_seccion(nuevo_submenu1, subopc2);
+
+	agregar_subseccion_a_opcion(menu_principal, opcion1, nuevo_submenu1,
+				    NULL);
+	agregar_subseccion_a_opcion(nuevo_submenu1, subopc1, sub_submenu, NULL);
+
+	pa2m_afirmar(obtener_menu_padre(menu_principal) == NULL,
+		     "Menú principal no tiene padre");
+	pa2m_afirmar(obtener_menu_padre(nuevo_submenu1) == menu_principal,
+		     "Submenu1 tiene como padre al menú principal");
+	pa2m_afirmar(obtener_menu_padre(sub_submenu) == nuevo_submenu1,
+		     "Sub-submenu tiene como padre al submenu1");
+
+	pa2m_afirmar(obtener_menu_padre(NULL) == NULL,
+		     "Menú NULL no tiene padre");
+
 	destruir_menu(menu_principal, NULL);
 }
 
@@ -190,6 +224,10 @@ void prueba_iterador()
 	pa2m_afirmar(it != NULL, "Se puede crear un iterador");
 	pa2m_afirmar(!iterador_tiene_siguiente(it),
 		     "Iterador de menú vacío no tiene siguiente");
+
+	iterador_menu_t *it_null = crear_iterador_menu(NULL);
+	pa2m_afirmar(it_null == NULL,
+		     "No se puede crear iterador de menú NULL");
 
 	char *opcion1 = "Opción 1";
 	char *opcion2 = "Opción 2";
@@ -215,31 +253,108 @@ void prueba_iterador()
 		     "Después de reiniciar, el iterador tiene siguiente");
 
 	destruir_iterador_menu(it);
+	destruir_iterador_menu(NULL); // No debería fallar
 	destruir_menu(menu, NULL);
 }
 
-void prueba_casos_borde()
+void prueba_iterador_menu_padre()
 {
-	pa2m_nuevo_grupo("Pruebas de casos borde y manejo de errores");
+	pa2m_nuevo_grupo("Pruebas de menú padre en iterador");
 
-	pa2m_afirmar(!insertar_opcion_en_seccion(NULL, "dato"),
-		     "No se puede insertar en menú NULL");
-	pa2m_afirmar(!existe_opcion_en_seccion(NULL, "dato", NULL),
-		     "No existe opción en menú NULL");
-	pa2m_afirmar(cantidad_opciones_seccion(NULL) == 0,
-		     "Menú NULL tiene 0 opciones");
-	pa2m_afirmar(menu_vacio(NULL), "Menú NULL se considera vacío");
+	menu_t *menu_principal = crear_menu();
+	menu_t *submenu = crear_menu();
 
-	menu_t *menu = crear_menu();
-	pa2m_afirmar(!insertar_opcion_en_seccion(menu, NULL),
-		     "No se puede insertar NULL como opción");
+	char *opcion1 = "Archivo";
+	char *opcion2 = "Editar";
+	char *subopc1 = "Nuevo";
 
-	iterador_menu_t *it = crear_iterador_menu(NULL);
-	pa2m_afirmar(it == NULL, "No se puede crear iterador de menú NULL");
+	insertar_opcion_en_seccion(menu_principal, opcion1);
+	insertar_opcion_en_seccion(menu_principal, opcion2);
+	insertar_opcion_en_seccion(submenu, subopc1);
 
-	destruir_menu(menu, NULL);
-	destruir_menu(NULL, NULL); // No debería fallar
-	destruir_iterador_menu(NULL); // No debería fallar
+	agregar_subseccion_a_opcion(menu_principal, opcion1, submenu, NULL);
+
+	iterador_menu_t *it = crear_iterador_menu(menu_principal);
+	pa2m_afirmar(iterador_obtener_menu_padre(NULL) == NULL,
+		     "Iterador NULL no tiene menú padre");
+	pa2m_afirmar(iterador_obtener_menu_padre(it) == NULL,
+		     "Menú principal no tiene padre");
+
+	if (iterador_tiene_siguiente(it)) {
+		iterador_siguiente(it);
+		menu_t *subseccion = iterador_obtener_subseccion_actual(it);
+
+		if (subseccion) {
+			iterador_menu_t *it_sub =
+				crear_iterador_menu(subseccion);
+
+			pa2m_afirmar(
+				iterador_obtener_menu_padre(it_sub) == NULL,
+				"Iterador de subsección no conoce automáticamente su padre");
+
+			destruir_iterador_menu(it_sub);
+		}
+	}
+
+	destruir_iterador_menu(it);
+	destruir_menu(menu_principal, NULL);
+}
+
+void prueba_iterador_subseccion_actual()
+{
+	pa2m_nuevo_grupo("Pruebas de subsección actual en iterador");
+
+	menu_t *menu_principal = crear_menu();
+	menu_t *submenu1 = crear_menu();
+	menu_t *submenu2 = crear_menu();
+
+	char *opcion1 = "Archivo";
+	char *opcion2 = "Editar";
+	char *opcion3 = "Ver";
+	char *subopc1 = "Nuevo";
+	char *subopc2 = "Copiar";
+
+	insertar_opcion_en_seccion(menu_principal, opcion1);
+	insertar_opcion_en_seccion(menu_principal, opcion2);
+	insertar_opcion_en_seccion(menu_principal, opcion3);
+
+	insertar_opcion_en_seccion(submenu1, subopc1);
+	insertar_opcion_en_seccion(submenu2, subopc2);
+
+	agregar_subseccion_a_opcion(menu_principal, opcion1, submenu1, NULL);
+	agregar_subseccion_a_opcion(menu_principal, opcion2, submenu2, NULL);
+
+	iterador_menu_t *it = crear_iterador_menu(menu_principal);
+	pa2m_afirmar(iterador_obtener_subseccion_actual(NULL) == NULL,
+		     "Iterador NULL no tiene subsección actual");
+	pa2m_afirmar(iterador_obtener_subseccion_actual(it) == NULL,
+		     "Sin posición actual, no hay subsección");
+
+	if (iterador_tiene_siguiente(it)) {
+		iterador_siguiente(it); // Archivo
+		menu_t *subseccion = iterador_obtener_subseccion_actual(it);
+		pa2m_afirmar(
+			subseccion == submenu1,
+			"Subsección actual es la correcta para primera opción");
+	}
+
+	if (iterador_tiene_siguiente(it)) {
+		iterador_siguiente(it); // Editar
+		menu_t *subseccion = iterador_obtener_subseccion_actual(it);
+		pa2m_afirmar(
+			subseccion == submenu2,
+			"Subsección actual es la correcta para segunda opción");
+	}
+
+	if (iterador_tiene_siguiente(it)) {
+		iterador_siguiente(it); // Ver
+		menu_t *subseccion = iterador_obtener_subseccion_actual(it);
+		pa2m_afirmar(subseccion == NULL,
+			     "Opción sin subsección devuelve NULL");
+	}
+
+	destruir_iterador_menu(it);
+	destruir_menu(menu_principal, NULL);
 }
 
 void prueba_destruccion_con_funcion()
@@ -268,9 +383,9 @@ void prueba_destruccion_con_funcion()
 
 // -------------------------------- JUEGO --------------------------------
 
-void test_inicializar_juego_completo()
+void test_inicializar_juego()
 {
-	pa2m_nuevo_grupo("Pruebas completas de inicialización");
+	pa2m_nuevo_grupo("Pruebas de inicialización del juego");
 
 	pokedex_t *pokedex = pokedex_abrir(ARCHIVO);
 
@@ -295,9 +410,9 @@ void test_inicializar_juego_completo()
 	}
 }
 
-void test_obtener_juego_completo()
+void test_obtener_juego()
 {
-	pa2m_nuevo_grupo("Pruebas completas de obtener juego");
+	pa2m_nuevo_grupo("Pruebas obtener juego");
 
 	pokedex_t *pokedex = pokedex_abrir(ARCHIVO);
 	conexion_juegos_t *conexion = inicializar_juego(pokedex, 12345);
@@ -333,9 +448,9 @@ void test_obtener_juego_completo()
 	}
 }
 
-void test_realizar_jugadas_completo()
+void test_realizar_jugada()
 {
-	pa2m_nuevo_grupo("Pruebas completas de realizar jugadas");
+	pa2m_nuevo_grupo("Pruebas realizar jugada");
 
 	pokedex_t *pokedex = pokedex_abrir(ARCHIVO);
 	conexion_juegos_t *conexion = inicializar_juego(pokedex, 12345);
@@ -450,9 +565,9 @@ void test_contenido_y_pokemon_en_posicion()
 	}
 }
 
-void test_estado_juego_completo()
+void test_estado_juego()
 {
-	pa2m_nuevo_grupo("Pruebas completas de estado del juego");
+	pa2m_nuevo_grupo("Pruebas estado del juego");
 
 	pokedex_t *pokedex = pokedex_abrir(ARCHIVO);
 	conexion_juegos_t *conexion = inicializar_juego(pokedex, 12345);
@@ -483,9 +598,9 @@ void test_estado_juego_completo()
 	}
 }
 
-void test_puntos_y_captura_avanzado()
+void test_puntos_y_captura()
 {
-	pa2m_nuevo_grupo("Pruebas avanzadas de puntos y captura");
+	pa2m_nuevo_grupo("Pruebas puntos y captura");
 
 	pokedex_t *pokedex = pokedex_abrir(ARCHIVO);
 	conexion_juegos_t *conexion = inicializar_juego(pokedex, 12345);
@@ -569,9 +684,9 @@ void test_puntos_y_captura_avanzado()
 	}
 }
 
-void test_casos_extremos_pokemon_capturado()
+void test_pokemon_capturado()
 {
-	pa2m_nuevo_grupo("Pruebas de casos extremos para pokemon capturado");
+	pa2m_nuevo_grupo("Pruebas pokemon capturado");
 
 	pokedex_t *pokedex = pokedex_abrir(ARCHIVO);
 	conexion_juegos_t *conexion = inicializar_juego(pokedex, 12345);
@@ -607,36 +722,6 @@ void test_casos_extremos_pokemon_capturado()
 	}
 }
 
-void test_tiempo_restante_completo()
-{
-	pa2m_nuevo_grupo("Pruebas completas de tiempo restante");
-
-	pokedex_t *pokedex = pokedex_abrir(ARCHIVO);
-	conexion_juegos_t *conexion = inicializar_juego(pokedex, 12345);
-
-	if (conexion) {
-		int tiempo_inicial = obtener_tiempo_restante(conexion);
-		pa2m_afirmar(tiempo_inicial > 0, "Tiempo inicial es positivo");
-
-		for (int i = 0; i < 10; i++) {
-			realizar_jugada(conexion, 'W');
-			realizar_jugada(conexion, 'S');
-		}
-
-		int tiempo_despues = obtener_tiempo_restante(conexion);
-		pa2m_afirmar(tiempo_despues >= 0,
-			     "Tiempo después de operaciones no es negativo");
-		pa2m_afirmar(tiempo_despues <= tiempo_inicial,
-			     "Tiempo no aumenta");
-
-		destruir_juego(conexion);
-	}
-
-	if (pokedex) {
-		pokedex_destruir(pokedex);
-	}
-}
-
 void test_recorrer_pokemones_capturados()
 {
 	pa2m_nuevo_grupo("Pruebas de recorrer pokemones capturados");
@@ -658,6 +743,74 @@ void test_recorrer_pokemones_capturados()
 			pa2m_afirmar(resultado == 0,
 				     "Recorrer con juego NULL devuelve 0");
 		}
+
+		destruir_juego(conexion);
+	}
+
+	if (pokedex) {
+		pokedex_destruir(pokedex);
+	}
+}
+
+void test_obtener_pokemon_pendiente_tope()
+{
+	pa2m_nuevo_grupo("Pruebas obtener pokemon pendiente tope");
+
+	pokedex_t *pokedex = pokedex_abrir(ARCHIVO);
+	conexion_juegos_t *conexion = inicializar_juego(pokedex, 12345);
+
+	if (conexion) {
+		juego_t *juego = obtener_juego(conexion, 0);
+
+		if (juego) {
+			size_t cantidad_pendientes =
+				obtener_cantidad_pokes_pendientes(juego);
+			pa2m_afirmar(
+				cantidad_pendientes == 0,
+				"Al iniciar el juego no hay pokemones pendientes");
+
+			struct pokemon *tope =
+				obtener_pokemon_pendiente_tope(juego);
+			pa2m_afirmar(
+				tope == NULL,
+				"Sin pokemones pendientes, el tope es NULL");
+
+			struct pokemon *tope_null =
+				obtener_pokemon_pendiente_tope(NULL);
+			pa2m_afirmar(
+				tope_null == NULL,
+				"Pokemon pendiente con juego NULL devuelve NULL");
+		}
+
+		destruir_juego(conexion);
+	}
+
+	if (pokedex) {
+		pokedex_destruir(pokedex);
+	}
+}
+
+void test_tiempo_restante()
+{
+	pa2m_nuevo_grupo("Pruebas tiempo restante");
+
+	pokedex_t *pokedex = pokedex_abrir(ARCHIVO);
+	conexion_juegos_t *conexion = inicializar_juego(pokedex, 12345);
+
+	if (conexion) {
+		int tiempo_inicial = obtener_tiempo_restante(conexion);
+		pa2m_afirmar(tiempo_inicial > 0, "Tiempo inicial es positivo");
+
+		for (int i = 0; i < 10; i++) {
+			realizar_jugada(conexion, 'W');
+			realizar_jugada(conexion, 'S');
+		}
+
+		int tiempo_despues = obtener_tiempo_restante(conexion);
+		pa2m_afirmar(tiempo_despues >= 0,
+			     "Tiempo después de operaciones no es negativo");
+		pa2m_afirmar(tiempo_despues <= tiempo_inicial,
+			     "Tiempo no aumenta");
 
 		destruir_juego(conexion);
 	}
@@ -716,20 +869,22 @@ int main()
 	prueba_eliminar_opcion();
 	prueba_subsecciones();
 	prueba_iterador();
-	prueba_casos_borde();
+	prueba_iterador_menu_padre();
+	prueba_iterador_subseccion_actual();
 	prueba_destruccion_con_funcion();
 
 	pa2m_nuevo_grupo(
 		"======================== JUEGO ========================");
-	test_inicializar_juego_completo();
-	test_obtener_juego_completo();
-	test_realizar_jugadas_completo();
+	test_inicializar_juego();
+	test_obtener_juego();
+	test_realizar_jugada();
 	test_contenido_y_pokemon_en_posicion();
-	test_estado_juego_completo();
-	test_puntos_y_captura_avanzado();
-	test_casos_extremos_pokemon_capturado();
-	test_tiempo_restante_completo();
+	test_estado_juego();
+	test_puntos_y_captura();
+	test_pokemon_capturado();
 	test_recorrer_pokemones_capturados();
+	test_obtener_pokemon_pendiente_tope();
+	test_tiempo_restante();
 	test_multiples_conexiones();
 
 	return pa2m_mostrar_reporte();
