@@ -52,9 +52,9 @@ typedef enum {
 	ACCION_BUSCAR_ID,
 	ACCION_MOSTRAR_NOMBRE,
 	ACCION_MOSTRAR_ID,
+	ACCION_SUBSECCION,
 	ACCION_MENU_ANTERIOR,
-	ACCION_SALIR,
-	ACCION_SUBSECCION
+	ACCION_SALIR
 } tipo_accion_t;
 
 typedef struct opcion_menu {
@@ -1039,6 +1039,14 @@ menu_t *procesar_opcion(menu_t *menu_actual, char opcion, pokedex_t *pokedex)
 	}
 
 	switch (opcion_seleccionada->tipo_accion) {
+	case ACCION_SUBSECCION: {
+		menu_t *subseccion = obtener_subseccion_de_opcion(
+			menu_actual, &opcion, comparar_opciones_por_caracter);
+		if (subseccion) {
+			return subseccion;
+		}
+		break;
+	}
 	case ACCION_MENU_ANTERIOR: {
 		menu_t *menu_padre = obtener_menu_padre(menu_actual);
 		if (menu_padre) {
@@ -1046,6 +1054,8 @@ menu_t *procesar_opcion(menu_t *menu_actual, char opcion, pokedex_t *pokedex)
 		}
 		break;
 	}
+	case ACCION_SALIR:
+		break;
 	case ACCION_JUGAR:
 		manejar_juego(pokedex, JUGAR);
 		return NULL;
@@ -1064,16 +1074,6 @@ menu_t *procesar_opcion(menu_t *menu_actual, char opcion, pokedex_t *pokedex)
 	case ACCION_MOSTRAR_ID:
 		manejar_mostrar(pokedex, MOSTRAR_POR_ID);
 		return NULL;
-	case ACCION_SUBSECCION: {
-		menu_t *subseccion = obtener_subseccion_de_opcion(
-			menu_actual, &opcion, comparar_opciones_por_caracter);
-		if (subseccion) {
-			return subseccion;
-		}
-		break;
-	}
-	case ACCION_SALIR:
-		break;
 	}
 
 	return menu_actual;
