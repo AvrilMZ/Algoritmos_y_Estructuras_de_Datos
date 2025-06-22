@@ -1,4 +1,4 @@
-# Algoritmos y Estructura de Datos - Curso Mendez/Pandolfo
+# Algoritmos y Estructuras de Datos - Curso Mendez/Pandolfo
 Cursada el primer cuatrimestre de 2025. [Pagina de la cátedra.](https://algoritmos7541mendez.com.ar/)
 
 ### Temario
