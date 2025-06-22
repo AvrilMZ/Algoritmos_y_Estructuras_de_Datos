@@ -207,7 +207,7 @@ Primitivas implementadas:
 
 Para poder darle un uso funcional a los TDA implementados, en el archivo `tp2.c` se unifican ambos propósitos, creando un menú que permite interactuar con el juego y también incluyendo las funcionalidades de búsqueda y orden de la pokedex implementadas previamente en el TP1.
 
-Las funciones implementadas definen la interfaz gráfica del menú y juego, sin utilizar ninguna lógica por fuera de las explicadas en los TDA. Únicamente se define la estructura `opcion_menu_t` que es pasada como dato a las opciones del menú conteniendo:
+Las funciones implementadas definen la interfaz gráfica del menú y juego, sin utilizar ninguna lógica por fuera de las explicadas en los TDA. Únicamente se define la estructura `opcion_menu_t` que es pasada como dato a las [opciones del menú](#imagen6) conteniendo:
 - `caracter`: carácter que representa la opción en el menú.
 - `texto`: texto que se muestra en la opción del menú.
 - `tipo_accion`: tipo de acción que se realiza al seleccionar la opción del menú, esta utiliza un enum `tipo_accion_t`, ya que algunas opciones comparten carácter, que define las acciones posibles:
@@ -221,12 +221,18 @@ Las funciones implementadas definen la interfaz gráfica del menú y juego, sin 
 	- `ACCION_SALIR`: salir del programa.
 	- `ACCION_SUBSECCION`: indica que la opción deriva a una subsección del menú.
 
-No es menos importante remarcar que para el loop y parte de la [visualización del juego](#imagen6) se utiliza el **TDA engine** proporcionado por la cátedra, que permite manejar la entrada de datos de manera inmediata así como también la muestra o no de ciertos aspectos de la consola.
+No es menos importante remarcar que para el loop y parte de la [visualización del juego](#imagen7) se utiliza el **TDA engine** proporcionado por la cátedra, que permite manejar la entrada de datos de manera inmediata así como también la muestra o no de ciertos aspectos de la consola.
 
 </div>
 
 <div id="imagen6" align="center">
+	<img src="img/Diagrama_mostrar_menu_principal().png" alt="Diagrama de flujo para mostrar el menú principal." width="400"/>
+
+<sup>Figura 6. Diagrama de flujo para mostrar el menú principal.</sup>
+</div>
+
+<div id="imagen7" align="center">
 	<img src="img/Diagrama_manejar_juego().png" alt="Diagrama de flujo para mostrar el juego." width="500"/>
 
-<sup>Figura 6. Diagrama de flujo para mostrar el juego.</sup>
+<sup>Figura 7. Diagrama de flujo para mostrar el juego.</sup>
 </div>
