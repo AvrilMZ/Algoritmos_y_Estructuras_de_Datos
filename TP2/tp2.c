@@ -126,6 +126,7 @@ void dibujo_charizard(char *texto)
 }
 
 // -------------------------------- MENÚ PRINCIPAL--------------------------------
+
 /**
  * Devuelve true si el char de entrada es igual al de caracter, en caso contrario false.
  */
@@ -314,6 +315,8 @@ menu_t *crear_menu_completo()
 
 	return menu;
 }
+
+// -------------------------------- MENÚ INTERACCION CON POKEDEX --------------------------------
 
 /**
  * Devuelve true si ambos strings son iguales en minúscula, de lo contrario devuelve false.
@@ -536,6 +539,8 @@ void manejar_mostrar(pokedex_t *pokedex, char opcion)
 					 imprimir_pokemon_con_formato, NULL);
 	}
 }
+
+// -------------------------------- MOSTRAR JUEGO --------------------------------
 
 /**
  * Le pide una semilla al usuario.
@@ -893,6 +898,8 @@ void manejar_juego(pokedex_t *pokedex, char opcion)
 	cierre_juego(estado_juego(conexion));
 	destruir_juego(conexion);
 }
+
+// -------------------------------- UNIÓN --------------------------------
 
 /**
  * Imprime por pantalla las opciones del menú dado.
