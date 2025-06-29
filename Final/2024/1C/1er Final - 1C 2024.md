@@ -5,9 +5,9 @@
 3. Se crea una tabla de tres columnas: vertice; distancia minima V; y el nodo anterior por el cual llego.
 4. Se toma el vertice V como vertice inicial y se calcula su distancia a si mismo, que es cero.
 5. Se actualiza la tabla, en la cual todas las distancias de los demas vertices a V se marcan como infinito.
-6. Se visita el vertice no visitado con menor distancia conocida desde el primer vertice V, ya que la distancia es cero y las demas infinito.
+6. Se visita el vertice no visitado con menor distancia conocida desde el vertice V.
 7. Se calcula la distancia entre los vertices sumando los pesos de cada una con la distancia de V.
-8. Si la distancia calculada de los vertices conocidos es menor a la que esta en la tavla se actualiza y tambien los verices desde donde se llego.
+8. Si la distancia calculada de los vertices conocidos es menor a la que esta en la tabla se actualiza y tambien los verices desde donde se llego.
 9. Se pasa el vertice V a la lista de verices visitados.
 10. Se continua con el vertice no visitado con menor distancia desde este.
 
@@ -50,7 +50,7 @@ No visitados: [A, B, D, E, F, G, H, I]
   G  | 10  |  F
   H  |  2  |  E
   I  |  7  |  F
-Visitados: [C, A, E, F]
+Visitados: [C, E, F, A]
 No visitados: [B, D, G, H, I]
 
   V  |  D  | V.A
@@ -63,7 +63,7 @@ No visitados: [B, D, G, H, I]
   G  |  9  |  I    C -> F -> I -> G
   H  |  2  |  E    C -> E -> H
   I  |  7  |  F    C -> F -> I
-Visitados: [C, A, E, F, D, B, H, G, I]
+Visitados: [C, E, F, A, H, B, I, G, D]
 No visitados: []
 ```
 
