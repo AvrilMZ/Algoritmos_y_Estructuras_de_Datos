@@ -128,4 +128,6 @@ bool grafo_borrar_arista(grafo_t *grafo, arista_t *arista) {
 ```
 
 # Ejercicio 5
-Un **diccionario** es una estructura de datos que permite almacenar pares clave-valor, donde las claves son únicas y se utilizan para acceder a los valores asociados. Una **tabla de hash**
+Un **diccionario** es una estructura de datos que permite almacenar pares clave-valor, donde las claves son únicas y se utilizan para acceder a los valores asociados. Por otro lado, una **tabla de hash** permite almacenar pares clave-valor, donde las claves son únicas utilizadas para acceder a los valores asociados. Esta usa una función de hash para mapear las claves a índices dentro de un arreglo, permitiendo un acceso rápido. Una función de hash es una función que toma una clave como entrada y devuelve un número entero, que representa un índice dentro del arreglo. La función de hash debe ser determinística, eficiente, poder distribuir uniformemente las claves y minimizar la cantidad de colisiones.
+
+Una mala función de hash seria aquella, que al hashear una clave, devuelva siempre un mismo indice, generando asi colisiones y resultando la busqueda en una complejidad $O(n)$, siendo $n$ la cantidad de elementos de la tabla. En este caso no cumple con ninguna de las caracteristicas previamente mencionadas.
