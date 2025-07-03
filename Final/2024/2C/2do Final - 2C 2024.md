@@ -91,24 +91,112 @@ El algoritmo se implemento como una lista de adyacencia para poder acceder a la 
 # Ejercicio 5
 Un diccionario es una estructura de datos que almacena pares clave-valor, la misma puede ser implementada de varias maneras aunque la mas comun es a traves de un hash. El mostrado es una tabla de hash cerrada ya que los elementos se guardan en un arreglo, en cambio si fuera una tabla de hash abierta el arreglo seria de punteros a un TDA, por lo general se utiliza una lista simplemente enlazada, que guardaria todas las claves hasheadas a ese indice.
 
+Suponiendo que A = 0, B = 1, etc. Se puede deducir, gracias a los datos ya incluidos en la tabla, que la funcion de hash es:
+$f(k) = 2k + 1$
+
 ```txt
-[ C;0 ]
-[ A;1 ]
-[     ]
-[ B;3 ]
-[     ]
+0 [ C;0 ]
+1 [ A;1 ]
+2 [     ]
+3 [ B;3 ]
+4 [     ]
 
 Suponiendo que el factor de carga es 0,75:
 Inserto <F;3>: (Debo rehashear)
 Rehasheo (al doble del tamaño anterior):
-[     ]
-[     ]
-[     ]
-[     ]
-[     ]
-[     ]
-[     ]
-[     ]
-[     ]
-[     ]
+0 [     ]
+1 [ A;1 ]
+2 [ B;3 ]
+3 [     ]
+4 [     ]
+5 [ C;0 ]
+6 [ F;3 ]
+7 [     ]
+8 [     ]
+9 [     ]
+
+Inserto <M;1>:
+0 [     ]
+1 [ A;1 ]
+2 [ B;3 ] <- Ocupada, uso probing lineal para buscar posicion libre
+3 [ M;1 ]
+4 [     ]
+5 [ C;0 ]
+6 [ F;3 ]
+7 [     ]
+8 [     ]
+9 [     ]
+
+Inserto <C;2>:
+0 [     ]
+1 [ A;1 ]
+2 [ B;3 ]
+3 [ M;1 ]
+4 [     ]
+5 [ C;2 ] -> Puedo guardar el valor anterior en un puntero (*anterior = 0)
+6 [ F;3 ]
+7 [     ]
+8 [     ]
+9 [     ]
+
+Inserto <H;3>:
+0 [     ]
+1 [ A;1 ]
+2 [ B;3 ]
+3 [ M;1 ]
+4 [     ]
+5 [ C;2 ]
+6 [ F;3 ]
+7 [ H;3 ]
+8 [     ]
+9 [     ]
+
+Elimino B:
+0 [     ]
+1 [ A;1 ]
+2 [  *  ] -> Activo la flag de eliminado
+3 [ M;1 ]
+4 [     ]
+5 [ C;2 ]
+6 [ F;3 ]
+7 [ H;3 ]
+8 [     ]
+9 [     ]
+
+Elimino A:
+0 [     ]
+1 [  *  ] -> Activo la flag de eliminado
+2 [  *  ]
+3 [ M;1 ]
+4 [     ]
+5 [ C;2 ]
+6 [ F;3 ]
+7 [ H;3 ]
+8 [     ]
+9 [     ]
+
+
+Inserto <D;1>:
+0 [     ]
+1 [  *  ]
+2 [  *  ]
+3 [ M;1 ] <- Ocupada, uso probing lineal para buscar posicion libre
+4 [ D;1 ]
+5 [ C;2 ]
+6 [ F;3 ]
+7 [ H;3 ]
+8 [     ]
+9 [     ]
+
+Inserto <B;2>:
+0 [     ]
+1 [  *  ]
+2 [ B;2 ]
+3 [ M;1 ]
+4 [ D;1 ]
+5 [ C;2 ]
+6 [ F;3 ]
+7 [ H;3 ]
+8 [     ]
+9 [     ]
 ```
