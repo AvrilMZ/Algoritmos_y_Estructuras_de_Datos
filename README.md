@@ -26,5 +26,5 @@ Cursada el primer cuatrimestre de 2025. [Pagina de la cátedra.](https://algorit
     - Métodos no comparativos
 - Diccionarios y Tablas de Hash (hashes abiertos y cerrados)
 - Grafos:
-    - Algoritmos: Dijkstra, Prim, Kruskal.
+    - Algoritmos: Dijkstra, Floyd-Warshall, Prim, Kruskal.
     - Recorridos de grafos
