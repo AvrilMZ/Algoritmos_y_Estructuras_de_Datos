@@ -826,10 +826,10 @@ void mostrar_juegos(conexion_juegos_t *conexion)
  */
 bool es_movimiento_valido(int accion)
 {
-	return (accion == TECLA_W || accion == TECLA_S || accion == TECLA_D ||
-		accion == TECLA_A || accion == TECLA_ARRIBA ||
-		accion == TECLA_ABAJO || accion == TECLA_IZQUIERDA ||
-		accion == TECLA_DERECHA);
+	return (toupper(accion) == TECLA_W || toupper(accion) == TECLA_S ||
+		toupper(accion) == TECLA_D || toupper(accion) == TECLA_A ||
+		accion == TECLA_ARRIBA || accion == TECLA_ABAJO ||
+		accion == TECLA_IZQUIERDA || accion == TECLA_DERECHA);
 }
 
 /**

@@ -2,6 +2,7 @@
 #include "juego.h"
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 
 #define MIN_POKEMONES 4
 #define TECLA_W 'W'
@@ -569,19 +570,19 @@ void realizar_movimiento(conexion_juegos_t *conexion, int accion, int num_juego)
 	}
 
 	juego_t *juego = conexion->juegos[num_juego];
-	if (accion == TECLA_W || accion == TECLA_ARRIBA) {
+	if (accion == TECLA_ARRIBA || toupper(accion) == TECLA_W) {
 		if (juego->jugador.posicion.fil - 1 >= 0) {
 			juego->jugador.posicion.fil--;
 		}
-	} else if (accion == TECLA_S || accion == TECLA_ABAJO) {
+	} else if (accion == TECLA_ABAJO || toupper(accion) == TECLA_S) {
 		if (juego->jugador.posicion.fil + 1 < MAX_FILAS) {
 			juego->jugador.posicion.fil++;
 		}
-	} else if (accion == TECLA_D || accion == TECLA_DERECHA) {
+	} else if (accion == TECLA_DERECHA || toupper(accion) == TECLA_D) {
 		if (juego->jugador.posicion.col + 1 < MAX_COLUMNAS) {
 			juego->jugador.posicion.col++;
 		}
-	} else if (accion == TECLA_A || accion == TECLA_IZQUIERDA) {
+	} else if (accion == TECLA_IZQUIERDA || toupper(accion) == TECLA_A) {
 		if (juego->jugador.posicion.col - 1 >= 0) {
 			juego->jugador.posicion.col--;
 		}
