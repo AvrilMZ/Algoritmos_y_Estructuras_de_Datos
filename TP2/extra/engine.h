@@ -22,7 +22,7 @@ void esconder_cursor();
 void mostrar_cursor();
 
 /**
- * Invoca el callback 5 veces por segundo (aproximadamente porque no importa tanto para este tp :P). 
+ * Invoca el callback 10 veces por segundo aproximadamente. 
  * 
  * El primer parámetro es el código ASCII de la tecla presionada (o algún código especial para los cursores).
  * El segundo es un puntero a datos que el callback puede utilizar.

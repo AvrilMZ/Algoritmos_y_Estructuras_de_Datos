@@ -73,7 +73,7 @@ void game_loop(int (*callback)(int, void *), void *data)
 	int input = 0;
 	struct termios oldt = inicializar_consola();
 	do {
-		usleep(200000);
+		usleep(20000);
 		input = proxima_tecla();
 	} while (callback(input, data) == 0);
 	restaurar_consola(oldt);
