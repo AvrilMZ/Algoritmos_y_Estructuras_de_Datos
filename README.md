@@ -27,4 +27,5 @@ Cursada el primer cuatrimestre de 2025. [Pagina de la cátedra.](https://algorit
 - Diccionarios y Tablas de Hash (hashes abiertos y cerrados)
 - Grafos:
     - Algoritmos: Dijkstra, Floyd-Warshall, Prim, Kruskal.
-    - Recorridos de grafos
+    - Recorridos
+    - Tipos
